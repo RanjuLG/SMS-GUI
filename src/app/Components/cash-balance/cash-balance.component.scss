@@ -1,0 +1,19 @@
+/* cash-balance.component.scss */
+.table thead th {
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+  
+  .table tbody tr.bg-light td {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .card {
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+  h4{
+
+    font-size: large;
+  }

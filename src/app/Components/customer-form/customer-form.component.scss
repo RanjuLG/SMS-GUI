@@ -1,0 +1,37 @@
+/* cash-balance.component.scss */
+.table thead th {
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+  
+  .table tbody tr.bg-light td {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .card {
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+  
+  h4{
+
+    font-size: large;
+  }
+  .position-relative {
+    position: relative;
+  }
+  
+  #searchResultList {
+    padding-right: 30px; /* Adjust based on icon size */
+  }
+  
+  .search-icon {
+    position: absolute;
+    top: 50%;
+    right: 10px; /* Adjust based on preference */
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #ccc; /* Optional: Change color */
+  }
+  

@@ -1,0 +1,51 @@
+.position-content {
+    padding-bottom: 2px;
+  }
+  
+  .navbar {
+    height: 60px; /* Set the desired height for the navbar */
+    background-color: #ffffff; /* Dark blue background */
+    /*border-radius: 5px;  Rounded corners */
+    margin-bottom: 1%;
+    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2);
+  }
+  
+  .navbar-brand img.navbar-logo {
+    height: 100%; /* Make the image height 100% of the navbar height */
+    width: auto; /* Maintain the aspect ratio */
+    vertical-align: middle; /* Center the image vertically */
+    height: 60px;
+  }
+  
+  .active-link {
+   /* background-color: #002147;  Golden yellow background for active link */
+    color: #0059ff !important; /* Dark blue text color */
+    border-radius: 4px; /* Rounded corners for active link */
+    display: inline-block; /* Ensure the background only covers the text */
+  }
+  
+  .text-style {
+    color: #d4af37; /* Golden yellow text color */
+    font-size: xx-large;
+    font-family: poppins;
+  }
+  
+  .nav-item {
+    font-size: larger;
+    margin: 10px;
+  }
+  
+  .nav-link {
+    color: #d4af37;
+    font-size: 0.9rem;     
+  }
+  
+  .btn{
+    color: #002147;
+  }
+  
+  .nav-icon {
+    margin-right: 5px; /* Space between icon and text */
+  }
+  
+  

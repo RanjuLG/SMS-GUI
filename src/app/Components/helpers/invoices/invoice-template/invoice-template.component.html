@@ -1,0 +1,145 @@
+<div class="row justify-content-center" id="printable-template">
+    <div class="col-xxl-9">
+        <div class="card" id="receipt">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="card-header border-bottom-dashed p-4">
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <h6><span class="text-muted fw-normal">Address:&nbsp;</span></h6>
+                                <h6 class="text-muted mb-1" id="address-details">Muruthalawa, Sri Lanka</h6>
+                            </div>
+                            <div class="col-lg-4">
+                                <div class="d-flex align-items-center">
+                                    <img src="GoldCashLogo.png" class="card-logo card-logo-dark" alt="logo dark" height="80">
+                                    <h6 class="ms-3">Gold Cash (Pvt) Ltd</h6>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 d-flex justify-content-end">
+                                <div>
+                                    <h6><span class="text-muted fw-normal">Legal Registration No:&nbsp;</span><span id="legal-register-no">987654</span></h6>
+                                    <h6><span class="text-muted fw-normal">Email:&nbsp;</span><span id="email">goldcash&#64;gmail.com</span></h6>
+                                    <h6 class="mb-0"><span class="text-muted fw-normal">Contact No:&nbsp;</span><span id="contact-no"> +(94) 81 222 1234</span></h6>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end col-->
+                <div class="col-lg-12">
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-lg-3 col-6">
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">Invoice No</p>
+                                <h6 class="fs-14 mb-0"><span id="receipt-no">{{invoice?.invoiceNo}}</span></h6>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">Date</p>
+                                <h6 class="fs-14 mb-0"><span id="receipt-date">{{invoice?.dateGenerated}}</span></h6>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">Payment Status</p>
+                                <h6 class="fs-14 mb-0">{{ invoice?.paymentStatus == true ? 'Paid' : 'Pending' }}</h6>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <p class="text-muted mb-2 text-uppercase fw-semibold">Total Amount</p>
+                                <h6 class="fs-14 mb-0">Rs.<span id="total-amount">{{invoice?.totalAmount}}</span></h6>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end col-->
+                <div class="col-lg-12">
+                    <div class="card-body p-4 border-top border-top-dashed">
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <h6 class="text-muted text-uppercase fw-semibold mb-3">Customer Information</h6>
+                                <p class="fw-medium mb-2" id="billing-name">{{customer?.customerName}}</p>
+                                <p class="text-muted mb-1" id="customer-address">{{customer?.customerAddress}}</p>
+                                <p class="text-muted mb-1"><span>Phone: +</span><span id="customer-phone-no">{{customer?.customerContactNo}}</span></p>
+                                <p class="text-muted mb-0"><span>NIC: </span><span id="customer-NIC">{{customer?.customerNIC}}</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end col-->
+                <div class="col-lg-12">
+                    <div class="card-body p-4">
+                        <div class="table-responsive">
+                            <table class="table table-borderless text-center table-nowrap align-middle mb-0">
+                                <thead>
+                                    <tr class="table-active">
+                                        <th scope="col" style="width: 50px;">#</th>
+                                        <th scope="col">Item Description</th>
+                                        <th scope="col">Total Gold Weight (g)</th>
+                                        <th scope="col">Caratage (Rs)</th>
+                                        <th scope="col" class="text-end">Item Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="products-list">
+                                    <tr>
+                                        <td scope="row">01</td>
+                                        <td class="text">
+                                            <span class="fw-medium">{{item?.itemDescription}}</span>
+                                        </td>
+                                        <td>{{item?.itemGoldWeight}}</td>
+                                        <td>{{item?.itemCaratage}}</td>
+                                        <td class="text-end">{{item?.itemValue}}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="border-top border-top-dashed mt-2">
+                            <table class="table table-borderless table-nowrap align-middle mb-0 ms-auto" style="width:250px">
+                                <tbody>
+                                    <tr>
+                                        <td>Sub Total</td>
+                                        <td class="text-end">{{transaction?.subTotal}}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Interest (%)</td>
+                                        <td class="text-end">{{transaction?.interest}}</td>
+                                    </tr>
+                                    <tr class="border-top border-top-dashed fs-15">
+                                        <th scope="row">Total Amount</th>
+                                        <th class="text-end">{{transaction?.totalAmount}}</th>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="mt-4">
+                            <div class="alert alert-info">
+                                <p class="mb-0"><span class="fw-semibold">Disclaimer:&nbsp;</span> <span id="note">I hereby
+                                        relieve Gold Cash (Pvt) Ltd. from all
+                                        claims and liabilities with regard to this mortgage, since all the articles
+                                        which have been mortgaged under this receipt,
+                                        have all been receieved.
+                                    </span></p>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <div class="row text-center">
+                                <div class="col-md-4">
+                                    <hr>
+                                    <p class="text-muted mb-0"><strong>Cashier's Signature</strong></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <hr>
+                                    <p class="text-muted mb-0"><strong>Manager's Signature</strong></p>
+                                </div>
+                                <div class="col-md-4">
+                                    <hr>
+                                    <p class="text-muted mb-0"><strong>Customer's Signature</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end col-->
+            </div><!--end row-->
+        </div>
+        <!--end card-->
+    </div>
+    <!--end col-->
+</div>
+
+<div class="hstack gap-2 justify-content-end d-print-none mt-4">
+    <button class="btn btn-success" (click)="printTemplate()"><i class="ri-printer-line align-bottom me-1"></i> Print</button>
+    <button class="btn btn-primary" (click)="downloadTemplate()"><i class="ri-download-2-line align-bottom me-1"></i> Download</button>
+</div>

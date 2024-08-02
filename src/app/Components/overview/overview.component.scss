@@ -1,0 +1,20 @@
+.center-content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start; // Align items at the start
+    min-height: 100vh; // Full viewport height
+    padding-top: 2rem; // Adjust this value to move the component down or up
+  }
+
+
+h6 {
+  font-size: large;
+}
+a{
+  font-size: small;
+}
+
+h4{
+
+  font-size: large;
+}

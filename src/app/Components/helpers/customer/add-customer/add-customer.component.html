@@ -1,0 +1,36 @@
+<div class="modal-header">
+    <h5 class="modal-title">{{ customer ? 'Edit Customer' : 'Add Customer' }}</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+  </div>
+  <div class="modal-body">
+    <form [formGroup]="customerForm" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="customerName" class="form-label">Name</label>
+        <input type="text" id="customerName" formControlName="customerName" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label for="customerAddress" class="form-label">Address</label>
+        <input type="text" id="customerAddress" formControlName="customerAddress" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label for="customerNIC" class="form-label">NIC</label>
+        <input type="text" id="customerNIC" formControlName="customerNIC" class="form-control" />
+      </div>
+      <div class="mb-3">
+        <label for="contactNo" class="form-label">Contact No.</label>
+        <input type="text" id="customerContactNo" formControlName="customerContactNo" class="form-control" />
+      </div>
+      <!--
+      <div class="mb-3">
+        <label for="joiningDate" class="form-label">Joining Date</label>
+        <input type="date" id="joiningDate" formControlName="joiningDate" class="form-control" />
+      </div>
+      --> 
+      <div class="modal-footer">
+        <div class="hstack gap-2 justify-content-end">
+          <button type="submit" class="btn btn-primary">{{ customer ? 'Save Changes' : 'Add Customer' }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+  

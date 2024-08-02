@@ -1,0 +1,70 @@
+/* cash-balance.component.scss */
+.table thead th {
+    background-color: #f8f9fa;
+    color: #6c757d;
+    font-size: smaller;
+  }
+  
+  .table tbody tr.bg-light td {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    font-size: smaller;
+  }
+  
+  .card {
+    border-radius: 0.25rem;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  }
+  :host ::ng-deep .form-control:focus {
+    box-shadow: none;
+    border-color: #ced4da; /* Optional: Reset the border color */
+  }
+  h4{
+
+    font-size: large;
+  }
+
+  .gridjs-pagination {
+    .gridjs-pages button {
+        margin-left: 0.3rem;
+        border-radius: 0.25rem !important; /* Adjusted border-radius */
+        border: 1px solid #dee2e6; /* Light grey border */
+        background-color: #f8f9fa; /* Light background color */
+        color: #343a40; /* Dark grey text color */
+
+        &:last-child {
+            border-right: 1px solid #dee2e6;
+        }
+
+        &:disabled,
+        &:hover:disabled,
+        &[disabled] {
+            color: #6c757d; /* Grey color for disabled state */
+            background-color: #f8f9fa;
+        }
+
+        &:hover {
+            background-color: #e2e6ea; /* Slightly darker background on hover */
+            color: #343a40; /* Same text color on hover */
+        }
+
+        &:focus {
+            box-shadow: none;
+        }
+
+        &:last-child,
+        &:first-child {
+            &:hover {
+                background-color: transparent;
+            }
+        }
+
+        &.gridjs-currentPage {
+            background-color: #007bff; /* Primary blue background for active page */
+            color: #fff; /* White text color for active page */
+            border-color: #007bff; /* Primary blue border color for active page */
+            font-weight: 500; /* Medium font weight */
+        }
+    }
+}
+

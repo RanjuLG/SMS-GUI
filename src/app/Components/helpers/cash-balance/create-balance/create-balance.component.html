@@ -1,0 +1,28 @@
+<div class="modal-header">
+    <h4 class="modal-title">Enter Balance</h4>
+    <button type="button" class="close" (click)="activeModal.dismiss('Cross click')">&times;</button>
+</div>
+<div class="modal-body">
+    <form (ngSubmit)="submitBalance()" class="row g-3">
+        <div class="col-md-6">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" id="date" [(ngModel)]="balance.date" name="date" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label">Total Amount</label>
+            <input type="number" id="totalAmount" [(ngModel)]="balance.totalAmount" name="totalAmount"
+                class="form-control" readonly>
+        </div>
+        <div class="col-12">
+            <hr class="my-4">
+        </div>
+        <div class="col-md-3" *ngFor="let note of noteValues">
+            <label [for]="'noteValue' + note" class="form-label">Rs. {{ note }}</label>
+            <input type="number" [id]="'noteValue' + note" [(ngModel)]="balance.notes[note]"
+                name="note{{note}}Value" class="form-control" (input)="calculateTotalAmount()" required>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </form>
+</div>
