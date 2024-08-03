@@ -124,6 +124,10 @@ export class ApiService {
     return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
   }
 
+  getInvoiceByInvoiceNo(invoiceNo: string): Observable<InvoiceDto[]> {
+    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
+  }
+
 
 
  // Transactions
