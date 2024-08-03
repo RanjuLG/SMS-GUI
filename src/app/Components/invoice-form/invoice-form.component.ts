@@ -29,7 +29,8 @@ export class InvoiceFormComponent implements OnInit {
   page: number = 1;
   invoicesPerPage: number = 10;
   invoicesPerPageOptions: number[] = [1, 5, 10, 15, 20];
-  searchControl = new FormControl();
+  searchNICControl = new FormControl();
+  searchInvoiceNoControl = new FormControl();
 
   constructor(
     private modalService: NgbModal,
@@ -41,14 +42,14 @@ export class InvoiceFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadInvoices();
-    this.searchControl.valueChanges.pipe(
+
+    this.searchNICControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((nic: string) => {
         if (!nic) {
           return this.apiService.getInvoices(); // Return all invoices if NIC is empty
         }
-        console.log(nic)
         return this.apiService.getInvoicesByCustomerNIC(nic).pipe(
           catchError(() => of([])) // Handle errors and return an empty array
         );
@@ -57,28 +58,54 @@ export class InvoiceFormComponent implements OnInit {
       next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
         this.invoices = result.map(invoice => ({
           ...invoice,
-          createdAt: this.dateService.formatDateTime(invoice.createdAt),
+          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
           selected: false,
-          customerNIC: invoice.customerNIC // Ensure this property is available in the response
+          customerNIC: invoice.customerNIC,
+          invoiceNo: invoice.invoiceNo
         }));
         this.cdr.markForCheck(); // Trigger change detection
       },
       error: (error: any) => {
-        console.error('Failed to fetch invoices', error);
+        console.error('Failed to fetch invoices by NIC', error);
+      }
+    });
+
+    this.searchInvoiceNoControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((invoiceNo: string) => {
+        if (!invoiceNo) {
+          return this.apiService.getInvoices(); // Return all invoices if Invoice No is empty
+        }
+        return this.apiService.getInvoiceByInvoiceNo(invoiceNo).pipe(
+          catchError(() => of([])) // Handle errors and return an empty array
+        );
+      })
+    ).subscribe({
+      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
+        this.invoices = result.map(invoice => ({
+          ...invoice,
+          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
+          selected: false,
+          customerNIC: invoice.customerNIC,
+          invoiceNo: invoice.invoiceNo
+        }));
+        this.cdr.markForCheck(); // Trigger change detection
+      },
+      error: (error: any) => {
+        console.error('Failed to fetch invoices by Invoice No', error);
       }
     });
   }
   
-
-
-
   loadInvoices() {
     this.apiService.getInvoices().subscribe(
       (data: InvoiceDto[]) => {
         this.invoices = data.map(invoice => ({ ...invoice,
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
           selected: false,
-          customerNIC: invoice.customerNIC }));
+          customerNIC: invoice.customerNIC,
+          invoiceNo: invoice.invoiceNo }));
           
         console.log("invoices: ",this.invoices)
         this.cdr.markForCheck(); // Trigger change detection
