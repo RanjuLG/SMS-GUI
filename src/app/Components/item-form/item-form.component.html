@@ -18,7 +18,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <div class="col-sm-auto ms-auto">
+                            <div class="col-sm-auto">
                                 <div class="d-flex gap-1">
                                     <input type="text" class="form-control" id="searchResultList" placeholder="Enter customer NIC..." [formControl]="searchControl">
                                 </div>
@@ -26,7 +26,7 @@
                         </div>
                         <div class="d-flex justify-content-between align-items-center mb-3">
                             <div>
-                                <label for="itemsPerPage" class="form-label">Items per page:</label>
+                                <label for="itemsPerPage" class="form-label"></label>
                                 <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
                                     <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
                                 </select>
@@ -43,9 +43,9 @@
                                         </th>
                                         <th scope="col">Added Date</th>
                                         <th scope="col">Item Description</th>
-                                        <th scope="col">Caratage</th>
+                                        <th scope="col">Karatage</th>
                                         <th scope="col">Total Gold Weight (g)</th>
-                                        <th scope="col">Amount per Caratage</th>
+                                        <th scope="col">Amount per Karatage</th>
                                         <th scope="col">Item Value</th>
                                         <th scope="col">Item Status</th>
                                         <th scope="col">Customer NIC</th>
