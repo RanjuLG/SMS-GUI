@@ -90,6 +90,10 @@ export class ApiService {
     return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { body: itemIds });
 
   }
+  getItemsByCustomerNIC(nic: string): Observable<ItemDto[]> {
+    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`);
+  }
+
 
   //Invoices
   createInvoice(invoiceDto: CreateInvoiceDto): Observable<any> {
