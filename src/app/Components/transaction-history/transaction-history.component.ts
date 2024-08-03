@@ -1,7 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { TransactionDto } from './transaction.model';
@@ -9,6 +9,8 @@ import { ApiService } from '../../Services/api-service.service';
 import { CreateTransactionDto, UpdateTransactionDto } from './transaction.model';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 export interface ExtendedTrasactionDto extends TransactionDto {
   selected?: boolean;
@@ -17,16 +19,18 @@ export interface ExtendedTrasactionDto extends TransactionDto {
 @Component({
   selector: 'app-transaction-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule],
+  imports: [CommonModule, FormsModule, NgxPaginationModule,ReactiveFormsModule],
   templateUrl: './transaction-history.component.html',
-  styleUrls: ['./transaction-history.component.scss']
+  styleUrls: ['./transaction-history.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TransactionHistoryComponent implements OnInit {
   transactions: ExtendedTrasactionDto[] = [];
   editingIndex: number | null = null;
   page: number = 1;
-  itemsPerPage: number = 10;
-  itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  transactionsPerPage: number = 10;
+  transactionsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  searchControl = new FormControl();
 
   constructor(
     private modalService: NgbModal, 
@@ -36,7 +40,34 @@ export class TransactionHistoryComponent implements OnInit {
 
   ngOnInit() {
     this.loadTransactions();
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((nic: string) => {
+        if (!nic) {
+          return this.apiService.getTransactions(); // Return all transactions if NIC is empty
+        }
+        console.log(nic)
+        return this.apiService.getTransactionsByCustomerNIC(nic).pipe(
+          catchError(() => of([])) // Handle errors and return an empty array
+        );
+      })
+    ).subscribe({
+      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
+        this.transactions = result.map(transaction => ({
+          ...transaction,
+          createdAt: this.dateService.formatDateTime(transaction.createdAt),
+          selected: false,
+          customerNIC: transaction.customerNIC // Ensure this property is available in the response
+        }));
+        this.cdr.markForCheck(); // Trigger change detection
+      },
+      error: (error: any) => {
+        console.error('Failed to fetch transactions', error);
+      }
+    });
   }
+  
 
   loadTransactions(): void {
     this.apiService.getTransactions().subscribe({
@@ -44,7 +75,8 @@ export class TransactionHistoryComponent implements OnInit {
         this.transactions = transactions.map(transaction => ({
           ...transaction,
           createdAt: this.dateService.formatDateTime(transaction.createdAt),
-          selected: false
+          selected: false,
+          customerNIC: transaction.customer.customerNIC
         }));
         this.cdr.markForCheck(); // Trigger change detection
         console.log(this.transactions);
@@ -150,11 +182,11 @@ export class TransactionHistoryComponent implements OnInit {
   }
 
   getStartIndex(): number {
-    return (this.page - 1) * this.itemsPerPage + 1;
+    return (this.page - 1) * this.transactionsPerPage + 1;
   }
 
   getEndIndex(): number {
-    const endIndex = this.page * this.itemsPerPage;
+    const endIndex = this.page * this.transactionsPerPage;
     return endIndex > this.transactions.length ? this.transactions.length : endIndex;
   }
 

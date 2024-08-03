@@ -1,7 +1,7 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { NgxPaginationModule } from 'ngx-pagination';
@@ -10,6 +10,8 @@ import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { CustomerDto } from '../customer-form/customer.model';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
@@ -20,7 +22,7 @@ export interface ExtendedItemDto extends ItemDto {
 @Component({
   selector: 'app-item-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, NgxPaginationModule],
+  imports: [FormsModule, CommonModule, NgxPaginationModule, ReactiveFormsModule],
   templateUrl: './item-form.component.html',
   styleUrls: ['./item-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,6 +32,7 @@ export class ItemFormComponent implements OnInit {
   page: number = 1;
   itemsPerPage: number = 10;
   itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  searchControl = new FormControl();
 
   constructor(
     private modalService: NgbModal,
@@ -40,7 +43,54 @@ export class ItemFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadItems();
+    this.searchControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((nic: string) => {
+        if (!nic) {
+          return this.apiService.getItems(); // Return all items if NIC is empty
+        }
+        console.log(nic)
+        return this.apiService.getItemsByCustomerNIC(nic).pipe(
+          catchError(() => of([])) // Handle errors and return an empty array
+        );
+      })
+    ).subscribe({
+      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
+        this.items = result.map(item => ({
+          ...item,
+          createdAt: this.dateService.formatDateTime(item.createdAt),
+          selected: false,
+          customerNIC: item.customerNIC // Ensure this property is available in the response
+        }));
+        this.cdr.markForCheck(); // Trigger change detection
+      },
+      error: (error: any) => {
+        console.error('Failed to fetch items', error);
+      }
+    });
   }
+  
+  loadItems(): void {
+    this.apiService.getItems().subscribe({
+      next: (items: any[]) => { // Use 'any' type here if your API response does not have a consistent type
+        this.items = items.map(item => ({
+          ...item,
+          createdAt: this.dateService.formatDateTime(item.createdAt),
+          selected: false,
+          customerNIC: item.customerNIC // Ensure this property is available in the response
+        })) as ExtendedItemDto[]; // Type assertion to ExtendedItemDto[]
+  
+        this.cdr.markForCheck(); // Trigger change detection
+        console.log(this.items);
+      },
+      error: (error: any) => {
+        console.error('Failed to load items', error);
+      }
+    });
+  }
+  
+
 
   openAddItemModal(): void {
     const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
@@ -138,26 +188,6 @@ export class ItemFormComponent implements OnInit {
   getEndIndex(): number {
     const endIndex = this.page * this.itemsPerPage;
     return endIndex > this.items.length ? this.items.length : endIndex;
-  }
-
-  loadItems(): void {
-    
-    this.apiService.getItems().subscribe({
-      next: (items: ItemDto[]) => {
-        this.items = items.map(item => ({
-          ...item,
-          createdAt: this.dateService.formatDateTime(item.createdAt),
-          selected: false
-        })) as ExtendedItemDto[]; // Type assertion to ExtendedItemDto[]
-  
-            this.cdr.markForCheck(); // Trigger change detection
-         
-        console.log(this.items)
-      },
-      error: (error: any) => {
-        console.error('Failed to load items', error);
-      }
-    });
   }
   
 }

@@ -90,6 +90,10 @@ export class ApiService {
     return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { body: itemIds });
 
   }
+  getItemsByCustomerNIC(nic: string): Observable<ItemDto[]> {
+    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`);
+  }
+
 
   //Invoices
   createInvoice(invoiceDto: CreateInvoiceDto): Observable<any> {
@@ -115,6 +119,12 @@ export class ApiService {
   deleteMultipleInvoices(invoiceIds: number[]): Observable<any> {
     return this.http.delete(`${this.configService.apiUrl}/api/invoices/delete-multiple`, { body: invoiceIds });
   }
+
+  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto[]> {
+    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
+  }
+
+
 
  // Transactions
  createTransaction(transactionDto: CreateTransactionDto): Observable<any> {
@@ -149,6 +159,10 @@ deleteTransaction(transactionId: number): Observable<any> {
 deleteMultipleTransactions(transactionIds: number[]): Observable<any> {
   return this.http.request('delete', `${this.configService.apiUrl}/api/transactions/delete-multiple`, { body: transactionIds })
     .pipe(catchError(this.handleError));
+}
+
+getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
+  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/customer/${nic}`);
 }
 
 
