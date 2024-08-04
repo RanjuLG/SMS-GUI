@@ -6,6 +6,7 @@ import { GetCustomerDTO, GetItemDTO, TransactionDto } from '../../../transaction
 import html2pdf from 'html2pdf.js';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { DateService } from '../../../../Services/date-service.service';
 
 
 @Component({
@@ -22,8 +23,9 @@ export class InvoiceTemplateComponent implements OnInit {
   customer: GetCustomerDTO | null = null; // Holds the customer data
   items: GetItemDTO[] | null = null; // Holds the item data
   errorMessage: string | null = null; // Holds any error messages
+  dateGenerated:string | null = null;
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute) { }
+  constructor(private apiService: ApiService, private route: ActivatedRoute,private dateService: DateService,) { }
 
   ngOnInit(): void {
     // Get the invoice ID from the route parameters
@@ -44,9 +46,10 @@ export class InvoiceTemplateComponent implements OnInit {
         console.log("this.transaction",this.transaction)
         this.customer = data.customer;
         this.items = this.transaction.items;
-
+        this.dateGenerated = this.formatDate(this.invoice.dateGenerated)
         console.log("this.transaction ", this.transaction)
         console.log("this.items: ", this.items)
+        console.log("customer ",this.customer)
       },
       error: (err) => {
         // Handle any errors that occur during the API call
@@ -59,16 +62,19 @@ export class InvoiceTemplateComponent implements OnInit {
     const element = document.getElementById('printable-template');
     if (element) {
       const options = {
-        margin: 10, // Uniform margin of 10mm
+        margin: 2,
         filename: `${this.invoice?.invoiceNo}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        image: { type: 'jpeg', quality: 1 },
         html2canvas: { scale: 1 },
         jsPDF: { format: 'a4', orientation: 'landscape' } // Half A4 size in landscape orientation
       };
       html2pdf().from(element).set(options).save();
     }
   }
-  
+
+  formatDate(dateString: string): string {
+    return this.dateService.formatDateTime(dateString);
+  }
 
 
   /*

@@ -4,9 +4,9 @@
         <div class="card h-100">
           <img src="overview/customerForm.jpg" class="card-img-top" alt="...">
           <div class="card-body">
-            <h6 class="card-title">Customer Form</h6>
+            <h6 class="card-title">Customer Section</h6>
             <p class="card-text"></p>
-            <a routerLink="/customer-form" class="btn btn-primary">View Customer Form</a>
+            <a routerLink="/customer-form" class="btn btn-primary">Manage Customers</a>
           </div>
         </div>
       </div>
@@ -14,9 +14,9 @@
         <div class="card h-100">
           <img src="overview/itemForm.jpg" class="card-img-top" alt="...">
           <div class="card-body">
-            <h6 class="card-title">Item Form</h6>
+            <h6 class="card-title">Item Section</h6>
             <p class="card-text"></p>
-            <a routerLink="/item-form" class="btn btn-primary">View Item Form</a>
+            <a routerLink="/item-form" class="btn btn-primary">Manage Items</a>
           </div>
         </div>
       </div>
@@ -24,9 +24,9 @@
         <div class="card h-100">
           <img src="overview/invoiceForm.jpg" class="card-img-top" alt="...">
           <div class="card-body">
-            <h6 class="card-title">Invoices Form</h6>
+            <h6 class="card-title">Invoice Section</h6>
             <p class="card-text"></p>
-            <a routerLink="/invoices" class="btn btn-primary">View Invoice Form</a>
+            <a routerLink="/invoices" class="btn btn-primary">Manage Invoices</a>
           </div>
         </div>
       </div>
@@ -46,7 +46,19 @@
           <div class="card-body">
             <h6 class="card-title">Cash Balance</h6>
             <p class="card-text"></p>
-            <a routerLink="/cash-balance" class="btn btn-primary">View Cash Balance</a>
+            <a routerLink="/cash-balance" class="btn btn-primary">Manage Cash Balance</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row justify-content-center align-items-stretch">
+      <div class="col-md-3 col-sm-4 mb-4">
+        <div class="card h-100">
+        
+          <div class="card-body">
+            <h6 class="card-title">Create Invoice</h6>
+            <p class="card-text"></p>
+            <button (click)="openCreateInvoiceModal()" class="btn btn-primary add-btn"><i class="ri-add-line align-bottom me-1"></i>Create Invoice</button>
           </div>
         </div>
       </div>

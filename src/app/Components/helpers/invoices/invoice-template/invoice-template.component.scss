@@ -1,110 +1,93 @@
+#receipt {
+  font-size: 10px;
+  font-family: Arial, sans-serif;
+  color: #333;
+}
+
+.card-header, .card-body {
+  padding: 0.5rem;
+}
+
+h6 {
+  margin: 0;
+  font-weight: 600;
+  font-size: 0.5rem;
+  color: #666;
+}
+
+.fw-medium {
+  font-weight: 500;
+}
+
+.fw-normal {
+  font-weight: 400;
+}
+
+.fw-semibold {
+  font-weight: 600;
+}
+
+.text-muted {
+  color: #6c757d !important;
+}
+
+.border-bottom-dashed {
+  border-bottom: 1px dashed #dee2e6;
+}
+
+.border-top-dashed {
+  border-top: 1px dashed #dee2e6;
+}
+
+.table {
+  margin-bottom: 0;
+}
+
+.table-active {
+  background-color: #f8f9fa;
+}
+
+.alert {
+  padding: 0.25rem;
+  margin-bottom: 0;
+}
+
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.fs-14 {
+  font-size: 10px;
+}
+
+.fs-12 {
+  font-size: 10px;
+}
+
+.text-end {
+  text-align: right;
+}
+
+.mt-1 {
+  margin-top: 0.25rem;
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+
+.mb-1 {
+  margin-bottom: 0.25rem;
+}
+
+.g-1 {
+  gap: 0.25rem;
+}
 
 @media print {
-    .d-print-none {
+  .d-print-none {
       display: none !important;
-    }
   }
-  
+}
 
-  #receipt {
-    font-size: 12px;
-    font-family: Arial, sans-serif;
-    color: #333;
-  
-    .card-header, .card-body {
-      padding: 1rem 1.5rem;
-    }
-  
-    h4, h6 {
-      margin: 0;
-      font-weight: 600;
-    }
-  
-    h4 {
-      font-size: 1.5rem;
-    }
-  
-    h6 {
-      font-size: 0.875rem;
-      color: #666;
-    }
-  
-    .fw-medium {
-      font-weight: 500;
-    }
-  
-    .fw-normal {
-      font-weight: 400;
-    }
-  
-    .fw-semibold {
-      font-weight: 600;
-    }
-  
-    .text-muted {
-      color: #6c757d !important;
-    }
-  
-    .border-bottom-dashed {
-      border-bottom: 1px dashed #dee2e6;
-    }
-  
-    .border-top-dashed {
-      border-top: 1px dashed #dee2e6;
-    }
-  
-    .table {
-      margin-bottom: 0;
-      thead th {
-        border-bottom: 2px solid #dee2e6;
-        font-size: 0.75rem;
-        font-weight: 600;
-        color: #555;
-      }
-  
-      tbody td {
-        font-size: 0.75rem;
-        padding: 0.5rem;
-      }
-    }
-  
-    .alert-info {
-      background-color: #e9f7fd;
-      border-color: #b6effb;
-      color: #31708f;
-    }
-  
-    .alert {
-      padding: 0.75rem 1rem;
-      font-size: 0.75rem;
-    }
-  
-    .text-uppercase {
-      text-transform: uppercase;
-    }
-  
-    .fs-14 {
-      font-size: 0.875rem;
-    }
-  
-    .fs-15 {
-      font-size: 0.9375rem;
-    }
-  
-    .text-end {
-      text-align: end;
-    }
-  
-    .mt-2 {
-      margin-top: 0.5rem;
-    }
-  
-    .mt-3 {
-      margin-top: 1rem;
-    }
-  
-    .mt-4 {
-      margin-top: 1.5rem;
-    }
-  }
-  
+
