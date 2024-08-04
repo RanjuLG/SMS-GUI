@@ -55,7 +55,8 @@ export class InvoiceFormComponent implements OnInit {
         );
       })
     ).subscribe({
-      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
+      next: (result: any[]) => { 
+        console.log(result)// Use 'any' type here if your API response does not have a consistent type
         this.invoices = result.map(invoice => ({
           ...invoice,
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
