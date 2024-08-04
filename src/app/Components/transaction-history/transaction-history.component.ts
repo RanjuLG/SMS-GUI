@@ -6,7 +6,6 @@ import Swal from 'sweetalert2';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { TransactionDto } from './transaction.model';
 import { ApiService } from '../../Services/api-service.service'; 
-import { CreateTransactionDto, UpdateTransactionDto } from './transaction.model';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
@@ -91,27 +90,9 @@ export class TransactionHistoryComponent implements OnInit {
     // Logic to open a modal for creating a new transaction
   }
 
-  createTransaction(transaction: CreateTransactionDto) {
-    this.apiService.createTransaction(transaction).subscribe(() => {
-      this.loadTransactions();
-      Swal.fire('Created!', 'Transaction has been created.', 'success');
-    }, error => {
-      console.error('Failed to create transaction', error);
-      Swal.fire('Error', 'Failed to create transaction.', 'error');
-    });
-  }
 
-  updateTransaction(index: number, transaction: UpdateTransactionDto) {
-    const transactionId = this.transactions[index].transactionId;
-    this.apiService.updateTransaction(transactionId, transaction).subscribe(() => {
-      this.loadTransactions();
-      this.editingIndex = null;
-      Swal.fire('Updated!', 'Transaction has been updated.', 'success');
-    }, error => {
-      console.error('Failed to update transaction', error);
-      Swal.fire('Error', 'Failed to update transaction.', 'error');
-    });
-  }
+
+ 
 
   deleteSelectedTransactions() {
     const selectedTransactionIds = this.transactions.filter(transaction => transaction.selected).map(transaction => transaction.transactionId);
@@ -176,10 +157,6 @@ export class TransactionHistoryComponent implements OnInit {
     this.editingIndex = index;
   }
 
-  saveTransaction(index: number) {
-    const transaction = this.transactions[index];
-    this.updateTransaction(index, transaction);
-  }
 
   getStartIndex(): number {
     return (this.page - 1) * this.transactionsPerPage + 1;

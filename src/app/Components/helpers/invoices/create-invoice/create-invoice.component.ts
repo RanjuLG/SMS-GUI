@@ -121,7 +121,7 @@ export class CreateInvoiceComponent implements OnInit {
                 Swal.fire('Success', 'Invoice updated successfully', 'success');
                 this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template/', this.invoice?.invoiceId]);
+                this.router.navigate(['/view-invoice-template/this.invoice?.invoiceId', this.invoice?.invoiceId]);
               },
               error: (error) => {
                 console.error('Error updating invoice:', error);
@@ -137,7 +137,7 @@ export class CreateInvoiceComponent implements OnInit {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template/', createdInvoice.invoiceId]);
+                this.router.navigate(['/view-invoice-template/createdInvoice.invoiceId', createdInvoice.invoiceId]);
               },
               error: (error) => {
                 console.error('Error creating invoice:', error);

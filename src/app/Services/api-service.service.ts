@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
 import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
-import { CreateTransactionDto, TransactionDto, UpdateTransactionDto } from '../Components/transaction-history/transaction.model';
+import { CreateTransactionDto, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 
@@ -136,10 +136,6 @@ export class ApiService {
     .pipe(catchError(this.handleError));
 }
 
-updateTransaction(transactionId: number, transactionDto: UpdateTransactionDto): Observable<any> {
-  return this.http.put(`${this.configService.apiUrl}/api/transactions/${transactionId}`, transactionDto)
-    .pipe(catchError(this.handleError));
-}
 
 getTransactions(): Observable<TransactionDto[]> {
   return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions`)
@@ -177,7 +173,7 @@ getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transac
         switchMap(transactions => 
           forkJoin([
             this.getCustomerByNIC(transactions[0].customer.customerNIC),
-            this.getItemById(transactions[0].item.itemId)
+            this.getItemById(transactions[0].item[0].itemId)
           ]).pipe(
             map(([customer, item]) => ({
               invoice,

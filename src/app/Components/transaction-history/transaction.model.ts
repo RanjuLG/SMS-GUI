@@ -5,7 +5,7 @@ export interface Transaction {
     interest: number;
     totalAmount: number;
     customer: GetCustomerDTO;
-    item: GetItemDTO;
+    item: GetItemDTO[];
   }
 
   export interface TransactionDto {
@@ -15,7 +15,7 @@ export interface Transaction {
     interest: number;
     totalAmount: number;
     customer: GetCustomerDTO;
-    item: GetItemDTO;
+    item: GetItemDTO[];
   }
   
 
@@ -29,15 +29,7 @@ export interface Transaction {
     item: GetItemDTO;
   }
 
-  export interface UpdateTransactionDto {
-    transactionId: number;
-    createdAt: string;
-    subTotal: number;
-    interest: number;
-    totalAmount: number;
-    customer: GetCustomerDTO;
-    item: GetItemDTO;
-  }
+ 
   
   export interface GetCustomerDTO {
     customerName: string;
