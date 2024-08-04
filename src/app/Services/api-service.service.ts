@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
 import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
-import { CreateTransactionDto, TransactionDto } from '../Components/transaction-history/transaction.model';
+import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 
@@ -166,27 +166,26 @@ getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
 }
 
 
-getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: CustomerDto, item: ItemDto }> {
+getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: GetCustomerDTO, items: GetItemDTO[] }> {
   return this.getInvoiceById(invoiceId).pipe(
     switchMap(invoice => 
-      this.getTransactionsByIds([invoice.transactionId]).pipe(  // Note: Make sure `invoice.transactionId` is wrapped in an array
-        switchMap(transactions => 
-          forkJoin([
-            this.getCustomerByNIC(transactions[0].customer.customerNIC),
-            this.getItemById(transactions[0].item[0].itemId)
-          ]).pipe(
-            map(([customer, item]) => ({
-              invoice,
-              transactions,
-              customer,
-              item
-            }))
-          )
-        )
+      this.getTransactionsByIds([invoice.transactionId]).pipe(  
+        map(transactions => {
+          const customer = transactions[0].customer;
+          const items = transactions[0].items;
+
+          return {
+            invoice,
+            transactions,
+            customer,
+            items
+          };
+        })
       )
     )
   );
 }
+
 
 
 

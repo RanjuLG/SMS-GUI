@@ -5,7 +5,7 @@ export interface Transaction {
     interest: number;
     totalAmount: number;
     customer: GetCustomerDTO;
-    item: GetItemDTO[];
+    items: GetItemDTO[];
   }
 
   export interface TransactionDto {
@@ -15,7 +15,7 @@ export interface Transaction {
     interest: number;
     totalAmount: number;
     customer: GetCustomerDTO;
-    item: GetItemDTO[];
+    items: GetItemDTO[];
   }
   
 
@@ -26,7 +26,7 @@ export interface Transaction {
     interest: number;
     totalAmount: number;
     customer: GetCustomerDTO;
-    item: GetItemDTO;
+    items: GetItemDTO;
   }
 
  

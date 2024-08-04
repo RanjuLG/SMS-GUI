@@ -54,7 +54,7 @@
                                 <h6 class="text-muted text-uppercase fw-semibold mb-3">Customer Information</h6>
                                 <p class="fw-medium mb-2" id="billing-name">{{customer?.customerName}}</p>
                                 <p class="text-muted mb-1" id="customer-address">{{customer?.customerAddress}}</p>
-                                <p class="text-muted mb-1"><span>Phone: +</span><span id="customer-phone-no">{{customer?.customerContactNo}}</span></p>
+                                <p class="text-muted mb-1"><span>Phone: +</span><span id="customer-phone-no">{{customer?.contactNo}}</span></p>
                                 <p class="text-muted mb-0"><span>NIC: </span><span id="customer-NIC">{{customer?.customerNIC}}</span></p>
                             </div>
                         </div>
@@ -74,16 +74,17 @@
                                     </tr>
                                 </thead>
                                 <tbody id="products-list">
-                                    <tr>
-                                        <td scope="row">01</td>
-                                        <td class="text">
-                                            <span class="fw-medium">{{item?.itemDescription}}</span>
-                                        </td>
-                                        <td>{{item?.itemGoldWeight}}</td>
-                                        <td>{{item?.itemCaratage}}</td>
-                                        <td class="text-end">{{item?.itemValue}}</td>
+                                    <tr *ngFor="let item of items; let i = index">
+                                      <td scope="row">{{ i + 1}}</td>
+                                      <td class="text">
+                                        <span class="fw-medium">{{ item?.itemDescription }}</span>
+                                      </td>
+                                      <td>{{ item?.itemGoldWeight }}</td>
+                                      <td>{{ item?.itemCaratage }}</td>
+                                      <td class="text-end">{{ item?.itemValue}}</td>
                                     </tr>
-                                </tbody>
+                                  </tbody>
+                                  
                             </table>
                         </div>
                         <div class="border-top border-top-dashed mt-2">

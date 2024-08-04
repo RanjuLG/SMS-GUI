@@ -133,11 +133,12 @@ export class CreateInvoiceComponent implements OnInit {
             console.log("invoiceDto: ", invoiceDto.paymentStatus)
             this.apiService.createInvoice(invoiceDto).subscribe({
               
-              next: (createdInvoice) => {
+              next: (createdInvoiceId) => {
+                console.log("createdInvoice",createdInvoiceId)
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template/createdInvoice.invoiceId', createdInvoice.invoiceId]);
+                window.open(`/view-invoice-template/${createdInvoiceId}`,createdInvoiceId); // Open in a new window
               },
               error: (error) => {
                 console.error('Error creating invoice:', error);
