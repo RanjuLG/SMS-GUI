@@ -32,9 +32,8 @@
                   <th scope="col">Customer NIC</th>
                   <th scope="col">Sub Total (Rs.)</th>
                   <th scope="col">Interest Rate (%)</th>
-                  <th scope="col">Interest Amount (Rs.)</th>
                   <th scope="col">Total Amount (Rs.)</th>
-                  <th scope="col"></th>
+                  <!--<th scope="col"></th> -->
                 </tr>
               </thead>
               <tbody>
@@ -56,13 +55,13 @@
                   <td>{{ transaction.subTotal }}</td>
                   <td>{{ transaction.interestRate }}</td>
                   <td>{{ transaction.totalAmount }}</td>
-                  <td>
+                   <!--<td>
                     <div class="d-flex gap-2">
                       <button class="btn btn-sm btn-danger" (click)="deleteTransaction(transaction.transactionId)">
                         <i class="ri-delete-bin-line align-bottom me-1"></i>
                       </button>
                     </div>
-                  </td>
+                  </td> -->
                 </tr>
               </tbody>
             </table>
