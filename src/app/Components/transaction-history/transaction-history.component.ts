@@ -31,6 +31,7 @@ export class TransactionHistoryComponent implements OnInit {
   transactionsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   searchControl = new FormControl();
   transactionIds?: number[];
+  transactionIds_delete?: number[];
 
   constructor(
     private modalService: NgbModal, 
@@ -142,10 +143,10 @@ export class TransactionHistoryComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // Ensure transactionIds is initialized and add transactionId to it
-        this.transactionIds = this.transactionIds || [];
-        this.transactionIds.concat(transactionId);
+        this.transactionIds_delete = this.transactionIds_delete || [];
+        this.transactionIds_delete = [...this.transactionIds_delete, transactionId];
   
-        this.apiService.deleteMultipleTransactions(this.transactionIds).subscribe(() => {
+        this.apiService.deleteMultipleTransactions(this.transactionIds_delete).subscribe(() => {
           this.loadTransactions();
           Swal.fire('Deleted!', 'Transaction has been deleted.', 'success');
         }, error => {
@@ -157,6 +158,7 @@ export class TransactionHistoryComponent implements OnInit {
       }
     });
   }
+  
   
 
   toggleAllSelections(event: Event) {
