@@ -9,13 +9,37 @@ import { ConfigService } from './Services/config-service.service';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { ApiService } from './Services/api-service.service';
 import { FlatpickrModule, FlatpickrDefaults } from 'angularx-flatpickr';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
+import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 
+// Function to load configuration during application initialization
 export function initializeApp(configService: ConfigService): () => Promise<void> {
   return () => configService.loadConfig();
 }
 
+// Custom date formats
+const CUSTOM_DATE_FORMATS = {
+  parse: {
+    dateInput: 'yyyy-MM-dd',
+  },
+  display: {
+    dateInput: 'yyyy-MM-dd',
+    monthYearLabel: 'MMM yyyy',
+    dateA11yLabel: 'yyyy-MM-dd',
+    monthYearA11yLabel: 'MMMM yyyy',
+  },
+};
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    // Custom date adapter and formats
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
+    {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
+    
+
+    // Other providers
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     importProvidersFrom(
@@ -29,12 +53,12 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptorsFromDi()),
     ConfigService,
     ApiService,
-    FlatpickrDefaults, // Add FlatpickrDefaults provider
+    FlatpickrDefaults,
     {
       provide: APP_INITIALIZER,
       useFactory: initializeApp,
       deps: [ConfigService],
       multi: true
-    }
+    },
   ]
 };

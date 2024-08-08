@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
@@ -12,6 +12,10 @@ import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatHint } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 export interface ExtendedCustomerDto extends CustomerDto {
   selected?: boolean;
@@ -20,7 +24,17 @@ export interface ExtendedCustomerDto extends CustomerDto {
 @Component({
   selector: 'app-customer-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, NgxPaginationModule, ReactiveFormsModule, JsonPipe],
+  imports: [
+    FormsModule, 
+    CommonModule, 
+    NgxPaginationModule, 
+    ReactiveFormsModule, 
+    JsonPipe,
+    MatDatepickerModule,
+    MatHint,
+    MatFormFieldModule, // Import Material Form Field Module
+    MatInputModule, 
+  ],
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,6 +45,12 @@ export class CustomerFormComponent implements OnInit {
   itemsPerPage: number = 10;
   itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   searchControl = new FormControl();
+  private readonly _currentDate = new Date();
+  readonly maxDate = new Date(this._currentDate);
+  from = new Date(this._currentDate);
+  to = new Date(this._currentDate)
+  
+  @ViewChild('datePicker') datePicker!: ElementRef;
 
   constructor(
     private modalService: NgbModal, 
@@ -40,13 +60,16 @@ export class CustomerFormComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
+    this.from.setDate(this.from.getDate() - 7);
+    this.to.setDate(this.to.getDate() + 1);
     this.loadCustomers();
+   
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((nic: string) => {
         if (!nic) {
-          return this.apiService.getCustomers(); // Return all customers if NIC is empty
+          return this.apiService.getCustomers(this.from,this.to); // Return all customers if NIC is empty
         }
         return this.apiService.getCustomerByNIC(nic).pipe(
           catchError(() => of([])) // Handle errors and return an empty array
@@ -74,9 +97,10 @@ export class CustomerFormComponent implements OnInit {
       }
     });
   }
+  
 
   loadCustomers(): void {
-    this.apiService.getCustomers().subscribe({
+    this.apiService.getCustomers(this.from, this.to).subscribe({
       next: (customers: ExtendedCustomerDto[]) => {
         this.customers = customers.map(customer => ({
           ...customer,
@@ -204,4 +228,30 @@ export class CustomerFormComponent implements OnInit {
     const endIndex = this.page * this.itemsPerPage;
     return endIndex > this.customers.length ? this.customers.length : endIndex;
   }
+
+  onStartDateChange(event: any): void{
+    this.from = new Date(event.value)
+    console.log("this.from: ", this.from);
+
+
+  }
+  onDateRangeChange(event: any): void {
+   
+    if (event && event.value) 
+    {
+      const {end } = event.value;
+      
+        this.to = new Date(event.value);
+        this.to.setDate(this.to.getDate() + 1);
+        
+        console.log("this.to: ", this.to);
+        this.loadCustomers();
+  
+    } 
+    else {
+      console.error('Event or event value is null');
+    }
+    this.cdr.markForCheck();
+  }
+  
 }

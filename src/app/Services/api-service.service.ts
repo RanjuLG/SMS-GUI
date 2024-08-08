@@ -31,9 +31,17 @@ export class ApiService {
     return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, customerDto);
   }
 
-  getCustomers(): Observable<CustomerDto[]> {
-    return this.http.get<CustomerDto[]>(`${this.configService.apiUrl}/api/customers`);
+  getCustomers(from: Date, to: Date): Observable<CustomerDto[]> {
+    // Convert dates to ISO strings
+    const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+  
+    // Construct the URL with query parameters
+    const url = `${this.configService.apiUrl}/api/customers?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`;
+  
+    return this.http.get<CustomerDto[]>(url);
   }
+  
 
   getCustomerById(customerId: number): Observable<CustomerDto> {
     return this.http.get<CustomerDto>(`${this.configService.apiUrl}/api/customers/${customerId}/customer`);
