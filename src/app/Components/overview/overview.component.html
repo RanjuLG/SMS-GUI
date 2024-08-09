@@ -1,67 +1,60 @@
 <div class="container text-center">
-    <div class="row justify-content-center align-items-stretch">
-      <div class="col-md-2 col-sm-4 mb-4">
-        <div class="card h-100">
-          <img src="overview/customerForm.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h6 class="card-title">Customer Section</h6>
-            <p class="card-text"></p>
-            <a routerLink="/customer-form" class="btn btn-primary">Manage Customers</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 col-sm-4 mb-4">
-        <div class="card h-100">
-          <img src="overview/itemForm.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h6 class="card-title">Item Section</h6>
-            <p class="card-text"></p>
-            <a routerLink="/item-form" class="btn btn-primary">Manage Items</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 col-sm-4 mb-4">
-        <div class="card h-100">
-          <img src="overview/invoiceForm.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h6 class="card-title">Invoice Section</h6>
-            <p class="card-text"></p>
-            <a routerLink="/invoices" class="btn btn-primary">Manage Invoices</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 col-sm-4 mb-4">
-        <div class="card h-100">
-          <img src="overview/transactionHistoryForm.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h6 class="card-title">Transaction History</h6>
-            <p class="card-text"></p>
-            <a routerLink="/transaction-history" class="btn btn-primary">View Transaction History</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-2 col-sm-4 mb-4">
-        <div class="card h-100">
-          <img src="overview/cashBalance.jpg" class="card-img-top" alt="...">
-          <div class="card-body">
-            <h6 class="card-title">Cash Balance</h6>
-            <p class="card-text"></p>
-            <a routerLink="/cash-balance" class="btn btn-primary">Manage Cash Balance</a>
-          </div>
+  <div class="row justify-content-center align-items-stretch g-2"> <!-- Adjusted gap between columns -->
+    <div class="col-md-2 col-sm-4 mb-2"> <!-- Reduced margin-bottom -->
+      <div class="card h-100 shadow-sm">
+        <img src="overview/customerForm.png" class="card-img-top" alt="...">
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1">Customer Section</h6>
+          <a routerLink="/customer-form" class="btn btn-primary btn-sm">Manage Customers</a>
         </div>
       </div>
     </div>
-    <div class="row justify-content-center align-items-stretch">
-      <div class="col-md-3 col-sm-4 mb-4">
-        <div class="card h-100">
-        
-          <div class="card-body">
-            <h6 class="card-title">Create Invoice</h6>
-            <p class="card-text"></p>
-            <button (click)="openCreateInvoiceModal()" class="btn btn-primary add-btn"><i class="ri-add-line align-bottom me-1"></i>Create Invoice</button>
-          </div>
+    <div class="col-md-2 col-sm-4 mb-2">
+      <div class="card h-100 shadow-sm">
+        <img src="overview/itemForm.png" class="card-img-top" alt="...">
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1">Item Section</h6>
+          <a routerLink="/item-form" class="btn btn-primary btn-sm">Manage Items</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-sm-4 mb-2">
+      <div class="card h-100 shadow-sm">
+        <img src="overview/invoiceForm.png" class="card-img-top" alt="...">
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1">Invoice Section</h6>
+          <a routerLink="/invoices" class="btn btn-primary btn-sm">Manage Invoices</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-sm-4 mb-2">
+      <div class="card h-100 shadow-sm">
+        <img src="overview/transactionHistoryForm.png" class="card-img-top" alt="...">
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1">Transaction History</h6>
+          <a routerLink="/transaction-history" class="btn btn-primary btn-sm">View Transaction History</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-2 col-sm-4 mb-2">
+      <div class="card h-100 shadow-sm">
+        <img src="overview/cashBalance.png" class="card-img-top" alt="...">
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1">Cash Balance</h6>
+          <a routerLink="/cash-balance" class="btn btn-primary btn-sm">Manage Cash Balance</a>
         </div>
       </div>
     </div>
   </div>
-  
+  <div class="row justify-content-center align-items-stretch g-2">
+    <div class="col-md-2 col-sm-4 mb-2">
+      <div class="card h-100 shadow-sm">
+        <img src="overview/createInvoice.png" class="card-img-top" alt="...">
+        <div class="card-body p-2">
+          <h6 class="card-title mb-1">Create Invoice</h6>
+          <button (click)="openCreateInvoiceModal()" class="btn btn-primary btn-sm add-btn"><i class="ri-add-line align-bottom me-1"></i>Create Invoice</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

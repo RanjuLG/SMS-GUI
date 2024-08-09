@@ -14,7 +14,18 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="row mb-3">
+          <div class="row mb-3 align-items-center">
+            <div class="col-md-3"> 
+              <mat-form-field class="small-date-range">
+                <mat-label>Enter a date range</mat-label>
+                <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
+                  <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
+                  <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+            </div>
             <div class="col-md-2">
               <input
                 type="text"
@@ -24,11 +35,7 @@
                 [formControl]="searchControl"
               />
             </div>
-            <div class="col-md-2">
-              <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
-                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
-              </select>
-            </div>
+         
             <div class="table-responsive table-card mt-3 mb-1">
               <table class="table table-hover">
                 <thead>
@@ -77,6 +84,9 @@
               </table>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
+              <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
+                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+              </select>
               <div>
                 Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ customers.length }} entries
               </div>
@@ -86,5 +96,7 @@
         </div><!-- end card body -->
       </div><!-- end card -->
     </div><!-- end col -->
+    
   </div><!-- end row -->
+  
 </div><!-- end container-fluid -->
