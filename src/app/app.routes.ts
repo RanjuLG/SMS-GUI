@@ -17,7 +17,7 @@ export const routes: Routes = [
     { path: 'transaction-history', component: TransactionHistoryComponent},
     {path: 'invoices',component: InvoiceFormComponent},
     {path: 'create-invoice',component: CreateInvoiceComponent},
-    {path:'view-invoice-template/:invoiceId',component: InvoiceTemplateComponent},
+    { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent },
     {path:'cash-balance',component: CashBalanceComponent},
     {path:'auth/sign-in',component: SignInComponent},
 

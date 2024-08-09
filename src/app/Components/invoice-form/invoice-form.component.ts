@@ -1,14 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
 import { InvoiceDto } from './invoice.model';
 import { DateService } from '../../Services/date-service.service';
+import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 export interface ExtendedInvoiceDto extends InvoiceDto {
   selected?: boolean;
@@ -17,34 +19,97 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, NgxPaginationModule],
+  imports: [FormsModule, CommonModule, NgxPaginationModule,ReactiveFormsModule],
   templateUrl: './invoice-form.component.html',
-  styleUrls: ['./invoice-form.component.scss']
+  styleUrls: ['./invoice-form.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InvoiceFormComponent implements OnInit {
   invoices: ExtendedInvoiceDto[] = [];
   page: number = 1;
-  itemsPerPage: number = 10;
-  itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  invoicesPerPage: number = 10;
+  invoicesPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  searchNICControl = new FormControl();
+  searchInvoiceNoControl = new FormControl();
 
   constructor(
     private modalService: NgbModal,
     private router: Router,
     private apiService: ApiService,
-    private dateService: DateService
+    private dateService: DateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
     this.loadInvoices();
-  }
 
+    this.searchNICControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((nic: string) => {
+        if (!nic) {
+          return this.apiService.getInvoices(); // Return all invoices if NIC is empty
+        }
+        return this.apiService.getInvoicesByCustomerNIC(nic).pipe(
+          catchError(() => of([])) // Handle errors and return an empty array
+        );
+      })
+    ).subscribe({
+      next: (result: any[]) => { 
+        console.log(result)// Use 'any' type here if your API response does not have a consistent type
+        this.invoices = result.map(invoice => ({
+          ...invoice,
+          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
+          selected: false,
+          customerNIC: invoice.customerNIC,
+          invoiceNo: invoice.invoiceNo
+        }));
+        this.cdr.markForCheck(); // Trigger change detection
+      },
+      error: (error: any) => {
+        console.error('Failed to fetch invoices by NIC', error);
+      }
+    });
+
+    this.searchInvoiceNoControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap((invoiceNo: string) => {
+        if (!invoiceNo) {
+          return this.apiService.getInvoices(); // Return all invoices if Invoice No is empty
+        }
+        return this.apiService.getInvoiceByInvoiceNo(invoiceNo).pipe(
+          catchError(() => of([])) // Handle errors and return an empty array
+        );
+      })
+    ).subscribe({
+      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
+        this.invoices = result.map(invoice => ({
+          ...invoice,
+          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
+          selected: false,
+          customerNIC: invoice.customerNIC,
+          invoiceNo: invoice.invoiceNo
+        }));
+        this.cdr.markForCheck(); // Trigger change detection
+      },
+      error: (error: any) => {
+        console.error('Failed to fetch invoices by Invoice No', error);
+      }
+    });
+  }
+  
   loadInvoices() {
     this.apiService.getInvoices().subscribe(
       (data: InvoiceDto[]) => {
         this.invoices = data.map(invoice => ({ ...invoice,
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false }));
+          selected: false,
+          customerNIC: invoice.customerNIC,
+          invoiceNo: invoice.invoiceNo }));
+          
         console.log("invoices: ",this.invoices)
+        this.cdr.markForCheck(); // Trigger change detection
       },
       (error) => {
         console.error('Error fetching invoices:', error);
@@ -151,11 +216,11 @@ export class InvoiceFormComponent implements OnInit {
   }
 
   getStartIndex(): number {
-    return (this.page - 1) * this.itemsPerPage + 1;
+    return (this.page - 1) * this.invoicesPerPage + 1;
   }
 
   getEndIndex(): number {
-    const endIndex = this.page * this.itemsPerPage;
+    const endIndex = this.page * this.invoicesPerPage;
     return endIndex > this.invoices.length ? this.invoices.length : endIndex;
   }
 

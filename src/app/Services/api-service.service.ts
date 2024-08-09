@@ -6,7 +6,7 @@ import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
 import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
-import { CreateTransactionDto, TransactionDto, UpdateTransactionDto } from '../Components/transaction-history/transaction.model';
+import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 
@@ -90,6 +90,10 @@ export class ApiService {
     return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { body: itemIds });
 
   }
+  getItemsByCustomerNIC(nic: string): Observable<ItemDto[]> {
+    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`);
+  }
+
 
   //Invoices
   createInvoice(invoiceDto: CreateInvoiceDto): Observable<any> {
@@ -116,16 +120,22 @@ export class ApiService {
     return this.http.delete(`${this.configService.apiUrl}/api/invoices/delete-multiple`, { body: invoiceIds });
   }
 
+  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto[]> {
+    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
+  }
+
+  getInvoiceByInvoiceNo(invoiceNo: string): Observable<InvoiceDto[]> {
+    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
+  }
+
+
+
  // Transactions
  createTransaction(transactionDto: CreateTransactionDto): Observable<any> {
   return this.http.post(`${this.configService.apiUrl}/api/transactions`, transactionDto)
     .pipe(catchError(this.handleError));
 }
 
-updateTransaction(transactionId: number, transactionDto: UpdateTransactionDto): Observable<any> {
-  return this.http.put(`${this.configService.apiUrl}/api/transactions/${transactionId}`, transactionDto)
-    .pipe(catchError(this.handleError));
-}
 
 getTransactions(): Observable<TransactionDto[]> {
   return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions`)
@@ -151,28 +161,31 @@ deleteMultipleTransactions(transactionIds: number[]): Observable<any> {
     .pipe(catchError(this.handleError));
 }
 
+getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
+  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/customer/${nic}`);
+}
 
-getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: CustomerDto, item: ItemDto }> {
+
+getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: GetCustomerDTO, items: GetItemDTO[] }> {
   return this.getInvoiceById(invoiceId).pipe(
     switchMap(invoice => 
-      this.getTransactionsByIds([invoice.transactionId]).pipe(  // Note: Make sure `invoice.transactionId` is wrapped in an array
-        switchMap(transactions => 
-          forkJoin([
-            this.getCustomerByNIC(transactions[0].customer.customerNIC),
-            this.getItemById(transactions[0].item.itemId)
-          ]).pipe(
-            map(([customer, item]) => ({
-              invoice,
-              transactions,
-              customer,
-              item
-            }))
-          )
-        )
+      this.getTransactionsByIds([invoice.transactionId]).pipe(  
+        map(transactions => {
+          const customer = transactions[0].customer;
+          const items = transactions[0].items;
+
+          return {
+            invoice,
+            transactions,
+            customer,
+            items
+          };
+        })
       )
     )
   );
 }
+
 
 
 

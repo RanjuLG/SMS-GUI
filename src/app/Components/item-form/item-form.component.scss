@@ -1,21 +1,46 @@
-/* cash-balance.component.scss */
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
 .table thead th {
-    background-color: #f8f9fa;
-    color: #6c757d;
-  }
-  
-  .table tbody tr.bg-light td {
-    background-color: #f8f9fa;
-    font-weight: bold;
-  }
-  
-  .card {
-    border-radius: 0.25rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  }
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
 
+.table tbody tr:hover {
+  background-color: #f1f3f5;
+}
 
-  h4{
+.table .badge {
+  font-size: 0.875rem;
+}
 
-    font-size: large;
+.btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-outline-warning,
+.btn-outline-danger {
+  color: #6c757d;
+}
+
+#searchResultList {
+  max-width: 100%;
+}
+
+.form-select {
+  max-width: 100px;
+}
+
+.pagination-controls {
+  .pagination {
+    margin: 0;
   }
+}

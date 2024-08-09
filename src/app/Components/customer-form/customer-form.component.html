@@ -1,36 +1,33 @@
 <div class="container-fluid">
   <div class="row">
     <div class="col-lg-12">
-      <div class="card">
-        <div class="card-header">
-          <h4 class="card-title mb-0">Add, Edit & Remove Customers</h4>
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="card-title mb-0">Manage Customers</h4>
+          <div>
+            <button type="button" class="btn btn-primary" (click)="openAddCustomerModal()">
+              <i class="ri-add-line align-bottom me-1"></i> Add Customer
+            </button>
+            <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedCustomers()">
+              <i class="ri-delete-bin-2-line"></i> Delete Selected
+            </button>
+          </div>
         </div>
         <div class="card-body">
-          <div id="customerList">
-            <div class="row g-4 mb-3">
-              <div class="col-sm-auto">
-                <div class="d-flex gap-1">
-                  <button type="button" class="btn btn-primary add-btn" id="create-btn" (click)="openAddCustomerModal()">
-                    <i class="ri-add-line align-bottom me-1"></i> Add Customer
-                  </button>
-                  <button class="btn btn-soft-danger" (click)="deleteSelectedCustomers()">
-                    <i class="ri-delete-bin-2-line"></i>
-                  </button>
-                </div>
-              </div>
-              <div class="col-sm-auto ms-auto">
-                <div class="d-flex gap-1">
-                  <input type="text" class="form-control" id="searchResultList" placeholder="Enter customer NIC..." [formControl]="searchControl">
-                </div>
-              </div>              
+          <div class="row mb-3">
+            <div class="col-md-2">
+              <input
+                type="text"
+                class="form-control"
+                id="searchResultList"
+                placeholder="Search by Customer NIC..."
+                [formControl]="searchControl"
+              />
             </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <div>
-                <label for="itemsPerPage" class="form-label"></label>
-                <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
-                  <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
-                </select>
-              </div>
+            <div class="col-md-2">
+              <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
+                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+              </select>
             </div>
             <div class="table-responsive table-card mt-3 mb-1">
               <table class="table table-hover">
@@ -42,7 +39,7 @@
                       </div>
                     </th>
                     <th class="sort" data-sort="date">Joining Date</th>
-                    <th class="sort" data-sort="customer_name">Customer</th>
+                    <th class="sort" data-sort="customer_name">Name</th>
                     <th class="sort" data-sort="address">Address</th>
                     <th class="sort" data-sort="nic">NIC</th>
                     <th class="sort" data-sort="phone">Phone</th>
