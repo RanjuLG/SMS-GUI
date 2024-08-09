@@ -14,9 +14,9 @@
           </div>
         </div>
         <div class="card-body">
-          <div class="row mb-3">
+          <div class="row mb-3 align-items-center">
             <div class="col-md-3"> 
-              <mat-form-field>
+              <mat-form-field class="small-date-range">
                 <mat-label>Enter a date range</mat-label>
                 <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
                   <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
@@ -25,7 +25,6 @@
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
               </mat-form-field>
-              
             </div>
             <div class="col-md-2">
               <input
@@ -36,6 +35,7 @@
                 [formControl]="searchControl"
               />
             </div>
+         
             <div class="table-responsive table-card mt-3 mb-1">
               <table class="table table-hover">
                 <thead>

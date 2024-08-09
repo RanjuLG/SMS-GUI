@@ -45,14 +45,22 @@
   }
 }
 
-.custom-date-range-picker .mat-form-field-infix {
-  font-size: 0.875rem; // Adjust this value as needed
+.small-date-range {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.5rem; // Reduce padding
+  }
+  .mat-form-field-flex {
+    font-size: 0.875rem; // Reduce font size
+  }
+  .mat-date-range-input {
+    input {
+      height: 1.5rem; // Reduce input height
+      padding: 0.25rem 0.5rem; // Reduce padding inside inputs
+    }
+  }
 }
 
-.custom-date-range-picker .mat-datepicker-toggle {
-  font-size: 0.875rem; // Adjust this value as needed
+#searchResultList {
+  margin-left: -10px; // Bring the search box closer to the date range picker
 }
 
-.custom-date-range-picker .mat-calendar {
-  font-size: 0.875rem; // Adjust this value as needed
-}
