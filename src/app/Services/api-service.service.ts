@@ -81,8 +81,12 @@ export class ApiService {
     return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto);
   }
 
-  getItems(): Observable<ItemDto[]> {
-    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items?status=1`);
+  getItems(from: Date, to: Date): Observable<ItemDto[]> {
+    
+    const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+
+    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`);
   }
 
   getItemById(itemId: number): Observable<ItemDto> {
