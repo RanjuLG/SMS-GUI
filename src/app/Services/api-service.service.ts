@@ -153,8 +153,10 @@ export class ApiService {
 }
 
 
-getTransactions(): Observable<TransactionDto[]> {
-  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions`)
+getTransactions(from: Date, to: Date): Observable<TransactionDto[]> {
+  const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
     .pipe(catchError(this.handleError));
 }
 
