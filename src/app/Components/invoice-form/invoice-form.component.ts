@@ -11,6 +11,10 @@ import { InvoiceDto } from './invoice.model';
 import { DateService } from '../../Services/date-service.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatHint } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 export interface ExtendedInvoiceDto extends InvoiceDto {
   selected?: boolean;
@@ -19,7 +23,16 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
 @Component({
   selector: 'app-invoice-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, NgxPaginationModule,ReactiveFormsModule],
+  imports: [
+    FormsModule, 
+    CommonModule, 
+    NgxPaginationModule,
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatHint,
+    MatFormFieldModule,
+    MatInputModule
+  ],
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -31,6 +44,10 @@ export class InvoiceFormComponent implements OnInit {
   invoicesPerPageOptions: number[] = [1, 5, 10, 15, 20];
   searchNICControl = new FormControl();
   searchInvoiceNoControl = new FormControl();
+  private readonly _currentDate = new Date();
+  readonly maxDate = new Date(this._currentDate);
+  from = new Date(this._currentDate);
+  to = new Date(this._currentDate)
 
   constructor(
     private modalService: NgbModal,
@@ -41,6 +58,8 @@ export class InvoiceFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.from.setDate(this.from.getDate() - 30);
+    this.to.setDate(this.to.getDate() + 1);
     this.loadInvoices();
 
     this.searchNICControl.valueChanges.pipe(
@@ -48,7 +67,7 @@ export class InvoiceFormComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((nic: string) => {
         if (!nic) {
-          return this.apiService.getInvoices(); // Return all invoices if NIC is empty
+          return this.apiService.getInvoices(this.from,this.to); // Return all invoices if NIC is empty
         }
         return this.apiService.getInvoicesByCustomerNIC(nic).pipe(
           catchError(() => of([])) // Handle errors and return an empty array
@@ -76,7 +95,7 @@ export class InvoiceFormComponent implements OnInit {
       distinctUntilChanged(),
       switchMap((invoiceNo: string) => {
         if (!invoiceNo) {
-          return this.apiService.getInvoices(); // Return all invoices if Invoice No is empty
+          return this.apiService.getInvoices(this.from,this.to); // Return all invoices if Invoice No is empty
         }
         return this.apiService.getInvoiceByInvoiceNo(invoiceNo).pipe(
           catchError(() => of([])) // Handle errors and return an empty array
@@ -100,22 +119,25 @@ export class InvoiceFormComponent implements OnInit {
   }
   
   loadInvoices() {
-    this.apiService.getInvoices().subscribe(
-      (data: InvoiceDto[]) => {
-        this.invoices = data.map(invoice => ({ ...invoice,
+    this.apiService.getInvoices(this.from, this.to).subscribe({
+      next: (data: InvoiceDto[]) => {
+        this.invoices = data.map(invoice => ({
+          ...invoice,
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
           selected: false,
           customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo }));
-          
-        console.log("invoices: ",this.invoices)
+          invoiceNo: invoice.invoiceNo
+        }));
+  
+        console.log("invoices: ", this.invoices);
         this.cdr.markForCheck(); // Trigger change detection
       },
-      (error) => {
+      error: (error) => {
         console.error('Error fetching invoices:', error);
       }
-    );
+    });
   }
+  
 
   openCreateInvoiceModal() {
     const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
@@ -226,5 +248,30 @@ export class InvoiceFormComponent implements OnInit {
 
   viewInvoiceTemplate() {
     this.router.navigate(['/view-invoice-template/37']);
+  }
+
+  onStartDateChange(event: any): void{
+    this.from = new Date(event.value)
+    console.log("this.from: ", this.from);
+
+
+  }
+  onDateRangeChange(event: any): void {
+   
+    if (event && event.value) 
+    {
+      const {end } = event.value;
+      
+        this.to = new Date(event.value);
+        this.to.setDate(this.to.getDate() + 1);
+        
+        console.log("this.to: ", this.to);
+        this.loadInvoices();
+  
+    } 
+    else {
+      console.error('Event or event value is null');
+    }
+    this.cdr.markForCheck();
   }
 }

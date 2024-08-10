@@ -9,9 +9,12 @@ import { ItemDto } from './item.model';
 import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { CustomerDto } from '../customer-form/customer.model';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatHint } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
@@ -22,17 +25,32 @@ export interface ExtendedItemDto extends ItemDto {
 @Component({
   selector: 'app-item-form',
   standalone: true,
-  imports: [FormsModule, CommonModule, NgxPaginationModule, ReactiveFormsModule],
+  imports: [
+    FormsModule, 
+    CommonModule, 
+    NgxPaginationModule, 
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatHint,
+    MatFormFieldModule,
+    MatInputModule
+
+  ],
   templateUrl: './item-form.component.html',
   styleUrls: ['./item-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
+
 export class ItemFormComponent implements OnInit {
   items: ExtendedItemDto[] = [];
   page: number = 1;
   itemsPerPage: number = 10;
   itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   searchControl = new FormControl();
+  private readonly _currentDate = new Date();
+  readonly maxDate = new Date(this._currentDate);
+  from = new Date(this._currentDate);
+  to = new Date(this._currentDate)
 
   constructor(
     private modalService: NgbModal,
@@ -42,13 +60,16 @@ export class ItemFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.from.setDate(this.from.getDate() - 30);
+    this.to.setDate(this.to.getDate() + 1);
     this.loadItems();
+
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((nic: string) => {
         if (!nic) {
-          return this.apiService.getItems(); // Return all items if NIC is empty
+          return this.apiService.getItems(this.from,this.to); // Return all items if NIC is empty
         }
         console.log(nic)
         return this.apiService.getItemsByCustomerNIC(nic).pipe(
@@ -72,7 +93,9 @@ export class ItemFormComponent implements OnInit {
   }
   
   loadItems(): void {
-    this.apiService.getItems().subscribe({
+    console.log("$",this.from)
+    console.log("$$",this.to)
+    this.apiService.getItems(this.from,this.to).subscribe({
       next: (items: any[]) => { // Use 'any' type here if your API response does not have a consistent type
         this.items = items.map(item => ({
           ...item,
@@ -189,5 +212,31 @@ export class ItemFormComponent implements OnInit {
     const endIndex = this.page * this.itemsPerPage;
     return endIndex > this.items.length ? this.items.length : endIndex;
   }
+
+  onStartDateChange(event: any): void{
+    this.from = new Date(event.value)
+    console.log("this.from: ", this.from);
+
+
+  }
+  onDateRangeChange(event: any): void {
+   
+    if (event && event.value) 
+    {
+      const {end } = event.value;
+      
+        this.to = new Date(event.value);
+        this.to.setDate(this.to.getDate() + 1);
+        
+        console.log("this.to: ", this.to);
+        this.loadItems();
+  
+    } 
+    else {
+      console.error('Event or event value is null');
+    }
+    this.cdr.markForCheck();
+  }
+  
   
 }

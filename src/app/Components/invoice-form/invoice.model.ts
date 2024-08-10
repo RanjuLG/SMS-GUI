@@ -53,6 +53,7 @@ export interface InvoiceDto_ {
 }
 export interface Item {
     itemDescription: string;
+    itemId:number;
     itemCaratage: number;
     itemGoldWeight: number;
     itemValue: number;

@@ -44,3 +44,38 @@
     margin: 0;
   }
 }
+
+.small-date-range {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.5rem; // Reduce padding
+  }
+  .mat-form-field-flex {
+    font-size: 0.875rem; // Reduce font size
+  }
+  .mat-date-range-input {
+    input {
+      height: 1.5rem; // Reduce input height
+      padding: 0.25rem 0.5rem; // Reduce padding inside inputs
+    }
+  }
+}
+
+.search-nic {
+  width: 225px; /* Set width independently */
+}
+
+.d-flex > div {
+  display: flex;
+  align-items: center;
+}
+
+.me-2 {
+  margin-right: 0.5rem; /* Space between the date range picker and search box */
+}
+
+.w-100 {
+  width: 100%; /* Ensure date range picker takes full width of its container */
+}
+
+
+

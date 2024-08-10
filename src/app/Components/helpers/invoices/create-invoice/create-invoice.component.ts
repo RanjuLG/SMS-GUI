@@ -21,7 +21,9 @@ export class CreateInvoiceComponent implements OnInit {
   invoiceForm: FormGroup;
   isEditMode = false;
   manualTotalAmountEdit = false;
-  customerFieldsDisabled = true;
+  customerItems: Item[] = [];
+  isCustomerAutofilled = false; // Array to store items for the selected customer
+
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
@@ -41,7 +43,7 @@ export class CreateInvoiceComponent implements OnInit {
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
       totalAmount: [0, Validators.required]
-    });    
+    });
   }
 
   ngOnInit(): void {
@@ -50,10 +52,17 @@ export class CreateInvoiceComponent implements OnInit {
       this.isEditMode = true;
     }
     this.subscribeToFormChanges();
+
+    this.invoiceForm.get('customer.customerNIC')?.valueChanges.subscribe(() => {
+      if (this.isCustomerAutofilled) {
+        this.resetCustomerFields();
+      }
+    });
   }
 
   createItem(): FormGroup {
     return this.fb.group({
+      itemId: [null], // Include itemId field
       itemDescription: ['', Validators.required],
       itemCaratage: [0, Validators.required],
       itemGoldWeight: [0, Validators.required],
@@ -65,14 +74,103 @@ export class CreateInvoiceComponent implements OnInit {
     return this.invoiceForm.get('items') as FormArray;
   }
 
-  addItem(): void {
-    this.items().push(this.createItem());
-  }
+
 
   removeItem(index: number): void {
     this.items().removeAt(index);
   }
 
+  onItemSelected(event: Event, index: number): void {
+    const selectedItemId = (event.target as HTMLSelectElement).value;
+    if (selectedItemId) {
+      const selectedItem = this.customerItems.find(item => item.itemId === +selectedItemId);
+      if (selectedItem) {
+        const itemFormGroup = this.items().at(index);
+        itemFormGroup.patchValue({
+          itemId: selectedItem.itemId,
+          itemDescription: selectedItem.itemDescription,
+          itemCaratage: selectedItem.itemCaratage,
+          itemGoldWeight: selectedItem.itemGoldWeight,
+          itemValue: selectedItem.itemValue
+        });
+  
+        // Disable form controls for existing items
+        itemFormGroup.get('itemDescription')?.disable();
+        itemFormGroup.get('itemCaratage')?.disable();
+        itemFormGroup.get('itemGoldWeight')?.disable();
+        itemFormGroup.get('itemValue')?.disable();
+      }
+    } else {
+      const itemFormGroup = this.items().at(index);
+      itemFormGroup.reset();
+      // Enable form controls for new items
+      itemFormGroup.get('itemDescription')?.enable();
+      itemFormGroup.get('itemCaratage')?.enable();
+      itemFormGroup.get('itemGoldWeight')?.enable();
+      itemFormGroup.get('itemValue')?.enable();
+    }
+  }
+  
+  addItem(): void {
+    const newItem = this.createItem();
+    this.items().push(newItem);
+    // Enable form controls for new items
+    newItem.get('itemDescription')?.enable();
+    newItem.get('itemCaratage')?.enable();
+    newItem.get('itemGoldWeight')?.enable();
+    newItem.get('itemValue')?.enable();
+  }
+  
+
+  autofillCustomerDetails(): void {
+    const nic = this.invoiceForm.get('customer.customerNIC')?.value;
+    if (nic) {
+      this.apiService.getCustomerByNIC(nic).subscribe({
+        next: (customer: CustomerDto) => {
+          this.invoiceForm.patchValue({
+            customer: {
+              customerNIC: nic,
+              customerName: customer.customerName,
+              customerAddress: customer.customerAddress,
+              customerContactNo: customer.customerContactNo
+            }
+          });
+
+          this.isCustomerAutofilled = true;
+          this.invoiceForm.get('customer.customerName')?.disable();
+          this.invoiceForm.get('customer.customerContactNo')?.disable();
+          this.invoiceForm.get('customer.customerAddress')?.disable();
+
+          this.apiService.getItemsByCustomerNIC(nic).subscribe({
+            next: (items: Item[]) => {
+              this.customerItems = items;
+            },
+            error: (error) => {
+              console.error('Error fetching customer items:', error);
+              Swal.fire('Error', 'Failed to fetch items for this customer', 'error');
+            }
+          });
+        },
+        error: (error) => {
+          this.isCustomerAutofilled = false;
+          this.resetCustomerFields();
+          console.error('Error fetching customer details:', error);
+          Swal.fire('Error', 'Customer does not exist', 'error');
+        }
+      });
+    }
+  }
+
+  resetCustomerFields(): void {
+    this.isCustomerAutofilled = false;
+    this.invoiceForm.get('customer.customerName')?.enable();
+    this.invoiceForm.get('customer.customerContactNo')?.enable();
+    this.invoiceForm.get('customer.customerAddress')?.enable();
+    this.invoiceForm.get('customer')?.reset();
+    this.customerItems = [];
+    this.items().clear();
+    this.addItem();
+  }
   subscribeToFormChanges(): void {
     this.items().valueChanges.subscribe(() => {
       this.calculateSubTotal();
@@ -113,15 +211,19 @@ export class CreateInvoiceComponent implements OnInit {
         if (result.isConfirmed) {
           const invoiceDto: CreateInvoiceDto = {
             ...this.invoiceForm.value,
+            items: this.invoiceForm.value.items.map((item: Item) => ({
+              ...item,
+              itemId: item.itemId || 0 // Set itemId to 0 if it's null
+            }))
           };
-  
+
           if (this.isEditMode && this.invoice) {
             this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
               next: () => {
                 Swal.fire('Success', 'Invoice updated successfully', 'success');
                 this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template/this.invoice?.invoiceId', this.invoice?.invoiceId]);
+                this.router.navigate(['/view-invoice-template', this.invoice?.invoiceId]);
               },
               error: (error) => {
                 console.error('Error updating invoice:', error);
@@ -129,16 +231,12 @@ export class CreateInvoiceComponent implements OnInit {
               }
             });
           } else {
-            console.log("paymentStatussssss: ", this.invoiceForm.value.paymentStatus)
-            console.log("invoiceDto: ", invoiceDto.paymentStatus)
             this.apiService.createInvoice(invoiceDto).subscribe({
-              
               next: (createdInvoiceId) => {
-                console.log("createdInvoice",createdInvoiceId)
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
-                window.open(`/view-invoice-template/${createdInvoiceId}`,createdInvoiceId); // Open in a new window
+                this.router.navigate(['/view-invoice-template', createdInvoiceId]);
               },
               error: (error) => {
                 console.error('Error creating invoice:', error);
@@ -150,46 +248,12 @@ export class CreateInvoiceComponent implements OnInit {
       });
     }
   }
-  
-
-  previewInvoice(invoice: CreateInvoiceDto): void {
-    this.router.navigate(['/view-invoice-template/', invoice.invoiceId]);
-  }
-
-  autofillCustomerDetails() {
-    const nic = this.invoiceForm.get('customer.customerNIC')?.value;
-    console.log("nic: ",nic )
-    this.apiService.getCustomerByNIC(nic).subscribe({
-      next: (customer: CustomerDto) => {
-        this.invoiceForm.patchValue({
-          customer: {
-            customerNIC: nic, // Ensure this is included if it needs to be kept
-            customerName: customer.customerName,
-            customerAddress: customer.customerAddress,
-            customerContactNo: customer.customerContactNo
-          }
-        });
-      },
-      error: (error) => {
-        console.error('Error fetching customer details:', error);
-        Swal.fire('Error', 'Failed to fetch customer details', 'error');
-      }
-    });
-  }
-  
-  
-  
 
   onCancel() {
     this.activeModal.dismiss();
   }
 
-
-  statusss(){
-
-    console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus)
-
+  statusss() {
+    console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus);
   }
-
-
 }
