@@ -116,8 +116,12 @@ export class ApiService {
     return this.http.put(`${this.configService.apiUrl}/api/invoices/${invoiceId}`, invoiceDto);
   }
 
-  getInvoices(): Observable<InvoiceDto[]> {
-    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices`);
+  getInvoices(from: Date, to: Date): Observable<InvoiceDto[]> {
+
+    const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+
+    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`);
   }
 
   getInvoiceById(invoiceId: number): Observable<InvoiceDto_> {
