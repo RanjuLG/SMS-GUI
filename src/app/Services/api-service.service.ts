@@ -81,8 +81,12 @@ export class ApiService {
     return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto);
   }
 
-  getItems(): Observable<ItemDto[]> {
-    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items?status=1`);
+  getItems(from: Date, to: Date): Observable<ItemDto[]> {
+    
+    const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+
+    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`);
   }
 
   getItemById(itemId: number): Observable<ItemDto> {
@@ -112,8 +116,12 @@ export class ApiService {
     return this.http.put(`${this.configService.apiUrl}/api/invoices/${invoiceId}`, invoiceDto);
   }
 
-  getInvoices(): Observable<InvoiceDto[]> {
-    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices`);
+  getInvoices(from: Date, to: Date): Observable<InvoiceDto[]> {
+
+    const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+
+    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`);
   }
 
   getInvoiceById(invoiceId: number): Observable<InvoiceDto_> {
@@ -145,8 +153,10 @@ export class ApiService {
 }
 
 
-getTransactions(): Observable<TransactionDto[]> {
-  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions`)
+getTransactions(from: Date, to: Date): Observable<TransactionDto[]> {
+  const fromStr = from.toISOString();
+    const toStr = to.toISOString();
+  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
     .pipe(catchError(this.handleError));
 }
 

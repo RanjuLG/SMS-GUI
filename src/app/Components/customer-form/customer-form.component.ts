@@ -60,7 +60,7 @@ export class CustomerFormComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.from.setDate(this.from.getDate() - 7);
+    this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadCustomers();
    
@@ -100,6 +100,8 @@ export class CustomerFormComponent implements OnInit {
   
 
   loadCustomers(): void {
+    console.log("$",this.from)
+    console.log("$$",this.to)
     this.apiService.getCustomers(this.from, this.to).subscribe({
       next: (customers: ExtendedCustomerDto[]) => {
         this.customers = customers.map(customer => ({

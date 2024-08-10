@@ -10,6 +10,11 @@ import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import {MatDatepickerModule} from '@angular/material/datepicker';
+import { MatHint } from '@angular/material/form-field';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+
 
 export interface ExtendedTrasactionDto extends TransactionDto {
   selected?: boolean;
@@ -18,7 +23,17 @@ export interface ExtendedTrasactionDto extends TransactionDto {
 @Component({
   selector: 'app-transaction-history',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgxPaginationModule,ReactiveFormsModule],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    NgxPaginationModule,
+    ReactiveFormsModule,
+    MatDatepickerModule,
+    MatHint,
+    MatFormFieldModule,
+    MatInputModule
+  
+  ],
   templateUrl: './transaction-history.component.html',
   styleUrls: ['./transaction-history.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -32,6 +47,11 @@ export class TransactionHistoryComponent implements OnInit {
   searchControl = new FormControl();
   transactionIds?: number[];
   transactionIds_delete?: number[];
+  private readonly _currentDate = new Date();
+  readonly maxDate = new Date(this._currentDate);
+  from = new Date(this._currentDate);
+  to = new Date(this._currentDate)
+  
 
   constructor(
     private modalService: NgbModal, 
@@ -40,13 +60,15 @@ export class TransactionHistoryComponent implements OnInit {
     private cdr: ChangeDetectorRef ) {}
 
   ngOnInit() {
+    this.from.setDate(this.from.getDate() - 30);
+    this.to.setDate(this.to.getDate() + 1);
     this.loadTransactions();
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((nic: string) => {
         if (!nic) {
-          return this.apiService.getTransactions(); // Return all transactions if NIC is empty
+          return this.apiService.getTransactions(this.from,this.to); // Return all transactions if NIC is empty
         }
         console.log(nic)
         return this.apiService.getTransactionsByCustomerNIC(nic).pipe(
@@ -71,7 +93,7 @@ export class TransactionHistoryComponent implements OnInit {
   
 
   loadTransactions(): void {
-    this.apiService.getTransactions().subscribe({
+    this.apiService.getTransactions(this.from,this.to).subscribe({
       next: (transactions: ExtendedTrasactionDto[]) => {
         this.transactions = transactions.map(transaction => ({
           ...transaction,
@@ -184,4 +206,29 @@ export class TransactionHistoryComponent implements OnInit {
     return this.dateService.formatDateTime(dateString);
   }
 
+  
+  onStartDateChange(event: any): void{
+    this.from = new Date(event.value)
+    console.log("this.from: ", this.from);
+
+
+  }
+  onDateRangeChange(event: any): void {
+   
+    if (event && event.value) 
+    {
+      const {end } = event.value;
+      
+        this.to = new Date(event.value);
+        this.to.setDate(this.to.getDate() + 1);
+        
+        console.log("this.to: ", this.to);
+        this.loadTransactions();
+  
+    } 
+    else {
+      console.error('Event or event value is null');
+    }
+    this.cdr.markForCheck();
+  }
 }

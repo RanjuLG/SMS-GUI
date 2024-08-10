@@ -60,7 +60,22 @@
   }
 }
 
-#searchResultList {
-  margin-left: -10px; // Bring the search box closer to the date range picker
+.search-nic {
+  width: 225px; /* Set width independently */
 }
+
+.d-flex > div {
+  display: flex;
+  align-items: center;
+}
+
+.me-2 {
+  margin-right: 0.5rem; /* Space between the date range picker and search box */
+}
+
+.w-100 {
+  width: 100%; /* Ensure date range picker takes full width of its container */
+}
+
+
 
