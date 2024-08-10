@@ -21,7 +21,8 @@ export class CreateInvoiceComponent implements OnInit {
   invoiceForm: FormGroup;
   isEditMode = false;
   manualTotalAmountEdit = false;
-  customerItems: Item[] = []; // Array to store items for the selected customer
+  customerItems: Item[] = [];
+  isCustomerAutofilled = false; // Array to store items for the selected customer
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -51,6 +52,12 @@ export class CreateInvoiceComponent implements OnInit {
       this.isEditMode = true;
     }
     this.subscribeToFormChanges();
+
+    this.invoiceForm.get('customer.customerNIC')?.valueChanges.subscribe(() => {
+      if (this.isCustomerAutofilled) {
+        this.resetCustomerFields();
+      }
+    });
   }
 
   createItem(): FormGroup {
@@ -118,22 +125,25 @@ export class CreateInvoiceComponent implements OnInit {
   autofillCustomerDetails(): void {
     const nic = this.invoiceForm.get('customer.customerNIC')?.value;
     if (nic) {
-      // Fetch customer details
       this.apiService.getCustomerByNIC(nic).subscribe({
         next: (customer: CustomerDto) => {
           this.invoiceForm.patchValue({
             customer: {
-              customerNIC: nic, // Ensure this is included if it needs to be kept
+              customerNIC: nic,
               customerName: customer.customerName,
               customerAddress: customer.customerAddress,
               customerContactNo: customer.customerContactNo
             }
           });
 
-          // Fetch items after successfully fetching customer details
+          this.isCustomerAutofilled = true;
+          this.invoiceForm.get('customer.customerName')?.disable();
+          this.invoiceForm.get('customer.customerContactNo')?.disable();
+          this.invoiceForm.get('customer.customerAddress')?.disable();
+
           this.apiService.getItemsByCustomerNIC(nic).subscribe({
             next: (items: Item[]) => {
-              this.customerItems = items; // Populate the dropdown with existing items
+              this.customerItems = items;
             },
             error: (error) => {
               console.error('Error fetching customer items:', error);
@@ -142,13 +152,25 @@ export class CreateInvoiceComponent implements OnInit {
           });
         },
         error: (error) => {
+          this.isCustomerAutofilled = false;
+          this.resetCustomerFields();
           console.error('Error fetching customer details:', error);
-          Swal.fire('Error', 'Failed to fetch customer details', 'error');
+          Swal.fire('Error', 'Customer does not exist', 'error');
         }
       });
     }
   }
 
+  resetCustomerFields(): void {
+    this.isCustomerAutofilled = false;
+    this.invoiceForm.get('customer.customerName')?.enable();
+    this.invoiceForm.get('customer.customerContactNo')?.enable();
+    this.invoiceForm.get('customer.customerAddress')?.enable();
+    this.invoiceForm.get('customer')?.reset();
+    this.customerItems = [];
+    this.items().clear();
+    this.addItem();
+  }
   subscribeToFormChanges(): void {
     this.items().valueChanges.subscribe(() => {
       this.calculateSubTotal();
