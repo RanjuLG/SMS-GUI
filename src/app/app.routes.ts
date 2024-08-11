@@ -8,6 +8,11 @@ import { CreateInvoiceComponent } from './Components/helpers/invoices/create-inv
 import { InvoiceTemplateComponent } from './Components/helpers/invoices/invoice-template/invoice-template.component';
 import { CashBalanceComponent } from './Components/cash-balance/cash-balance.component';
 import { SignInComponent } from './Components/sign-in/sign-in.component';
+import { LoginComponent } from './Components/login/login.component';
+import { RegisterComponent } from './Components/register/register.component';
+import { AuthGuard } from './Services/auth.guard';
+import { UserManagementComponent } from './Components/user-management/user-management.component';
+import { UnauthiruzedComponent } from './Components/helpers/unauthiruzed/unauthiruzed.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full' },
@@ -20,5 +25,9 @@ export const routes: Routes = [
     { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent },
     {path:'cash-balance',component: CashBalanceComponent},
     {path:'auth/sign-in',component: SignInComponent},
+    //{ path: 'login', component: LoginComponent },
+    { path: 'auth/register', component: RegisterComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
+    { path: 'users', component: UserManagementComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
+    { path: 'unauthorized', component: UnauthiruzedComponent }
 
 ];
