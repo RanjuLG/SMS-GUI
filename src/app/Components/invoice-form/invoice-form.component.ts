@@ -155,21 +155,37 @@ export class InvoiceFormComponent implements OnInit {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
   
-  editInvoice(invoiceId: number) {
-    this.apiService.getInvoiceById(invoiceId).subscribe(invoice => {
-      const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
-      modalRef.componentInstance.invoice = invoice;
-      modalRef.result.then((result) => {
-        if (result === 'submitted') {
-          this.loadInvoices();
-        }
-      }).catch((error) => {
-        console.error('Modal dismissed:', error);
-      });
-    }, error => {
-      console.error('Error fetching invoice:', error);
+  editInvoice(invoiceId: number): void {
+    Swal.fire({
+      title: 'Edit Invoice',
+      text: `Are you sure you want to edit this invoice?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#007bff',
+      confirmButtonText: 'Yes, edit it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.getInvoiceById(invoiceId).subscribe(invoice => {
+          const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
+          modalRef.componentInstance.invoice = invoice;
+          modalRef.result.then((result) => {
+            if (result === 'submitted') {
+              this.loadInvoices();
+              Swal.fire('Updated!', 'Invoice has been updated.', 'success');
+            }
+          }).catch((error) => {
+            console.error('Modal dismissed:', error);
+          });
+        }, error => {
+          console.error('Error fetching invoice:', error);
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Invoice editing cancelled.', 'info');
+      }
     });
   }
+  
 
   deleteInvoice(invoiceId: number) {
     console.log("invo id: ",invoiceId )

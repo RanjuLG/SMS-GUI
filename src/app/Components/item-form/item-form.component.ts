@@ -130,13 +130,28 @@ export class ItemFormComponent implements OnInit {
   }
 
   editItem(item: ExtendedItemDto): void {
-    const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
-    modalRef.componentInstance.item = { ...item };
-    modalRef.componentInstance.saveItem.subscribe((updatedItem: ExtendedItemDto) => {
-      this.loadItems();
-      Swal.fire('Updated!', 'Item has been updated.', 'success');
+    Swal.fire({
+      title: 'Edit Item',
+      text: `Are you sure you want to edit item '${item.itemId}'?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#007bff',
+      confirmButtonText: 'Yes, edit it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
+        modalRef.componentInstance.item = { ...item };
+        modalRef.componentInstance.saveItem.subscribe((updatedItem: ExtendedItemDto) => {
+          this.loadItems();
+          Swal.fire('Updated!', 'Item has been updated.', 'success');
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Item editing cancelled.', 'info');
+      }
     });
   }
+  
 
   removeItem(item: ExtendedItemDto): void {
     Swal.fire({
