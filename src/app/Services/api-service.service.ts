@@ -9,29 +9,43 @@ import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, UpdateInvoiceDto } from '../
 import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  constructor(private http: HttpClient, private configService: ConfigService) { }
+  constructor(private http: HttpClient, private configService: ConfigService,private authService: AuthService) { }
   
   private handleError(error: any): Observable<never> {
     console.error('API call failed:', error);
     return throwError(() => new Error(error.message || 'Server Error'));
   }
 
+
+  private checkLoggedIn(): boolean {
+    if (!this.authService.isLoggedIn) {
+      console.error('User is not logged in');
+      this.authService.logout();
+      return false;
+    }
+    return true;
+  }
+
 //Customers
   createCustomer(customerDto: CreateCustomerDto): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.post(`${this.configService.apiUrl}/api/customers`, customerDto);
   }
 
   updateCustomer(customerId: number, customerDto: CreateCustomerDto): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, customerDto);
   }
 
   getCustomers(from: Date, to: Date): Observable<CustomerDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     // Convert dates to ISO strings
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
@@ -44,24 +58,29 @@ export class ApiService {
   
 
   getCustomerById(customerId: number): Observable<CustomerDto> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.get<CustomerDto>(`${this.configService.apiUrl}/api/customers/${customerId}/customer`);
   }
 
   deleteCustomer(customerId: number): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.delete(`${this.configService.apiUrl}/api/customers/${customerId}/customer`);
   }
 
   deleteMultipleCustomers(customerIds: number[]): Observable<any>{
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
     return this.http.delete(`${this.configService.apiUrl}/api/customers/delete-multiple`, { body: customerIds });
 
   }
 
   getCustomersByIds(customerIds: number[]): Observable<CustomerDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.post<CustomerDto[]>(`${this.configService.apiUrl}/api/customers/byIds`, customerIds);
   }
 
   getCustomerByNIC(customerNIC: string): Observable<CustomerDto> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.post<CustomerDto>(`${this.configService.apiUrl}/api/customers/byNIC`, JSON.stringify(customerNIC), {
       headers: { 'Content-Type': 'application/json' }
     });
@@ -74,14 +93,17 @@ export class ApiService {
   //Items
 
   createItem(itemDto: CreateItemDto): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.post(`${this.configService.apiUrl}/api/items`, itemDto);
   }
 
   updateItem(itemId: number, itemDto: CreateItemDto): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto);
   }
 
   getItems(from: Date, to: Date): Observable<ItemDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
@@ -90,33 +112,40 @@ export class ApiService {
   }
 
   getItemById(itemId: number): Observable<ItemDto> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.get<ItemDto>(`${this.configService.apiUrl}/api/items/${itemId}/item`);
   }
 
   deleteItem(itemId: number): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.delete(`${this.configService.apiUrl}/api/items/${itemId}/item`);
   }
 
   deleteMultipleItems(itemIds: number[]): Observable<any>{
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
     return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { body: itemIds });
 
   }
   getItemsByCustomerNIC(nic: string): Observable<ItemDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`);
   }
 
 
   //Invoices
   createInvoice(invoiceDto: CreateInvoiceDto): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.post(`${this.configService.apiUrl}/api/invoices`, invoiceDto);
   }
 
   updateInvoice(invoiceId: number, invoiceDto: CreateInvoiceDto): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.put(`${this.configService.apiUrl}/api/invoices/${invoiceId}`, invoiceDto);
   }
 
   getInvoices(from: Date, to: Date): Observable<InvoiceDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
@@ -125,22 +154,27 @@ export class ApiService {
   }
 
   getInvoiceById(invoiceId: number): Observable<InvoiceDto_> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.get<InvoiceDto_>(`${this.configService.apiUrl}/api/invoices/${invoiceId}`);
   }
 
   deleteInvoice(invoiceId: number): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.delete(`${this.configService.apiUrl}/api/invoices/${invoiceId}`);
   }
 
   deleteMultipleInvoices(invoiceIds: number[]): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.delete(`${this.configService.apiUrl}/api/invoices/delete-multiple`, { body: invoiceIds });
   }
 
   getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
   }
 
   getInvoiceByInvoiceNo(invoiceNo: string): Observable<InvoiceDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
   }
 
@@ -148,12 +182,14 @@ export class ApiService {
 
  // Transactions
  createTransaction(transactionDto: CreateTransactionDto): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.post(`${this.configService.apiUrl}/api/transactions`, transactionDto)
     .pipe(catchError(this.handleError));
 }
 
 
 getTransactions(from: Date, to: Date): Observable<TransactionDto[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   const fromStr = from.toISOString();
     const toStr = to.toISOString();
   return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
@@ -161,30 +197,36 @@ getTransactions(from: Date, to: Date): Observable<TransactionDto[]> {
 }
 
 getTransactionById(transactionId: number): Observable<TransactionDto> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<TransactionDto>(`${this.configService.apiUrl}/api/transactions/${transactionId}`)
     .pipe(catchError(this.handleError));
 }
 getTransactionsByIds(transactionIds: number[]): Observable<TransactionDto[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.post<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/byIds`, transactionIds)
     .pipe(catchError(this.handleError));
 }
 
 deleteTransaction(transactionId: number): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.delete(`${this.configService.apiUrl}/api/transactions/${transactionId}`)
     .pipe(catchError(this.handleError));
 }
 
 deleteMultipleTransactions(transactionIds: number[]): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.request('delete', `${this.configService.apiUrl}/api/transactions/delete-multiple`, { body: transactionIds })
     .pipe(catchError(this.handleError));
 }
 
 getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/customer/${nic}`);
 }
 
 
 getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: GetCustomerDTO, items: GetItemDTO[] }> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.getInvoiceById(invoiceId).pipe(
     switchMap(invoice => 
       this.getTransactionsByIds([invoice.transactionId]).pipe(  
