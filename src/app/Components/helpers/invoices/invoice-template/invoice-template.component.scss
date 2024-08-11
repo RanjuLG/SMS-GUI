@@ -1,34 +1,26 @@
 #receipt {
-  font-size: 10px;
-  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-family: 'Roboto', sans-serif;
   color: #333;
 }
 
 .card-header, .card-body {
-  padding: 0.5rem;
+  padding: 1rem;
 }
 
-h6 {
+h6, p {
   margin: 0;
   font-weight: 600;
-  font-size: 0.5rem;
-  color: #666;
+  font-size: 0.8rem;
 }
 
-.fw-medium {
-  font-weight: 500;
+.table-active {
+  background-color: #f1f3f5;
 }
 
-.fw-normal {
-  font-weight: 400;
-}
-
-.fw-semibold {
-  font-weight: 600;
-}
-
-.text-muted {
-  color: #6c757d !important;
+.table th, .table td {
+  padding: 0.5rem;
+  vertical-align: middle;
 }
 
 .border-bottom-dashed {
@@ -39,55 +31,31 @@ h6 {
   border-top: 1px dashed #dee2e6;
 }
 
-.table {
-  margin-bottom: 0;
-}
-
-.table-active {
-  background-color: #f8f9fa;
-}
-
 .alert {
-  padding: 0.25rem;
-  margin-bottom: 0;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  background-color: #e9f7fd;
+  border-color: #b8daff;
 }
 
 .text-uppercase {
   text-transform: uppercase;
 }
 
-.fs-14 {
-  font-size: 10px;
-}
-
-.fs-12 {
-  font-size: 10px;
-}
-
 .text-end {
   text-align: right;
 }
 
-.mt-1 {
-  margin-top: 0.25rem;
-}
-
-.mb-0 {
-  margin-bottom: 0;
+.mt-2 {
+  margin-top: 0.5rem;
 }
 
 .mb-1 {
-  margin-bottom: 0.25rem;
-}
-
-.g-1 {
-  gap: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 @media print {
   .d-print-none {
-      display: none !important;
+    display: none !important;
   }
 }
-
-

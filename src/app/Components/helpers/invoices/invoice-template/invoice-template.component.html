@@ -45,6 +45,7 @@
                                         <thead>
                                             <tr class="table-active">
                                                 <th scope="col" style="width: 50px;">#</th>
+                                                <th scope="col">Item No.</th>
                                                 <th scope="col">Item Description</th>
                                                 <th scope="col">Total Gold Weight (g)</th>
                                                 <th scope="col">Karatage</th>
@@ -54,6 +55,7 @@
                                         <tbody id="products-list">
                                             <tr *ngFor="let item of items; let i = index">
                                                 <td scope="row">{{ i + 1 }}</td>
+                                                <td>{{ item?.itemId }}</td>
                                                 <td class="text">
                                                     <span class="fw-medium">{{ item?.itemDescription }}</span>
                                                 </td>

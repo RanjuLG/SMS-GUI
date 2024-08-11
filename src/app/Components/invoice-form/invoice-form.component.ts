@@ -265,6 +265,9 @@ export class InvoiceFormComponent implements OnInit {
   viewInvoiceTemplate() {
     this.router.navigate(['/view-invoice-template/37']);
   }
+  viewInvoice(invoiceId: number) {
+    this.router.navigate([`/view-invoice-template/${invoiceId}`]);
+  }
 
   onStartDateChange(event: any): void{
     this.from = new Date(event.value)

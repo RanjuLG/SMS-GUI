@@ -9,7 +9,12 @@
       <div class="col-lg-6 col-md-12">
         <div class="form-group">
           <label for="customerNIC">Customer NIC</label>
-          <input id="customerNIC" class="form-control" formControlName="customerNIC" required />
+          <input 
+            id="customerNIC" 
+            class="form-control" 
+            formControlName="customerNIC" 
+            required 
+            [readonly]="item !== null" />
         </div>
       </div>
       <div class="col-lg-6 col-md-12">

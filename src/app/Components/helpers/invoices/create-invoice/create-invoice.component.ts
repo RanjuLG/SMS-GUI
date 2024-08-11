@@ -38,16 +38,18 @@ export class CreateInvoiceComponent implements OnInit {
         customerAddress: ['', Validators.required],
       }),
       items: this.fb.array([this.createItem()]),
-      date: [new Date().toISOString(), Validators.required],
+      date: [new Date().toISOString().substring(0, 10), Validators.required], // Set the default date to today
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
       totalAmount: [0, Validators.required]
     });
+    
   }
 
   ngOnInit(): void {
     if (this.invoice) {
+      
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
     }
