@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable, tap } from 'rxjs';
 import { ConfigService } from './config-service.service';
 
 @Injectable({
@@ -16,12 +16,13 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private configService: ConfigService) { }
 
-  login(username: string, password: string) {
-    return this.http.post(`${this.authUrl}/login`, { username, password }).subscribe((response: any) => {
-      localStorage.setItem('token', response.token);
-      this.currentUserSubject.next(this.jwtHelper.decodeToken(response.token));
-      this.router.navigate(['/']);
-    });
+  login(username: string, password: string): Observable<any> {
+    return this.http.post(`${this.authUrl}/login`, { username, password }).pipe(
+      tap((response: any) => {
+        localStorage.setItem('token', response.token);
+        this.currentUserSubject.next(this.jwtHelper.decodeToken(response.token));
+      })
+    );
   }
 
   register(username: string, email: string, password: string, role: string) {
@@ -31,7 +32,7 @@ export class AuthService {
   logout() {
     localStorage.removeItem('token');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/login']);
+    this.router.navigate(['/auth/sign-in']);
   }
 
   get isLoggedIn(): boolean {

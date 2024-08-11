@@ -12,7 +12,7 @@ import { LoginComponent } from './Components/login/login.component';
 import { RegisterComponent } from './Components/register/register.component';
 import { AuthGuard } from './Services/auth.guard';
 import { UserManagementComponent } from './Components/user-management/user-management.component';
-import { UnauthiruzedComponent } from './Components/helpers/unauthiruzed/unauthiruzed.component';
+import { UnauthiruzedComponent } from './Components/helpers/unauthorized/unauthorized.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full' },

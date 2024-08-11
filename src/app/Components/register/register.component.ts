@@ -1,24 +1,28 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../Services/auth.service';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
   standalone: true,
   imports: [FormsModule],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrls: ['./register.component.scss']
 })
 export class RegisterComponent {
 
   username = '';
   email = '';
   password = '';
-  role = 'Cashier';  // Default to Cashier role
+  role = 'Cashier';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
 
-  register() {
-    this.authService.register(this.username, this.email, this.password, this.role).subscribe();
+  onSubmit() {
+    this.authService.register(this.username, this.email, this.password, this.role).subscribe({
+      next: () => this.router.navigate(['/auth/sign-in']),
+      error: (err) => console.error(err),
+    });
   }
 }
