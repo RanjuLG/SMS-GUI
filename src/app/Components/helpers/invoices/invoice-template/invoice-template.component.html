@@ -3,48 +3,43 @@
         <div class="card" id="receipt">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card-header border-bottom-dashed p-4">
+                    <div class="card-header border-bottom-dashed p-4 text-center">
                         <div class="row">
-                            <div class="col-lg-1">
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">Address:</p>
-                                <h6 class="text-muted mb-1" id="address-details">Muruthalawa, Sri Lanka</h6>
-                            </div>
-                            <div class="col-lg-1">
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">Date</p>
-                                <h6 class="text-muted mb-1"><span id="receipt-date">{{dateGenerated}}</span></h6>
-                            </div>
-                            <div class="col-lg-1">
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">Invoice No</p>
-                                <h6 class="text-muted mb-1"><span id="receipt-no">{{invoice?.invoiceNo}}</span></h6>
+                            <div class="col-lg-4 text-start">
+                                <p class="text-muted text-uppercase fw-semibold">Date</p>
+                                <h6 class="text-muted"><span id="receipt-date">{{dateGenerated}}</span></h6>
+                                <p class="text-muted text-uppercase fw-semibold">Invoice No</p>
+                                <h6 class="text-muted"><span id="receipt-no">{{invoice?.invoiceNo}}</span></h6>
                             </div>
                             <div class="col-lg-4 text-center">
-                                <!--<img src="GoldCashLogo-receipt.png" alt="Gold Cash" style="width: 60px; height: 60px;"> -->
-                                <h5 class="text-muted mb-2 text-uppercase fw-semibold">Gold Cash</h5> 
-                              </div>
-                            <div class="col-lg-5 text-end">
-                                <h6><span class="text-muted fw-normal">Legal Registration No:&nbsp;</span><span id="legal-register-no">987654</span></h6>
-                                <h6><span class="text-muted fw-normal">Email:&nbsp;</span><span id="email">goldcashgmail.com</span></h6>
-                                <h6 class="mb-0"><span class="text-muted fw-normal">Contact No:&nbsp;</span><span id="contact-no">+(94) 81 222 1234</span></h6>
+                               <!-- <img src="GoldCashLogo-receipt.png" alt="Gold Cash" class="company-logo"> -->
+                                <h5 class="text-muted text-uppercase fw-semibold">Gold Cash <h6>(Pvt) Ltd.</h6></h5>
+                            </div>
+                            <div class="col-lg-4 text-end">
+                                <p class="text-muted mb-0">Legal Registration No: <span id="legal-register-no">987654</span></p>
+                                <p class="text-muted mb-0">Email: <span id="email">goldcashgmail.com</span></p>
+                                <p class="text-muted mb-0">Contact No: <span id="contact-no">+(94) 81 222 1234</span></p>
+                                <p class="text-muted">Address: <span id="address-details">Muruthalawa, Sri Lanka</span></p>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-lg-12">
                     <div class="card-body p-4">
-                        <div class="row g-3">
-                            <div class="col-lg-3 col-3">
-                                <p class="text-muted mb-2 text-uppercase fw-semibold">Customer Information</p>
-                                <p class="fw-medium mb-2" id="billing-name">{{customer?.customerName}}</p>
-                                <p class="text-muted mb-1" id="customer-address">{{customer?.customerAddress}}</p>
-                                <p class="text-muted mb-0"><span>NIC: </span><span id="customer-NIC">{{customer?.customerNIC}}</span></p>
-                                <p class="text-muted mb-1"><span>Phone: </span><span id="customer-phone-no">{{customer?.customerContactNo}}</span></p>
+                        <div class="row">
+                            <div class="col-lg-4">
+                                <p class="text-muted text-uppercase fw-semibold">Customer Information</p>
+                                <p class="fw-medium mb-1">{{customer?.customerName}}</p>
+                                <p class="text-muted mb-1">{{customer?.customerAddress}}</p>
+                                <p class="text-muted mb-1">NIC: {{customer?.customerNIC}}</p>
+                                <p class="text-muted mb-1">Phone: {{customer?.customerContactNo}}</p>
                             </div>
-                            <div class="col-lg-9 col-9">
+                            <div class="col-lg-8">
                                 <div class="table-responsive">
-                                    <table class="table table-borderless text-center table-nowrap align-middle mb-0">
+                                    <table class="table table-bordered text-center table-nowrap align-middle mb-0">
                                         <thead>
                                             <tr class="table-active">
-                                                <th scope="col" style="width: 50px;">#</th>
+                                                <th scope="col">#</th>
                                                 <th scope="col">Item No.</th>
                                                 <th scope="col">Item Description</th>
                                                 <th scope="col">Total Gold Weight (g)</th>
@@ -54,11 +49,9 @@
                                         </thead>
                                         <tbody id="products-list">
                                             <tr *ngFor="let item of items; let i = index">
-                                                <td scope="row">{{ i + 1 }}</td>
+                                                <td>{{ i + 1 }}</td>
                                                 <td>{{ item?.itemId }}</td>
-                                                <td class="text">
-                                                    <span class="fw-medium">{{ item?.itemDescription }}</span>
-                                                </td>
+                                                <td class="text">{{ item?.itemDescription }}</td>
                                                 <td>{{ item?.itemGoldWeight }}</td>
                                                 <td>{{ item?.itemCaratage }}</td>
                                                 <td class="text-end">{{ item?.itemValue }}</td>
@@ -66,8 +59,8 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="border-top border-top-dashed mt-2">
-                                    <table class="table table-borderless table-nowrap align-middle mb-0 ms-auto" style="width:250px">
+                                <div class="border-top-dashed mt-3">
+                                    <table class="table table-borderless table-nowrap align-middle ms-auto" style="width:250px">
                                         <tbody>
                                             <tr>
                                                 <td>Sub Total</td>
@@ -90,12 +83,10 @@
                 </div>
                 <div class="col-lg-12">
                     <div class="card-body p-4">
-                        <div class="mt-2">
+                        <div class="mt-4">
                             <div class="alert alert-info">
-                                <p class="mb-0"><span class="fw-semibold">Disclaimer:&nbsp;</span> <span id="note">I hereby relieve Gold Cash (Pvt) Ltd. from all claims and liabilities with regard to this mortgage, since all the articles which have been mortgaged under this receipt, have all been received.</span></p>
+                                <p class="mb-0"><span class="fw-semibold">Disclaimer:&nbsp;</span><span id="note">I hereby relieve Gold Cash (Pvt) Ltd. from all claims and liabilities with regard to this mortgage, since all the articles which have been mortgaged under this receipt, have all been received.</span></p>
                             </div>
-                        </div>
-                        <div class="mt-2">
                             <div class="row text-center">
                                 <div class="col-md-4">
                                     <hr>

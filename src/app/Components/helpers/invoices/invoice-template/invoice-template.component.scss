@@ -54,8 +54,18 @@ h6, p {
   margin-bottom: 0.5rem;
 }
 
+.company-logo {
+  width: 100%;
+  height: auto;
+  max-width: 150px;
+  margin-bottom: 10px;
+}
+
 @media print {
   .d-print-none {
     display: none !important;
   }
 }
+
+
+
