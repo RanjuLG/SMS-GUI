@@ -249,11 +249,28 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  onCancel() {
-    this.activeModal.dismiss();
-  }
-
   statusss() {
     console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus);
+  }
+
+  
+  onCancel() {
+    Swal.fire({
+      title: 'Cancel Changes',
+      text: 'Are you sure you want to cancel these changes?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.activeModal.dismiss();
+        Swal.fire(
+          'Cancelled',
+          'Changes have been cancelled.',
+          'info'
+        );
+      }
+    });
   }
 }

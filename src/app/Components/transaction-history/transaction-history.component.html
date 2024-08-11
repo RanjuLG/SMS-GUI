@@ -17,7 +17,7 @@
                 <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                 <mat-date-range-picker #picker></mat-date-range-picker>
               </mat-form-field>
-              <input type="text" class="form-control" id="searchResultList" placeholder="Search by Customer NIC..."
+              <input type="text" class="form-control search-nic" id="searchResultList" placeholder="Search by Customer NIC..."
                 [formControl]="searchControl">
             </div>
           </div>
@@ -74,9 +74,9 @@
             <select id="itemsPerPage" class="form-select" [(ngModel)]="transactionsPerPage">
               <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
             </select>
-            <div>
+            
               Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ transactions.length }} entries
-            </div>
+            
             <pagination-controls (pageChange)="page = $event"></pagination-controls>
           </div>
 
