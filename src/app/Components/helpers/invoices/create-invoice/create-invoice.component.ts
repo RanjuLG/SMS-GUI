@@ -38,16 +38,18 @@ export class CreateInvoiceComponent implements OnInit {
         customerAddress: ['', Validators.required],
       }),
       items: this.fb.array([this.createItem()]),
-      date: [new Date().toISOString(), Validators.required],
+      date: [new Date().toISOString().substring(0, 10), Validators.required], // Set the default date to today
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
       totalAmount: [0, Validators.required]
     });
+    
   }
 
   ngOnInit(): void {
     if (this.invoice) {
+      
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
     }
@@ -249,11 +251,28 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-  onCancel() {
-    this.activeModal.dismiss();
-  }
-
   statusss() {
     console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus);
+  }
+
+  
+  onCancel() {
+    Swal.fire({
+      title: 'Cancel Changes',
+      text: 'Are you sure you want to cancel these changes?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.activeModal.dismiss();
+        Swal.fire(
+          'Cancelled',
+          'Changes have been cancelled.',
+          'info'
+        );
+      }
+    });
   }
 }

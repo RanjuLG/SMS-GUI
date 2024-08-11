@@ -67,8 +67,12 @@
                                         <td>{{ item.amountPerCaratage }}</td>
                                         <td>{{ item.itemValue }}</td>
                                         <td>
-                                            <span class="badge badge-danger">Test Badge</span>
-                                        </td>
+                                            <span 
+                                              [ngClass]="item.status === 1 ? 'status-label status-paid' : 'status-label status-unpaid'">
+                                              {{ item.status === 1 ? 'Paid' : 'Unpaid' }}
+                                            </span>
+                                          </td>
+                                          
                                         <td>{{ item.customerNIC }}</td>
                                         <td>
                                             <div class="d-flex gap-2">

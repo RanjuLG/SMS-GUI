@@ -62,3 +62,17 @@
   width: 100%; /* Ensure date range picker takes full width of its container */
 }
 
+.status-label {
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.status-paid {
+  background-color: #007bff; /* Primary color */
+}
+
+.status-unpaid {
+  background-color: #dc3545; /* Danger color */
+}

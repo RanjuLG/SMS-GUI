@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
+import Swal from 'sweetalert2';
 
 interface Balance {
   date: string;
@@ -37,5 +38,25 @@ export class CreateBalanceComponent {
 
   submitBalance() {
     this.activeModal.close(this.balance);
+  }
+  
+  onCancel() {
+    Swal.fire({
+      title: 'Cancel Changes',
+      text: 'Are you sure you want to cancel these changes?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, cancel',
+      cancelButtonText: 'No'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.activeModal.dismiss();
+        Swal.fire(
+          'Cancelled',
+          'Changes have been cancelled.',
+          'info'
+        );
+      }
+    });
   }
 }
