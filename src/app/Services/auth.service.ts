@@ -42,6 +42,11 @@ export class AuthService {
 
   get currentUserRole(): string | null {
     const token = localStorage.getItem('token');
-    return token ? this.jwtHelper.decodeToken(token)?.role : null;
+    if (token) {
+      const decodedToken = this.jwtHelper.decodeToken(token);
+      console.log("Decoded Token: ", decodedToken);
+      return decodedToken?.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
+    }
+    return null;
   }
 }
