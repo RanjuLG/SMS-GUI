@@ -15,6 +15,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {RouterLink} from '@angular/router'
 
 export interface ExtendedInvoiceDto extends InvoiceDto {
   selected?: boolean;
@@ -31,7 +32,8 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
     MatDatepickerModule,
     MatHint,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    RouterLink
   ],
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],

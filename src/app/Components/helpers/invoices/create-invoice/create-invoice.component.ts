@@ -7,6 +7,7 @@ import { CreateInvoiceDto, Item } from '../../../invoice-form/invoice.model';
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-create-invoice',
@@ -25,10 +26,10 @@ export class CreateInvoiceComponent implements OnInit {
   isCustomerAutofilled = false; // Array to store items for the selected customer
 
   constructor(
-    public activeModal: NgbActiveModal,
     private fb: FormBuilder,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private modalService: NgbModal
   ) {
     this.invoiceForm = this.fb.group({
       customer: this.fb.group({
@@ -223,7 +224,6 @@ export class CreateInvoiceComponent implements OnInit {
             this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
               next: () => {
                 Swal.fire('Success', 'Invoice updated successfully', 'success');
-                this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
                 this.router.navigate(['/view-invoice-template', this.invoice?.invoiceId]);
               },
@@ -236,7 +236,6 @@ export class CreateInvoiceComponent implements OnInit {
             this.apiService.createInvoice(invoiceDto).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
-                this.activeModal.close();
                 this.saveInvoice.emit(invoiceDto);
                 this.router.navigate(['/view-invoice-template', createdInvoiceId]);
               },
@@ -266,12 +265,12 @@ export class CreateInvoiceComponent implements OnInit {
       cancelButtonText: 'No'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.activeModal.dismiss();
         Swal.fire(
           'Cancelled',
           'Changes have been cancelled.',
           'info'
         );
+        this.router.navigate(['/invoices']);
       }
     });
   }

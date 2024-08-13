@@ -22,7 +22,7 @@ export const routes: Routes = [
     {path: 'item-form',component: ItemFormComponent},
     { path: 'transaction-history', component: TransactionHistoryComponent},
     {path: 'invoices',component: InvoiceFormComponent},
-    {path: 'create-invoice',component: CreateInvoiceComponent},
+    { path: 'create-invoice', component: CreateInvoiceComponent },
     { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent },
     {path:'cash-balance',component: CashBalanceComponent},
     {path:'auth/sign-in',component: SignInComponent},
