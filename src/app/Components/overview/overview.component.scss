@@ -1,27 +1,32 @@
+/* Animation on hover */
+.card-hover {
+  transition: transform 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.card-hover:hover {
+  transform: scale(1.05); /* Pop-up effect */
+}
+
+/* Center content */
 .center-content {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start; // Align items at the start
-    min-height: 100vh; // Full viewport height
-    padding-top: 2rem; // Adjust this value to move the component down or up
-  }
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  min-height: 100vh;
+  padding-top: 2rem;
+}
 
-
+/* Adjusting font sizes */
 h6 {
   font-size: large;
 }
-a{
-  font-size: small;
-}
 
-h4{
-
+.card-title {
   font-size: large;
 }
 
-.card-img-top{
-
-
-  //background-color: #4560f7;
+/* Removing unnecessary styling */
+.card-img-top {
+  /* background-color: #4560f7; */
 }
-
