@@ -11,6 +11,8 @@ import { ApiService } from './Services/api-service.service';
 import { FlatpickrModule, FlatpickrDefaults } from 'angularx-flatpickr';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, NativeDateAdapter } from '@angular/material/core';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
+import { JwtInterceptor } from './Services/jwt.service';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
 // Function to load configuration during application initialization
 export function initializeApp(configService: ConfigService): () => Promise<void> {
@@ -37,6 +39,7 @@ export const appConfig: ApplicationConfig = {
     { provide: MAT_DATE_FORMATS, useValue: CUSTOM_DATE_FORMATS },
     { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
+    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     
 
     // Other providers

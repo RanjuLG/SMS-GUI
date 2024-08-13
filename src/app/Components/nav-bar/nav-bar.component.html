@@ -1,55 +1,78 @@
-<div class="container-fluid position-content p-0">
-  <nav class="navbar navbar-expand-lg w-100 p-0">
+<div class="container-fluid p-0">
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <a class="navbar-brand text-style" href="#">
-        <img src="GoldCashLogo.png" alt="Gold Cash" class="navbar-logo">
-        Gold Cash
+        <img src="GoldCashLogo.png" alt="Gold Cash" class="navbar-logo"> Gold Cash
       </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
         aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse justify-content-center" id="navbarNavDropdown">
-        <ul class="navbar-nav">
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav mx-auto">
           <li class="nav-item active">
             <a class="nav-link text-muted" routerLink="/overview" routerLinkActive="active-link">
-              <i class="ri-home-2-line nav-icon"></i>Home
+              <i class="ri-home-2-line nav-icon"></i> Home
             </a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link text-muted" routerLink="/customer-form" routerLinkActive="active-link">
-              <i class="ri-user-3-line nav-icon"></i>Customer Section
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted" href="#" id="customerDropdown" role="button">
+              <i class="ri-user-3-line nav-icon"></i> Customer Management
             </a>
+            <ul class="dropdown-menu" aria-labelledby="customerDropdown">
+              <li><a class="dropdown-item" routerLink="/customer-form" routerLinkActive="active-link">View Customers</a></li>
+              <li><a class="dropdown-item" (click)="openAddCustomerModal()" routerLinkActive="active-link">Add Customer</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link text-muted" routerLink="/item-form" routerLinkActive="active-link">
-              <i class="ri-archive-line nav-icon"></i>Item Section
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted" href="#" id="itemDropdown" role="button">
+              <i class="ri-archive-line nav-icon"></i> Inventory Management
             </a>
+            <ul class="dropdown-menu" aria-labelledby="itemDropdown">
+              <li><a class="dropdown-item" routerLink="/item-form" routerLinkActive="active-link">View Inventory</a></li>
+              <li><a class="dropdown-item"    (click)="openAddItemModal()"  routerLinkActive="active-link">Add Item</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link text-muted" routerLink="/invoices" routerLinkActive="active-link">
-              <i class="ri-article-line nav-icon"></i>Invoice Section
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted" href="#" id="invoiceDropdown" role="button">
+              <i class="ri-article-line nav-icon"></i> Invoice Management
             </a>
+            <ul class="dropdown-menu" aria-labelledby="invoiceDropdown">
+              <li><a class="dropdown-item" routerLink="/invoices" routerLinkActive="active-link">View Invoices</a></li>
+              <li><a class="dropdown-item" routerLink="/create-invoice" routerLinkActive="active-link">Create Invoice</a></li>
+            </ul>
           </li>
-          <li class="nav-item">
-            <a class="nav-link text-muted" routerLink="/transaction-history" routerLinkActive="active-link">
-              <i class="ri-chat-history-line nav-icon"></i>Transaction History
+
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted" href="#" id="financialDropdown" role="button">
+              <i class="ri-cash-line nav-icon"></i> Financial Management
             </a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link text-muted" routerLink="/cash-balance" routerLinkActive="active-link">
-              <i class="ri-cash-line nav-icon"></i>Cash Balance
-            </a>
+            <ul class="dropdown-menu" aria-labelledby="financialDropdown">
+              <li><a class="dropdown-item" routerLink="/transaction-history" routerLinkActive="active-link">Transaction History</a></li>
+              <li><a class="dropdown-item" routerLink="/cash-balance" routerLinkActive="active-link">Cash Balance</a></li>
+            </ul>
           </li>
         </ul>
       </div>
       <div class="d-flex ms-auto align-items-center">
-        <!-- Image as dropdown toggle -->
-        <img src="nav-bar/sign-in-logo.png" alt="Dropdown Image" class="rounded-circle me-2" style="width: 50px; height: 50px;" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        <!-- User Profile Dropdown -->
+        <img src="nav-bar/user-logo.png" alt="Dropdown Image" class="rounded-circle me-2" style="width: 50px; height: 50px;" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-          <li><a class="dropdown-item" href="#">Action</a></li>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><a class="dropdown-item" routerLink="/auth/sign-in">Sign Out</a></li>
+          <li><a class="dropdown-item" href="#">Profile</a></li>
+          <li><a class="dropdown-item" href="#">Settings</a></li>
+          <li>
+            <a 
+              class="dropdown-item" 
+              routerLink="/auth/sign-in"
+              (click)="signOut()"
+              href="javascript:void(0);"
+            >
+              Sign Out
+            </a>
+          </li>
         </ul>
       </div>
     </div>

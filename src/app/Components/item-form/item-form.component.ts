@@ -118,15 +118,9 @@ export class ItemFormComponent implements OnInit {
   openAddItemModal(): void {
     const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
     modalRef.componentInstance.saveItem.subscribe((item: ExtendedItemDto) => {
-      this.addItem(item);
+      this.cdr.markForCheck();
       Swal.fire('Added!', 'Item has been added.', 'success');
     });
-  }
-
-  addItem(item: ExtendedItemDto): void {
-    this.items.push(item);
-    this.cdr.markForCheck(); // Trigger change detection
-    Swal.fire('Added!', 'Item has been added.', 'success');
   }
 
   editItem(item: ExtendedItemDto): void {

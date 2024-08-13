@@ -1,57 +1,55 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { AuthService } from '../../Services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sign-in',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './sign-in.component.html',
-  styleUrl: './sign-in.component.scss'
+  styleUrls: ['./sign-in.component.scss']
 })
 export class SignInComponent implements OnInit {
 
-// Login Form
-loginForm!: UntypedFormGroup;
-submitted = false;
-fieldTextType!: boolean;
-error = '';
-returnUrl!: string;
-// set the current year
-year: number = new Date().getFullYear();
+  loginForm!: UntypedFormGroup;
+  submitted = false;
+  fieldTextType = false;
+  year: number = new Date().getFullYear();
 
-constructor(private formBuilder: UntypedFormBuilder) { }
+  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) { }
 
-ngOnInit(): void {
-  /**
-   * Form Validatyion
-   */
-   this.loginForm = this.formBuilder.group({
-    name: ['', [Validators.required]],
-    password: ['', Validators.required],
-  });
-}
-
-// convenience getter for easy access to form fields
-get f() { return this.loginForm.controls; }
-
-/**
- * Form submit
- */
- onSubmit() {
-  this.submitted = true;
-
-  // stop here if form is invalid
-  if (this.loginForm.invalid) {
-    return;
+  ngOnInit(): void {
+    this.loginForm = this.formBuilder.group({
+      username: ['', Validators.required],
+      password: ['', Validators.required],
+    });
   }
-}
 
-/**
- * Password Hide/Show
- */
- toggleFieldTextType() {
-  this.fieldTextType = !this.fieldTextType;
-}
+  get f() { return this.loginForm.controls; }
 
+  onSubmit() {
+    this.submitted = true;
+    if (this.loginForm.invalid) {
+      return;
+    }
+
+    const username = this.f['username'].value;
+    const password = this.f['password'].value;
+
+    this.authService.login(username, password).subscribe({
+      next: () => {
+        this.router.navigate(['/']);
+      },
+      error: (err) => {
+        console.error('Login failed', err);
+        // Handle login error, e.g., display an error message
+      }
+    });
+  }
+
+  toggleFieldTextType() {
+    this.fieldTextType = !this.fieldTextType;
+  }
 }
