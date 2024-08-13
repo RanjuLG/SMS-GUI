@@ -80,8 +80,18 @@ export class CreateInvoiceComponent implements OnInit {
 
 
   removeItem(index: number): void {
-    this.items().removeAt(index);
+    if (this.items().length > 1) {
+      this.items().removeAt(index);
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cannot Remove Item',
+        text: 'There should be at least one item in the invoice.',
+        confirmButtonText: 'OK'
+      });
+    }
   }
+  
 
   onItemSelected(event: Event, index: number): void {
     const selectedItemId = (event.target as HTMLSelectElement).value;
@@ -174,6 +184,7 @@ export class CreateInvoiceComponent implements OnInit {
     this.items().clear();
     this.addItem();
   }
+
   subscribeToFormChanges(): void {
     this.items().valueChanges.subscribe(() => {
       this.calculateSubTotal();
@@ -247,6 +258,16 @@ export class CreateInvoiceComponent implements OnInit {
           }
         }
       });
+    }
+    else{
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cannot Create Invoice',
+        text: 'Please fill out all the fields.',
+        confirmButtonText: 'OK'
+      });
+
     }
   }
 
