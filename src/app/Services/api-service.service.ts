@@ -10,6 +10,7 @@ import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
+import { User, UserDTO } from '../Components/user-management/user.model';
 
 @Injectable({
   providedIn: 'root'
@@ -221,7 +222,8 @@ deleteMultipleTransactions(transactionIds: number[]): Observable<any> {
 
 getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/customer/${nic}`);
+  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/customer/${nic}`)
+  .pipe(catchError(this.handleError));
 }
 
 
@@ -243,9 +245,30 @@ getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transac
         })
       )
     )
-  );
+  )
+  .pipe(catchError(this.handleError));
 }
 
+getUsers(){
+
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<User[]>(`${this.configService.apiUrl}/api/account/users`)
+  .pipe(catchError(this.handleError));
+
+}
+
+updateUser(userId: string,UserDto:UserDTO){
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.put(`${this.configService.apiUrl}/api/account/user/${userId}`,UserDto);
+
+}
+
+deleteUsers(userIds: string[]){
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.delete(`${this.configService.apiUrl}/api/account/users/delete-multiple`,{body: userIds})
+  .pipe(catchError(this.handleError));
+
+}
 
 
 

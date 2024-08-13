@@ -24,10 +24,13 @@ export class AuthService {
       })
     );
   }
-
-  register(username: string, email: string, password: string, role: string) {
-    return this.http.post(`${this.authUrl}/register`, { username, email, password, role });
+  
+  register(username: string, email: string, password: string, role: string): Observable<any> {
+    var token = localStorage.getItem('token');
+    return this.http.post(`${this.authUrl}/register/${token}`, { username, email, password, role });
   }
+  
+  
 
   logout() {
     localStorage.removeItem('token');

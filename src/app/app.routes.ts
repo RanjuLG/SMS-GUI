@@ -13,6 +13,7 @@ import { RegisterComponent } from './Components/register/register.component';
 import { AuthGuard } from './Services/auth.guard';
 import { UserManagementComponent } from './Components/user-management/user-management.component';
 import { UnauthorizedComponent } from './Components/helpers/unauthorized/unauthorized.component';
+import { SignUpComponent } from './Components/sign-up/sign-up.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full' },
@@ -28,6 +29,7 @@ export const routes: Routes = [
     //{ path: 'login', component: LoginComponent },
     { path: 'auth/register', component: RegisterComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'users', component: UserManagementComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
-    { path: 'unauthorized', component: UnauthorizedComponent }
+    { path: 'unauthorized', component: UnauthorizedComponent },
+    { path: 'auth/sign-up', component: SignUpComponent, canActivate: [AuthGuard], data: { role: 'Admin' } }
 
 ];

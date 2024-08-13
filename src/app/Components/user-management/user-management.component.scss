@@ -1,33 +1,81 @@
-.table {
-    margin-top: 20px;
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.table .badge {
+  font-size: 0.875rem;
+}
+
+.btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.btn-outline-warning,
+.btn-outline-danger {
+  color: #6c757d;
+}
+
+#searchResultList {
+  max-width: 100%;
+}
+
+.form-select {
+  max-width: 100px;
+}
+
+.pagination-controls {
+  .pagination {
+    margin: 0;
   }
-  
-  .table thead {
-    background-color: #343a40;
-    color: #fff;
+}
+
+.small-date-range {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.5rem; // Reduce padding
   }
-  
-  .table-hover tbody tr:hover {
-    background-color: #f1f1f1;
+  .mat-form-field-flex {
+    font-size: 0.875rem; // Reduce font size
   }
-  
-  .btn-warning {
-    background-color: #ffc107;
-    border-color: #ffc107;
+  .mat-date-range-input {
+    input {
+      height: 1.5rem; // Reduce input height
+      padding: 0.25rem 0.5rem; // Reduce padding inside inputs
+    }
   }
-  
-  .btn-warning:hover {
-    background-color: #e0a800;
-    border-color: #d39e00;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-    border-color: #dc3545;
-  }
-  
-  .btn-danger:hover {
-    background-color: #c82333;
-    border-color: #bd2130;
-  }
-  
+}
+
+.search-nic {
+  width: 225px; /* Set width independently */
+}
+
+.d-flex > div {
+  display: flex;
+  align-items: center;
+}
+
+.me-2 {
+  margin-right: 0.5rem; /* Space between the date range picker and search box */
+}
+
+.w-100 {
+  width: 100%; /* Ensure date range picker takes full width of its container */
+}
+
+
+
