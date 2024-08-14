@@ -24,11 +24,19 @@ export class AuthService {
       })
     );
   }
-  
+
   register(username: string, email: string, password: string, role: string): Observable<any> {
-    var token = localStorage.getItem('token');
-    return this.http.post(`${this.authUrl}/register/${token}`, { username, email, password, role });
+    const token = localStorage.getItem('token');
+    return this.http.post(`${this.authUrl}/register`, 
+      { username, email, password, roles: [role] }, 
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
   }
+    
+  
+  
   
   
 
