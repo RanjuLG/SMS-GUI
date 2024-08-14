@@ -15,14 +15,15 @@ export class AuthGuard implements CanActivate {
       console.log("userRole: ",userRole)
       console.log("expectedRole: ",expectedRole)
 
-      if (expectedRole && expectedRole !== userRole) {
+      if (expectedRole === "Admin" && userRole !== "Admin") {
         this.router.navigate(['/unauthorized']);
         return false;
       }
 
-      return true;
+        return true;
+      
     } else {
-      this.router.navigate(['/login']);
+      this.router.navigate(['/auth/sign-in']);
       return false;
     }
   }

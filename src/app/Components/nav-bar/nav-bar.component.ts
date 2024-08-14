@@ -32,11 +32,18 @@ export class NavBarComponent {
       
   }
 
-  signOut(){
-
-    this.authService.logout();
-    this.router.navigate(['/auth/sign-in']);
+  signOut() {
+    try {
+      this.authService.logout();
+      Swal.fire('Logout Successful', 'You have logged out successfully.', 'success').then(() => {
+        this.router.navigate(['/auth/sign-in']);
+      });
+    } catch (error) {
+      Swal.fire('Logout Error', 'An issue occurred while logging out. Please try again.', 'error');
+    }
   }
+  
+  
 
   openAddCustomerModal(): void {
     const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });

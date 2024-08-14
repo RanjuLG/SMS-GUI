@@ -17,22 +17,22 @@ import { SignUpComponent } from './Components/sign-up/sign-up.component';
 import { AddCustomerComponent } from './Components/helpers/customer/add-customer/add-customer.component';
 
 export const routes: Routes = [
-    { path: '', redirectTo: '/overview', pathMatch: 'full' },
-    { path: 'overview', component: OverviewComponent },
-    { path: 'customer-form', component: CustomerFormComponent},
-    {path: 'item-form',component: ItemFormComponent},
-    { path: 'transaction-history', component: TransactionHistoryComponent},
-    {path: 'invoices',component: InvoiceFormComponent},
-    { path: 'create-invoice', component: CreateInvoiceComponent },
-    { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent },
-    {path:'cash-balance',component: CashBalanceComponent},
+    { path: '', redirectTo: '/overview', pathMatch: 'full'},
+    { path: 'overview', component: OverviewComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'customer-form', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path: 'item-form',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path: 'invoices',component: InvoiceFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'create-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    {path:'cash-balance',component: CashBalanceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'auth/sign-in',component: SignInComponent},
-    //{ path: 'login', component: LoginComponent },
+   // { path: 'login', component: LoginComponent },
     { path: 'auth/register', component: RegisterComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'users', component: UserManagementComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'unauthorized', component: UnauthorizedComponent },
     { path: 'auth/sign-up', component: SignUpComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
-    {path:'customers/create-customer',component: AddCustomerComponent},
+    {path:'customers/create-customer',component: AddCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
 
 ];
 //AddCustomerComponent

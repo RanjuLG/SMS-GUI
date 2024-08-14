@@ -1,32 +1,66 @@
-/* Animation on hover */
+/* Container styling */
+.container {
+  padding: 2rem 1rem;
+}
+
+/* Grid and card layout */
 .card-hover {
-  transition: transform 0.3s ease-in-out;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
   cursor: pointer;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .card-hover:hover {
-  transform: scale(1.05); /* Pop-up effect */
+  transform: translateY(-10px); /* Lift-up effect */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Center content */
-.center-content {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; 
-  min-height: 100vh;
-  padding-top: 2rem;
+/* Card styling with image resolution of 512x512 */
+.card-img-top {
+  object-fit: cover;
+  width: 100%;
+  height: auto;
+  max-width: 512px;
+  max-height: 512px;
+  margin: 0 auto;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
 }
 
-/* Adjusting font sizes */
-h6 {
-  font-size: large;
+
+.card-body {
+  padding: 1rem;
 }
 
 .card-title {
-  font-size: large;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
 }
 
-/* Removing unnecessary styling */
-.card-img-top {
-  /* background-color: #4560f7; */
+/* Responsive typography */
+h6 {
+  font-size: 1rem;
+  color: #495057;
+}
+
+@media (min-width: 768px) {
+  h6 {
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  h6 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Utility classes */
+.my-4 {
+  margin-top: 2rem !important;
+  margin-bottom: 2rem !important;
 }

@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-sign-in',
@@ -40,10 +41,12 @@ export class SignInComponent implements OnInit {
 
     this.authService.login(username, password).subscribe({
       next: () => {
+        Swal.fire('Login Successful', 'You have logged in successfully.', 'success');
         this.router.navigate(['/']);
       },
       error: (err) => {
         console.error('Login failed', err);
+        Swal.fire('Error', 'Please verify the username and password, and try again.', 'error');
         // Handle login error, e.g., display an error message
       }
     });

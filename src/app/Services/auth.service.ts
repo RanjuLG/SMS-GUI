@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
@@ -13,6 +13,7 @@ export class AuthService {
   private authUrl = `${this.configService.apiUrl}/api/account`;
   private currentUserSubject = new BehaviorSubject<any>(null);
   currentUser$ = this.currentUserSubject.asObservable();
+  authStatus = new EventEmitter<boolean>();
 
   constructor(private http: HttpClient, private router: Router, private configService: ConfigService) { }
 
@@ -20,24 +21,30 @@ export class AuthService {
     return this.http.post(`${this.authUrl}/login`, { username, password }).pipe(
       tap((response: any) => {
         localStorage.setItem('token', response.token);
-        this.currentUserSubject.next(this.jwtHelper.decodeToken(response.token));
+        const decodedToken = this.jwtHelper.decodeToken(response.token);
+        this.currentUserSubject.next(decodedToken);
+        this.authStatus.emit(true);  // Notify components of login status
       })
     );
   }
-  
-  register(username: string, email: string, password: string, role: string): Observable<any> {
-    var token = localStorage.getItem('token');
-    return this.http.post(`${this.authUrl}/register/${token}`, { username, email, password, role });
-  }
-  
-  
 
   logout() {
     localStorage.removeItem('token');
     this.currentUserSubject.next(null);
-    this.router.navigate(['/auth/sign-in']);
+    this.authStatus.emit(false);
+    this.router.navigate(['/auth/sign-in']);  // Notify components of logout status
   }
 
+  register(username: string, email: string, password: string, role: string): Observable<any> {
+    const token = localStorage.getItem('token');
+    return this.http.post(`${this.authUrl}/register`, 
+      { username, email, password, roles: [role] }, 
+      {
+        headers: { Authorization: `Bearer ${token}` }
+      }
+    );
+  }
+    
   get isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     return !!token && !this.jwtHelper.isTokenExpired(token);
