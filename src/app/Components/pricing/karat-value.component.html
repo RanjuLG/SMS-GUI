@@ -1,0 +1,79 @@
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card shadow-sm">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">Manage Pricings</h4>
+                    <div>
+                        <button type="button" class="btn btn-primary" (click)="openAddPricingModal()">
+                            <i class="ri-add-line align-bottom me-1"></i> Add Pricing
+                        </button>
+                        <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedPricings()">
+                            <i class="ri-delete-bin-2-line"></i> Delete Selected
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3 align-items-center">
+                        <div class="table-responsive table-card mt-3 mb-1">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr class="bg-light text-muted">
+                                        <th scope="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="checkAll"
+                                                    (change)="toggleAllSelections($event)">
+                                            </div>
+                                        </th>
+                                        <th scope="col">Price (Rs.)</th>
+                                        <th scope="col">Karat</th>
+                                        <th scope="col">Loan Period (months)</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr *ngFor="let pricing of pricings | paginate: { itemsPerPage: itemsPerPage, currentPage: page }">
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" [(ngModel)]="pricing.selected">
+                                            </div>
+                                        </td>
+                                        <td>{{ pricing.price }}</td>
+                                        <td>{{ pricing.karat?.karatValue }}</td>
+                                        <td>{{ pricing.loanPeriod?.period }}</td>
+                                        <td>
+                                            <div class="d-flex gap-2">
+                                                <div class="edit">
+                                                    <button class="btn btn-sm btn-warning" (click)="editPricing(pricing)">
+                                                        <i class="ri-edit-box-line align-bottom me-1"></i> Edit
+                                                    </button>
+                                                </div>
+                                                <div class="remove">
+                                                    <button class="btn btn-sm btn-danger" (click)="deletePricing(pricing.pricingId)">
+                                                        <i class="ri-delete-bin-line align-bottom me-1"></i> Delete
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            
+                            <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
+                                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}
+                                </option>
+                            </select>
+                        
+                        <div>
+                            Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ pricings.length }} entries
+                        </div>
+                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
+                    </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

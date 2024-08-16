@@ -11,6 +11,7 @@ import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
 import { User, UserDTO } from '../Components/user-management/user.model';
+import { Pricing, LoanPeriod,Karat } from '../Components/pricing/karat-value.model';
 
 @Injectable({
   providedIn: 'root'
@@ -270,7 +271,94 @@ deleteUsers(userIds: string[]){
 
 }
 
+// Services for Karatage, LoanPeriod, and Pricing operations
 
+// Karatage Operations
+
+getAllKarats(): Observable<Karat[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Karat[]>(`${this.configService.apiUrl}/api/karatage/karats`);
+}
+
+getKaratById(karatId: number): Observable<Karat> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Karat>(`${this.configService.apiUrl}/api/karatage/karats/${karatId}`);
+}
+
+createKarat(karat: Karat): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.post(`${this.configService.apiUrl}/api/karatage/karats`, karat);
+}
+
+updateKarat(karatId: number, karat: Karat): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.put(`${this.configService.apiUrl}/api/karatage/karats/${karatId}`, karat);
+}
+
+deleteKarat(karatId: number): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.delete(`${this.configService.apiUrl}/api/karatage/karats/${karatId}`);
+}
+
+// LoanPeriod Operations
+
+getAllLoanPeriods(): Observable<LoanPeriod[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<LoanPeriod[]>(`${this.configService.apiUrl}/api/karatage/loanperiods`);
+}
+
+getLoanPeriodById(loanPeriodId: number): Observable<LoanPeriod> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<LoanPeriod>(`${this.configService.apiUrl}/api/karatage/loanperiods/${loanPeriodId}`);
+}
+
+createLoanPeriod(loanPeriod: LoanPeriod): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.post(`${this.configService.apiUrl}/api/karatage/loanperiods`, loanPeriod);
+}
+
+updateLoanPeriod(loanPeriodId: number, loanPeriod: LoanPeriod): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.put(`${this.configService.apiUrl}/api/karatage/loanperiods/${loanPeriodId}`, loanPeriod);
+}
+
+deleteLoanPeriod(loanPeriodId: number): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.delete(`${this.configService.apiUrl}/api/karatage/loanperiods/${loanPeriodId}`);
+}
+
+// Pricing Operations
+
+getAllPricings(): Observable<Pricing[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings`);
+}
+
+getPricingById(pricingId: number): Observable<Pricing> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Pricing>(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`);
+}
+
+createPricing(pricing: Pricing): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.post(`${this.configService.apiUrl}/api/karatage/pricings`, pricing);
+}
+
+updatePricing(pricingId: number, pricing: Pricing): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.put(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`, pricing);
+}
+
+deletePricing(pricingId: number): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.delete(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`);
+}
+
+// Custom Operation: Get Pricings by Karat and LoanPeriod
+getPricingsByKaratAndLoanPeriod(karatId: number, loanPeriodId: number): Observable<Pricing[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
+}
 
 }
 

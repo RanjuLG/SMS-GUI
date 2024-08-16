@@ -1,6 +1,6 @@
 /* Container styling */
-.container {
-  padding: 2rem 1rem;
+.container-fluid {
+  padding: 0.5rem;
 }
 
 /* Grid and card layout */
@@ -10,60 +10,65 @@
   border-radius: 0.5rem;
   overflow: hidden;
   background-color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
 }
 
 .card-hover:hover {
-  transform: translateY(-10px); /* Lift-up effect */
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transform: translateY(-5px); /* Slight lift-up effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* Card styling with image resolution of 512x512 */
+/* Card image styling */
 .card-img-top {
   object-fit: cover;
   width: 100%;
   height: auto;
-  max-width: 512px;
-  max-height: 512px;
-  margin: 0 auto;
+  max-width: 100%;
   border-bottom: 1px solid #e9ecef;
-  background-color: #f8f9fa;
+  
 }
 
-
+/* Card body and title */
 .card-body {
-  padding: 1rem;
+  padding: 0.5rem;
+  
 }
 
 .card-title {
-  font-size: 1rem;
+  font-size: 0.8rem;
   font-weight: 500;
   color: #333;
 }
 
 /* Responsive typography */
 h6 {
-  font-size: 1rem;
+  font-size: 0.8rem;
   color: #495057;
+  text-align: center;
 }
 
 @media (min-width: 768px) {
   h6 {
-    font-size: 1.125rem;
+    font-size: 0.9rem;
   }
 }
 
 @media (min-width: 1024px) {
   h6 {
-    font-size: 1.25rem;
+    font-size: 1rem;
   }
 }
 
 /* Utility classes */
 .my-4 {
-  margin-top: 2rem !important;
-  margin-bottom: 2rem !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
 }
 .center-title {
   text-align: center;
+}
+
+.container-fluid{
+
+
 }

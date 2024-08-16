@@ -8,3 +8,42 @@ td, th{
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+/* Custom CSS for Muted Colors */
+
+/* Primary Button */
+.btn-primary {
+  background-color: #3d78e3 !important;
+  border-color:  #3d78e3 !important;
+  color: #ffffff !important;
+}
+
+/* Secondary Button */
+.btn-danger {
+  background-color: #f17171 !important;
+  color: #ffffff !important;
+  border-color: #f17171 !important;
+}
+
+/* Success Button */
+.btn-success {
+  background-color: #67b173 !important;
+  border-color:  #67b173 !important;
+  color: #ffffff !important;
+}
+
+/* Warning Button */
+.btn-warning {
+  background-color: #ffc84b !important;
+  border-color:  #ffc84b !important;
+  color: #ffffff !important;
+}
+
+.btn-info{
+
+    background-color: #29badb !important;
+    border-color:  #29badb !important;
+    color: #ffffff !important;
+}
+
+
