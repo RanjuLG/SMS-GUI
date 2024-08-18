@@ -25,9 +25,9 @@
                                                     (change)="toggleAllSelections($event)">
                                             </div>
                                         </th>
-                                        <th scope="col">Price (Rs.)</th>
                                         <th scope="col">Karat</th>
                                         <th scope="col">Loan Period (months)</th>
+                                        <th scope="col">Price (Rs.)</th>
                                         <th scope="col"></th>
                                     </tr>
                                 </thead>
@@ -38,9 +38,9 @@
                                                 <input class="form-check-input" type="checkbox" [(ngModel)]="pricing.selected">
                                             </div>
                                         </td>
-                                        <td>{{ pricing.price }}</td>
                                         <td>{{ pricing.karat?.karatValue }}</td>
                                         <td>{{ pricing.loanPeriod?.period }}</td>
+                                        <td>{{ pricing.price }}</td>
                                         <td>
                                             <div class="d-flex gap-2">
                                                 <div class="edit">

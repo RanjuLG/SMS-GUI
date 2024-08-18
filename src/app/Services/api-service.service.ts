@@ -11,7 +11,7 @@ import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
 import { User, UserDTO } from '../Components/user-management/user.model';
-import { Pricing, LoanPeriod,Karat } from '../Components/pricing/karat-value.model';
+import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing } from '../Components/pricing/karat-value.model';
 
 @Injectable({
   providedIn: 'root'
@@ -339,12 +339,12 @@ getPricingById(pricingId: number): Observable<Pricing> {
   return this.http.get<Pricing>(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`);
 }
 
-createPricing(pricing: Pricing): Observable<any> {
+createPricing(pricing: CreatePricing): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.post(`${this.configService.apiUrl}/api/karatage/pricings`, pricing);
 }
 
-updatePricing(pricingId: number, pricing: Pricing): Observable<any> {
+updatePricing(pricingId: number, pricing: EditPricing): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.put(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`, pricing);
 }

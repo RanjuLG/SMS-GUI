@@ -100,8 +100,6 @@ export class CustomerFormComponent implements OnInit {
   
 
   loadCustomers(): void {
-    console.log("$",this.from)
-    console.log("$$",this.to)
     this.apiService.getCustomers(this.from, this.to).subscribe({
       next: (customers: ExtendedCustomerDto[]) => {
         this.customers = customers.map(customer => ({
@@ -110,7 +108,6 @@ export class CustomerFormComponent implements OnInit {
           selected: false
         }));
         this.cdr.markForCheck(); // Trigger change detection
-        console.log(this.customers);
       },
       error: (error: any) => {
         console.error('Failed to load customers', error);

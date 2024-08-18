@@ -6,12 +6,13 @@ import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { AddPricingComponent } from '../helpers/pricing/add-pricing/add-pricing.component';
 import Swal from 'sweetalert2';
+import { AddPricingComponent } from '../helpers/pricing/add-pricing/add-pricing.component';
 
 export interface ExtendedPricingDto extends Pricing {
   selected?: boolean;
 }
+
 @Component({
   selector: 'app-karat-value',
   standalone: true,
@@ -22,7 +23,7 @@ export interface ExtendedPricingDto extends Pricing {
     ReactiveFormsModule,
   ],
   templateUrl: './karat-value.component.html',
-  styleUrl: './karat-value.component.scss'
+  styleUrls: ['./karat-value.component.scss'],
 })
 export class KaratValueComponent implements OnInit {
   pricings: ExtendedPricingDto[] = [];
@@ -39,7 +40,8 @@ export class KaratValueComponent implements OnInit {
     private modalService: NgbModal,
     private apiService: ApiService,
     private dateService: DateService,
-    private cdr: ChangeDetectorRef) {}
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
     this.loadKarats();
@@ -50,67 +52,91 @@ export class KaratValueComponent implements OnInit {
   loadKarats(): void {
     this.apiService.getAllKarats().subscribe((data) => {
       this.karats = data;
+      this.cdr.markForCheck();
     });
   }
 
   loadLoanPeriods(): void {
     this.apiService.getAllLoanPeriods().subscribe((data) => {
       this.loanPeriods = data;
+      this.cdr.markForCheck();
     });
   }
-  loadPricings(): void {
-   
-      this.apiService.getAllPricings().subscribe((data) => {
-        this.pricings = data;
-      });
-    
-  }
 
-  /*
   loadPricings(): void {
-    if (this.selectedKaratId && this.selectedLoanPeriodId) {
-      this.apiService.getPricingsByKaratAndLoanPeriod(this.selectedKaratId, this.selectedLoanPeriodId).subscribe((data) => {
-        this.pricings = data;
-      });
-    }
+    this.apiService.getAllPricings().subscribe((data) => {
+      this.pricings = data;
+      this.cdr.markForCheck(); // Ensure change detection is triggered
+    });
   }
-    */
 
   addPricing(): void {
-    const newPricing: Pricing = {
-      pricingId: 0, // or generate a new ID if needed
-      price: 0, // default price value
-      karatId: this.selectedKaratId ?? 0,
-      loanPeriodId: this.selectedLoanPeriodId ?? 0,
-    };
-
-    this.apiService.createPricing(newPricing).subscribe(() => {
+    const modalRef = this.modalService.open(AddPricingComponent, { size: 'lg' });
+    modalRef.componentInstance.savePricing.subscribe(() => {
       this.loadPricings();
+      this.cdr.detectChanges(); // Ensure UI is updated after reloading data
+      Swal.fire('Added!', 'Pricing has been added successfully.', 'success');
     });
   }
 
   editPricing(pricing: Pricing): void {
-    this.apiService.updatePricing(pricing.pricingId, pricing).subscribe(() => {
+    const modalRef = this.modalService.open(AddPricingComponent, { size: 'lg' });
+    modalRef.componentInstance.pricing = pricing;
+    modalRef.componentInstance.savePricing.subscribe(() => {
       this.loadPricings();
+      this.cdr.detectChanges(); // Ensure UI is updated after reloading data
+      Swal.fire('Saved!', 'Pricing has been updated.', 'success');
     });
   }
 
   deletePricing(pricingId: number): void {
-    this.apiService.deletePricing(pricingId).subscribe(() => {
-      this.loadPricings();
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You won\'t be able to revert this!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deletePricing(pricingId).subscribe(() => {
+          this.loadPricings(); // Reload pricings after deletion
+          Swal.fire('Deleted!', 'Pricing has been deleted.', 'success');
+        });
+      }
     });
   }
 
   deleteSelectedPricings(): void {
-    const selectedItems = this.pricings.filter(item => item.selected);
-    selectedItems.forEach(item => {
-      this.deletePricing(item.pricingId);
+    const selectedItems = this.pricings.filter((item) => item.selected);
+    if (selectedItems.length === 0) {
+      Swal.fire('No Selection', 'Please select at least one pricing to delete.', 'info');
+      return;
+    }
+
+    Swal.fire({
+      title: 'Are you sure?',
+      text: `You are about to delete ${selectedItems.length} pricing(s). This action cannot be undone.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete them!',
+      cancelButtonText: 'Cancel',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        selectedItems.forEach((item) => {
+          this.apiService.deletePricing(item.pricingId).subscribe(() => {
+            this.loadPricings();
+            this.cdr.markForCheck(); // Ensure UI is updated after deletion
+          });
+        });
+        Swal.fire('Deleted!', 'Selected pricings have been deleted.', 'success');
+      }
     });
   }
 
   toggleAllSelections(event: Event): void {
     const checked = (event.target as HTMLInputElement).checked;
-    this.pricings.forEach(pricing => pricing.selected = checked);
+    this.pricings.forEach((pricing) => (pricing.selected = checked));
     this.cdr.markForCheck(); // Trigger change detection
   }
 
@@ -124,10 +150,10 @@ export class KaratValueComponent implements OnInit {
 
   openAddPricingModal(): void {
     const modalRef = this.modalService.open(AddPricingComponent, { size: 'lg' });
-    modalRef.componentInstance.saveCustomer.subscribe((customer: ExtendedPricingDto) => {
-      this.loadPricings(); // Reload customers after adding a new customer
-      this.cdr.markForCheck(); // Trigger change detection
-      Swal.fire('Added!', 'Customer has been added.', 'success');
+    modalRef.componentInstance.savePricing.subscribe((pricing: ExtendedPricingDto) => {
+      Swal.fire('Added!', 'Pricing has been added.', 'success');
+      this.loadPricings();
+      this.cdr.markForCheck();
     });
   }
 }
