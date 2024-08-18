@@ -12,11 +12,24 @@ export interface Pricing {
 export interface LoanPeriod {
     loanPeriodId: number;
     period: string; // e.g., "30 Days", "60 Days"
-    pricings?: Pricing[];
+   // pricings?: Pricing[];
 }
 
 export interface Karat {
     karatId: number;
     karatValue: string;
-    pricings?: Pricing[];
+    //pricings?: Pricing[];
 }
+
+export interface CreatePricing {
+    price: number; // The price offering for this combination of Karat and LoanPeriod
+    karatId: number; // Selected Karat ID
+    loanPeriodId: number; // Selected Loan Period ID
+}
+
+
+export interface EditPricing {
+    price: number; // The price to be updated
+}
+
+
