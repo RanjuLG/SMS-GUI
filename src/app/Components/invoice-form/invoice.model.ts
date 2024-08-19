@@ -1,5 +1,6 @@
 export interface Invoice {
     invoiceId: number;
+    invoiceTypeId: number;
     invoiceNo: string;
     customerName: string;
     customerAddress: string;
@@ -18,6 +19,7 @@ export interface Invoice {
 
 export interface InvoiceDto {
     invoiceId: number;
+    invoiceTypeId: number;
     invoiceNo: string;
     customerName: string;
     customerAddress: string;
@@ -35,6 +37,7 @@ export interface InvoiceDto {
 }
 export interface InvoiceDto_ {
     invoiceId: number;
+    invoiceTypeId: number;
     invoiceNo: string;
     transactionId:number;
     customerName: string;
@@ -68,6 +71,7 @@ export interface Item {
   
   export interface CreateInvoiceDto {
     invoiceId: number;
+    invoiceTypeId: number;
     customer: Customer;
     items: Item[];
     dateGenerated: string; // Should be in ISO 8601 format, e.g., "2024-07-31T19:33:04.057Z"

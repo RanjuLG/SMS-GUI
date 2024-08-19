@@ -295,4 +295,14 @@ export class InvoiceFormComponent implements OnInit {
     }
     this.cdr.markForCheck();
   }
+  
+  getInvoiceType(invoiceTypeId: number): string {
+    switch (invoiceTypeId) {
+      case 1: return 'Initial Pawn Invoice';
+      case 2: return 'Installment Payment Invoice';
+      case 3: return 'Settlement Invoice';
+      default: return 'N/A';
+    }
+  }
+  
 }

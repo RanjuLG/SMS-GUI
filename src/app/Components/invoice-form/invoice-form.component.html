@@ -44,9 +44,9 @@
                       </div>
                     </th>
                     <th scope="col">Invoice No.</th>
+                    <th scope="col">Invoice Type</th>
                     <th scope="col">Customer NIC</th>
-                    <th scope="col">Total Amount (Rs.)</th>
-                  <!-- <th scope="col">Payment Status</th> --> 
+                  <th scope="col">Payment Status</th>
                     <th scope="col">Date</th>
                     <th scope="col"></th>
                   </tr>
@@ -59,9 +59,9 @@
                       </div>
                     </td>
                     <td>{{ invoice.invoiceNo }}</td>
+                    <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
                     <td>{{ invoice.customerNIC }}</td>
-                    <td>{{ invoice.totalAmount }}</td>
-                   <!--- <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td> -->
+                   <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td>
                     <td>{{ invoice.dateGenerated }}</td>
                     <td>
                       <div class="d-flex gap-2">

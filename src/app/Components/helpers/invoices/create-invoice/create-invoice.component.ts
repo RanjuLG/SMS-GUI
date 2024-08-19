@@ -43,7 +43,8 @@ export class CreateInvoiceComponent implements OnInit {
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
-      totalAmount: [0, Validators.required]
+      totalAmount: [0, Validators.required],
+      invoiceTypeId: [1, Validators.required]
     });
     
   }
