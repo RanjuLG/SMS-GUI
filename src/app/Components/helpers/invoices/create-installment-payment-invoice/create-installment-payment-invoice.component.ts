@@ -28,9 +28,9 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
     this.invoiceForm = this.fb.group({
       customer: this.fb.group({
         customerNIC: ['', Validators.required],
-        customerName: ['', Validators.required],
-        customerContactNo: ['', Validators.required],
-        customerAddress: ['', Validators.required],
+        customerName: [{ value: '', disabled: true }, Validators.required],
+        customerContactNo: [{ value: '', disabled: true }, Validators.required],
+        customerAddress: [{ value: '', disabled: true }, Validators.required],
       }),
       date: [new Date().toISOString().substring(0, 10), Validators.required],
       paymentStatus: [true, Validators.required],
@@ -131,7 +131,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template', createdInvoiceId]);
+                this.router.navigate(['/view-installment-invoice-template', createdInvoiceId]);
               },
               error: (error) => {
                 console.error('Error creating invoice:', error);

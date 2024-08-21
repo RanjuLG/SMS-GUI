@@ -65,7 +65,7 @@
                     <td>{{ invoice.dateGenerated }}</td>
                     <td>
                       <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-success" (click)="viewInvoice(invoice.invoiceId)">
+                        <button class="btn btn-sm btn-success" (click)="viewInvoice(invoice.invoiceId,invoice.invoiceTypeId)">
                           <i class="ri-eye-line align-bottom me-1"></i>
                         </button>
                         <button class="btn btn-sm btn-warning" (click)="editInvoice(invoice.invoiceId)">

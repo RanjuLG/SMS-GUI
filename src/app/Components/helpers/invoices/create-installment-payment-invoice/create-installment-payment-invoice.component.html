@@ -71,17 +71,15 @@
                   </div>
                 </div>
   
-                <!-- Submit & Cancel Buttons -->
-                <div class="text-right mt-4">
-                  <button type="submit" class="btn btn-success">Submit</button>
-                  <button type="button" class="btn btn-danger ml-2" (click)="onCancel()">Cancel</button>
-                </div>
-  
-              </form>
+                <div class="d-flex justify-content-end mt-4">
+                    <button type="button" class="btn btn-secondary me-2 btn-sm" (click)="onCancel()">Cancel</button>
+                    <button type="submit" class="btn btn-primary btn-sm">{{ isEditMode ? 'Update' : 'Create' }}</button>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
   
