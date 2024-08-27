@@ -34,8 +34,9 @@ h6, p {
 .alert {
   padding: 0.5rem;
   margin-bottom: 1rem;
-  background-color: #e9f7fd;
-  border-color: #b8daff;
+  background-color: #f8f9fa;
+  border-color: #e2e3e5;
+  color: #333;
 }
 
 .text-uppercase {
@@ -57,7 +58,7 @@ h6, p {
 .company-logo {
   width: 100%;
   height: auto;
-  max-width: 150px;
+  max-width: 100px; /* Adjusted size for a more compact logo display */
   margin-bottom: 10px;
 }
 
@@ -66,6 +67,3 @@ h6, p {
     display: none !important;
   }
 }
-
-
-

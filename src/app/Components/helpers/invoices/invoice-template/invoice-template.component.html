@@ -3,8 +3,8 @@
         <div class="card" id="receipt">
             <div class="row">
                 <div class="col-lg-12">
-                    <div class="card-header border-bottom-dashed p-4 text-center">
-                        <div class="row">
+                    <div class="card-header border-bottom-dashed p-4">
+                        <div class="row align-items-center">
                             <div class="col-lg-4 text-start">
                                 <p class="text-muted text-uppercase fw-semibold">Date</p>
                                 <h6 class="text-muted"><span id="receipt-date">{{dateGenerated}}</span></h6>
@@ -12,12 +12,12 @@
                                 <h6 class="text-muted"><span id="receipt-no">{{invoice?.invoiceNo}}</span></h6>
                             </div>
                             <div class="col-lg-4 text-center">
-                               <!-- <img src="GoldCashLogo-receipt.png" alt="Gold Cash" class="company-logo"> -->
-                                <h5 class="text-muted text-uppercase fw-semibold">Gold Cash <h6>(Pvt) Ltd.</h6></h5>
+                                <img src="GoldCashLogo-receipt.png" alt="Gold Cash" class="company-logo">
+                                <h5 class="text-muted text-uppercase fw-semibold mt-2">Gold Cash (Pvt) Ltd.</h5>
                             </div>
                             <div class="col-lg-4 text-end">
                                 <p class="text-muted mb-0">Legal Registration No: <span id="legal-register-no">987654</span></p>
-                                <p class="text-muted mb-0">Email: <span id="email">goldcashgmail.com</span></p>
+                                <p class="text-muted mb-0">Email: <span id="email">goldcash&#64;gmail.com</span></p>
                                 <p class="text-muted mb-0">Contact No: <span id="contact-no">+(94) 81 222 1234</span></p>
                                 <p class="text-muted">Address: <span id="address-details">Muruthalawa, Sri Lanka</span></p>
                             </div>
@@ -38,7 +38,7 @@
                                 <div class="table-responsive">
                                     <table class="table table-bordered text-center table-nowrap align-middle mb-0">
                                         <thead>
-                                            <tr class="table">
+                                            <tr>
                                                 <th scope="col">#</th>
                                                 <th scope="col">Item No.</th>
                                                 <th scope="col">Item Description</th>
