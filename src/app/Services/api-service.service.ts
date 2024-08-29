@@ -355,7 +355,7 @@ deletePricing(pricingId: number): Observable<any> {
 }
 
 // Custom Operation: Get Pricings by Karat and LoanPeriod
-getPricingsByKaratAndLoanPeriod(karatId: number, loanPeriodId: number): Observable<Pricing[]> {
+getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<Pricing[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
 }

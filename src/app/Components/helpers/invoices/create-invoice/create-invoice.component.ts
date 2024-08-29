@@ -8,12 +8,12 @@ import { CustomerDto } from '../../../customer-form/customer.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { LoanPeriod } from '../../../pricing/karat-value.model';
+import { LoanPeriod, Karat } from '../../../pricing/karat-value.model';
 
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
@@ -24,9 +24,9 @@ export class CreateInvoiceComponent implements OnInit {
   isEditMode = false;
   manualTotalAmountEdit = false;
   customerItems: Item[] = [];
-  isCustomerAutofilled = false; // Array to store items for the selected customer
+  isCustomerAutofilled = false; // Flag to check if customer details are autofilled
   loanPeriods: LoanPeriod[] = [];  // Available loan periods
-  karats: any[] = []; // Array to store karat values
+  karats: Karat[] = []; // Array to store karat values
 
   constructor(
     private fb: FormBuilder,
@@ -53,22 +53,46 @@ export class CreateInvoiceComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    const newItem = this.createItem();
+    this.items().push(newItem);
     if (this.invoice) {
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
     }
     this.subscribeToFormChanges();
-
-    // Load loan periods from API
-    this.loadKaratValues(); // Load karat values
-    this.loadLoanPeriods(); // Load loan periods
-
+  
+    // Load karat values and loan periods from API
+    this.loadKaratValues(); 
+    this.loadLoanPeriods();
+  
+    // Reset customer fields if NIC changes
     this.invoiceForm.get('customer.customerNIC')?.valueChanges.subscribe(() => {
       if (this.isCustomerAutofilled) {
         this.resetCustomerFields();
       }
     });
+  
+    // Subscribe to changes in gold weight, loan period, and karat
+    this.invoiceForm.get('loanPeriod')?.valueChanges.subscribe(() => {
+      this.items().controls.forEach((item, index) => {
+        this.loadPricingForNewItem(index);
+      });
+    });
+  
+    this.items().controls.forEach((item, index) => {
+      item.get('itemGoldWeight')?.valueChanges.subscribe(() => {
+        this.loadPricingForNewItem(index);
+      });
+  
+      item.get('itemCaratage')?.valueChanges.subscribe(() => {
+        this.loadPricingForNewItem(index);
+      });
+    });
+
+    this.subscribeToItemChanges(newItem);
   }
+  
+
   loadKaratValues(): void {
     this.apiService.getAllKarats().subscribe({
       next: (karats) => {
@@ -93,7 +117,159 @@ export class CreateInvoiceComponent implements OnInit {
     });
   }
 
-  // Other existing methods
+  createItem(): FormGroup {
+    return this.fb.group({
+      itemId: [null], // Include itemId field
+      itemDescription: ['', Validators.required],
+      itemCaratage: [0, Validators.required],
+      itemGoldWeight: [0, Validators.required],
+      itemValue: [0, Validators.required]
+    });
+  }
+
+  items(): FormArray {
+    return this.invoiceForm.get('items') as FormArray;
+  }
+
+  removeItem(index: number): void {
+    if (this.items().length > 1) {
+      this.items().removeAt(index);
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cannot Remove Item',
+        text: 'There should be at least one item in the invoice.',
+        confirmButtonText: 'OK'
+      });
+    }
+  }
+
+  onItemSelected(event: Event, index: number): void {
+    const selectedItemId = (event.target as HTMLSelectElement).value;
+    if (selectedItemId) {
+      const selectedItem = this.customerItems.find(item => item.itemId === +selectedItemId);
+      if (selectedItem) {
+        const itemFormGroup = this.items().at(index);
+        itemFormGroup.patchValue({
+          itemId: selectedItem.itemId,
+          itemDescription: selectedItem.itemDescription,
+          itemCaratage: selectedItem.itemCaratage,
+          itemGoldWeight: selectedItem.itemGoldWeight,
+          itemValue: selectedItem.itemValue
+        });
+
+        // Disable form controls for existing items
+        itemFormGroup.get('itemDescription')?.disable();
+        itemFormGroup.get('itemCaratage')?.disable();
+        itemFormGroup.get('itemGoldWeight')?.disable();
+        itemFormGroup.get('itemValue')?.disable();
+      }
+    } else {
+      const itemFormGroup = this.items().at(index);
+      itemFormGroup.reset();
+      // Enable form controls for new items
+      itemFormGroup.get('itemDescription')?.enable();
+      itemFormGroup.get('itemCaratage')?.enable();
+      itemFormGroup.get('itemGoldWeight')?.enable();
+      itemFormGroup.get('itemValue')?.enable();
+
+
+    // Load pricing based on karat and loan period
+    this.loadPricingForNewItem(index);
+    }
+  }
+
+  addItem(): void {
+    const newItem = this.createItem();
+    this.items().push(newItem);
+    // Enable form controls for new items
+    newItem.get('itemDescription')?.enable();
+    newItem.get('itemCaratage')?.enable();
+    newItem.get('itemGoldWeight')?.enable();
+    newItem.get('itemValue')?.enable();
+  }
+
+  autofillCustomerDetails(): void {
+    const nic = this.invoiceForm.get('customer.customerNIC')?.value;
+    if (nic) {
+      this.apiService.getCustomerByNIC(nic).subscribe({
+        next: (customer: CustomerDto) => {
+          this.invoiceForm.patchValue({
+            customer: {
+              customerNIC: nic,
+              customerName: customer.customerName,
+              customerAddress: customer.customerAddress,
+              customerContactNo: customer.customerContactNo
+            }
+          });
+
+          this.isCustomerAutofilled = true;
+          this.invoiceForm.get('customer.customerName')?.disable();
+          this.invoiceForm.get('customer.customerContactNo')?.disable();
+          this.invoiceForm.get('customer.customerAddress')?.disable();
+
+          this.apiService.getItemsByCustomerNIC(nic).subscribe({
+            next: (items: Item[]) => {
+              this.customerItems = items;
+            },
+            error: (error) => {
+              console.error('Error fetching customer items:', error);
+              Swal.fire('Error', 'Failed to fetch items for this customer', 'error');
+            }
+          });
+        },
+        error: (error) => {
+          this.isCustomerAutofilled = false;
+          this.resetCustomerFields();
+          console.error('Error fetching customer details:', error);
+          Swal.fire('Error', 'Customer does not exist', 'error');
+        }
+      });
+    }
+  }
+
+  resetCustomerFields(): void {
+    this.isCustomerAutofilled = false;
+    this.invoiceForm.get('customer.customerName')?.enable();
+    this.invoiceForm.get('customer.customerContactNo')?.enable();
+    this.invoiceForm.get('customer.customerAddress')?.enable();
+    this.invoiceForm.get('customer')?.reset();
+    this.customerItems = [];
+    this.items().clear();
+    this.addItem();
+  }
+
+  isExistingItem(index: number): boolean {
+    const itemId = this.items().at(index).get('itemId')?.value;
+    return !!itemId;
+  }
+
+  subscribeToFormChanges(): void {
+    this.items().valueChanges.subscribe(() => {
+      this.calculateSubTotal();
+    });
+  }
+
+  calculateSubTotal(): void {
+    const subTotal = this.items().controls.reduce((total, item) => {
+      return total + (item.get('itemValue')?.value || 0);
+    }, 0);
+    this.invoiceForm.get('subTotal')?.setValue(subTotal);
+    this.onSubTotalOrInterestChange();
+  }
+  
+  onSubTotalOrInterestChange() {
+    if (!this.manualTotalAmountEdit) {
+      const subTotal = this.invoiceForm.get('subTotal')?.value;
+      const interest = this.invoiceForm.get('interest')?.value;
+      const totalAmount = subTotal + (subTotal * interest / 100);
+      this.invoiceForm.patchValue({ totalAmount });
+    }
+  }
+
+  onTotalAmountChange() {
+    this.manualTotalAmountEdit = true;
+  }
 
   onSubmit() {
     if (this.invoiceForm.valid) {
@@ -152,163 +328,6 @@ export class CreateInvoiceComponent implements OnInit {
     }
   }
 
-
-  createItem(): FormGroup {
-    return this.fb.group({
-      itemId: [null], // Include itemId field
-      itemDescription: ['', Validators.required],
-      itemCaratage: [0, Validators.required],
-      itemGoldWeight: [0, Validators.required],
-      itemValue: [0, Validators.required]
-    });
-  }
-
-  items(): FormArray {
-    return this.invoiceForm.get('items') as FormArray;
-  }
-
-
-
-  removeItem(index: number): void {
-    if (this.items().length > 1) {
-      this.items().removeAt(index);
-    } else {
-      Swal.fire({
-        icon: 'warning',
-        title: 'Cannot Remove Item',
-        text: 'There should be at least one item in the invoice.',
-        confirmButtonText: 'OK'
-      });
-    }
-  }
-  
-
-  onItemSelected(event: Event, index: number): void {
-    const selectedItemId = (event.target as HTMLSelectElement).value;
-    if (selectedItemId) {
-      const selectedItem = this.customerItems.find(item => item.itemId === +selectedItemId);
-      if (selectedItem) {
-        const itemFormGroup = this.items().at(index);
-        itemFormGroup.patchValue({
-          itemId: selectedItem.itemId,
-          itemDescription: selectedItem.itemDescription,
-          itemCaratage: selectedItem.itemCaratage,
-          itemGoldWeight: selectedItem.itemGoldWeight,
-          itemValue: selectedItem.itemValue
-        });
-  
-        // Disable form controls for existing items
-        itemFormGroup.get('itemDescription')?.disable();
-        itemFormGroup.get('itemCaratage')?.disable();
-        itemFormGroup.get('itemGoldWeight')?.disable();
-        itemFormGroup.get('itemValue')?.disable();
-      }
-    } else {
-      const itemFormGroup = this.items().at(index);
-      itemFormGroup.reset();
-      // Enable form controls for new items
-      itemFormGroup.get('itemDescription')?.enable();
-      itemFormGroup.get('itemCaratage')?.enable();
-      itemFormGroup.get('itemGoldWeight')?.enable();
-      itemFormGroup.get('itemValue')?.enable();
-    }
-  }
-  
-  addItem(): void {
-    const newItem = this.createItem();
-    this.items().push(newItem);
-    // Enable form controls for new items
-    newItem.get('itemDescription')?.enable();
-    newItem.get('itemCaratage')?.enable();
-    newItem.get('itemGoldWeight')?.enable();
-    newItem.get('itemValue')?.enable();
-  }
-  
-
-  autofillCustomerDetails(): void {
-    const nic = this.invoiceForm.get('customer.customerNIC')?.value;
-    if (nic) {
-      this.apiService.getCustomerByNIC(nic).subscribe({
-        next: (customer: CustomerDto) => {
-          this.invoiceForm.patchValue({
-            customer: {
-              customerNIC: nic,
-              customerName: customer.customerName,
-              customerAddress: customer.customerAddress,
-              customerContactNo: customer.customerContactNo
-            }
-          });
-
-          this.isCustomerAutofilled = true;
-          this.invoiceForm.get('customer.customerName')?.disable();
-          this.invoiceForm.get('customer.customerContactNo')?.disable();
-          this.invoiceForm.get('customer.customerAddress')?.disable();
-
-          this.apiService.getItemsByCustomerNIC(nic).subscribe({
-            next: (items: Item[]) => {
-              this.customerItems = items;
-            },
-            error: (error) => {
-              console.error('Error fetching customer items:', error);
-              Swal.fire('Error', 'Failed to fetch items for this customer', 'error');
-            }
-          });
-        },
-        error: (error) => {
-          this.isCustomerAutofilled = false;
-          this.resetCustomerFields();
-          console.error('Error fetching customer details:', error);
-          Swal.fire('Error', 'Customer does not exist', 'error');
-        }
-      });
-    }
-  }
-
-  resetCustomerFields(): void {
-    this.isCustomerAutofilled = false;
-    this.invoiceForm.get('customer.customerName')?.enable();
-    this.invoiceForm.get('customer.customerContactNo')?.enable();
-    this.invoiceForm.get('customer.customerAddress')?.enable();
-    this.invoiceForm.get('customer')?.reset();
-    this.customerItems = [];
-    this.items().clear();
-    this.addItem();
-  }
-
-  subscribeToFormChanges(): void {
-    this.items().valueChanges.subscribe(() => {
-      this.calculateSubTotal();
-    });
-  }
-
-  calculateSubTotal(): void {
-    const subTotal = this.items().controls.reduce((total, item) => {
-      return total + item.get('itemValue')?.value;
-    }, 0);
-    this.invoiceForm.get('subTotal')?.setValue(subTotal);
-    this.onSubTotalOrInterestChange();
-  }
-
-  onSubTotalOrInterestChange() {
-    if (!this.manualTotalAmountEdit) {
-      const subTotal = this.invoiceForm.get('subTotal')?.value;
-      const interest = this.invoiceForm.get('interest')?.value;
-      const totalAmount = subTotal + (subTotal * interest / 100);
-      this.invoiceForm.patchValue({ totalAmount });
-    }
-  }
-
-  onTotalAmountChange() {
-    this.manualTotalAmountEdit = true;
-  }
-
-  
-
-  statusss() {
-    console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus);
-  }
-
-  
   onCancel() {
     Swal.fire({
       title: 'Cancel Changes',
@@ -328,4 +347,50 @@ export class CreateInvoiceComponent implements OnInit {
       }
     });
   }
+
+
+  loadPricingForNewItem(index: number): void {
+    const itemFormGroup = this.items().at(index);
+    const karatValue = itemFormGroup.get('itemCaratage')?.value;
+    const loanPeriodId = this.invoiceForm.value.loanPeriod;
+    const goldWeight = itemFormGroup.get('itemGoldWeight')?.value;
+
+    if (!karatValue || !loanPeriodId || !goldWeight) {
+        return; // Exit if any of the values are missing
+    }
+
+    const numericKaratValue = Number(karatValue);
+    const selectedKarat = this.karats.find(k => k.karatValue === numericKaratValue);
+    const karatId = selectedKarat ? selectedKarat.karatId : null;
+
+    if (karatId && loanPeriodId && goldWeight) {
+        this.apiService.getPricingsByKaratAndLoanPeriod(karatId, loanPeriodId).subscribe({
+            next: (pricings) => {
+                if (pricings && pricings.length > 0) {
+                    const pricing = pricings[0];
+                    const itemValue = (pricing.price / 8) * goldWeight; // Example calculation
+                    itemFormGroup.patchValue({ itemValue });
+                    this.calculateSubTotal();
+                }
+            },
+            error: (error) => {
+                console.error('Error loading pricing:', error);
+                Swal.fire('Error', 'Failed to load pricing for this item', 'error');
+            }
+        });
+    }
 }
+
+private subscribeToItemChanges(item: FormGroup): void {
+  item.get('itemGoldWeight')?.valueChanges.subscribe(() => {
+      this.loadPricingForNewItem(this.items().controls.indexOf(item));
+  });
+
+  item.get('itemCaratage')?.valueChanges.subscribe(() => {
+      this.loadPricingForNewItem(this.items().controls.indexOf(item));
+  });
+}
+
+
+}
+

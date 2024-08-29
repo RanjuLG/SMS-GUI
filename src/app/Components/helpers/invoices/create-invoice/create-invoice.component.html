@@ -41,6 +41,16 @@
                   </div>
                 </div>
               </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label for="loanPeriod">Loan Period (months)</label>
+                  <select id="loanPeriod" class="form-control form-control-sm" formControlName="loanPeriod" required>
+                    <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">
+                      {{ period.period }}
+                    </option>
+                  </select>
+                </div>
+              </div>
 
               <!-- Item Details -->
               <h5 class="section-title">Item Details</h5>
@@ -66,9 +76,14 @@
                   <div class="col-md-1">
                     <div class="form-group">
                       <label for="itemCaratage">Karat</label>
-                      <select id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required>
-                        <option *ngFor="let karat of karats" [value]="karat.karatId">{{ karat.karatValue }}</option>
+                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required>
+                        <option *ngFor="let karat of karats" [value]="karat.karatValue">
+                          {{ karat.karatValue }}K
+                        </option>
                       </select>
+                      
+                      <!-- Show read-only input for existing items -->
+                      <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" readonly />
                     </div>
                   </div>
                   <div class="col-md-2">
@@ -105,16 +120,7 @@
                     <input type="date" id="date" class="form-control form-control-sm" formControlName="date" required />
                   </div>
                 </div>
-                <div class="col-md-2">
-                  <div class="form-group">
-                    <label for="loanPeriod">Loan Period (months)</label>
-                    <select id="loanPeriod" class="form-control form-control-sm" formControlName="loanPeriod" required>
-                      <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">
-                        {{ period.period }}
-                      </option>
-                    </select>
-                  </div>
-                </div>
+               
                 
                 
                 <div class="col-md-2">
