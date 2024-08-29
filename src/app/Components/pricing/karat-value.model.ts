@@ -17,7 +17,7 @@ export interface LoanPeriod {
 
 export interface Karat {
     karatId: number;
-    karatValue: string;
+    karatValue: number;
     //pricings?: Pricing[];
 }
 

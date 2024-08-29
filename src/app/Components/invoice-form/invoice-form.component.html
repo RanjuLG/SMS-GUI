@@ -46,6 +46,7 @@
                     <th scope="col">Invoice No.</th>
                     <th scope="col">Invoice Type</th>
                     <th scope="col">Customer NIC</th>
+                    <th scope="col">Loan Period (months)</th>
                   <th scope="col">Payment Status</th>
                     <th scope="col">Date</th>
                     <th scope="col"></th>
@@ -61,6 +62,7 @@
                     <td>{{ invoice.invoiceNo }}</td>
                     <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
                     <td>{{ invoice.customerNIC }}</td>
+                    <td>{{ invoice.loanPeriod? invoice.loanPeriod:'N/A' }}</td>
                    <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td>
                     <td>{{ invoice.dateGenerated }}</td>
                     <td>

@@ -8,6 +8,7 @@ import { CustomerDto } from '../../../customer-form/customer.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LoanPeriod } from '../../../pricing/karat-value.model';
 
 @Component({
   selector: 'app-create-invoice',
@@ -24,6 +25,8 @@ export class CreateInvoiceComponent implements OnInit {
   manualTotalAmountEdit = false;
   customerItems: Item[] = [];
   isCustomerAutofilled = false; // Array to store items for the selected customer
+  loanPeriods: LoanPeriod[] = [];  // Available loan periods
+  karats: any[] = []; // Array to store karat values
 
   constructor(
     private fb: FormBuilder,
@@ -40,22 +43,25 @@ export class CreateInvoiceComponent implements OnInit {
       }),
       items: this.fb.array([this.createItem()]),
       date: [new Date().toISOString().substring(0, 10), Validators.required], // Set the default date to today
+      loanPeriod: [null, Validators.required], // Updated to hold loanPeriodId
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [1, Validators.required]
     });
-    
   }
 
   ngOnInit(): void {
     if (this.invoice) {
-      
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
     }
     this.subscribeToFormChanges();
+
+    // Load loan periods from API
+    this.loadKaratValues(); // Load karat values
+    this.loadLoanPeriods(); // Load loan periods
 
     this.invoiceForm.get('customer.customerNIC')?.valueChanges.subscribe(() => {
       if (this.isCustomerAutofilled) {
@@ -63,6 +69,89 @@ export class CreateInvoiceComponent implements OnInit {
       }
     });
   }
+  loadKaratValues(): void {
+    this.apiService.getAllKarats().subscribe({
+      next: (karats) => {
+        this.karats = karats;
+      },
+      error: (error) => {
+        console.error('Error fetching karat values:', error);
+        Swal.fire('Error', 'Failed to fetch karat values', 'error');
+      }
+    });
+  }
+
+  loadLoanPeriods(): void {
+    this.apiService.getAllLoanPeriods().subscribe({
+      next: (loanPeriods) => {
+        this.loanPeriods = loanPeriods;
+      },
+      error: (error) => {
+        console.error('Error fetching loan periods:', error);
+        Swal.fire('Error', 'Failed to fetch loan periods', 'error');
+      }
+    });
+  }
+
+  // Other existing methods
+
+  onSubmit() {
+    if (this.invoiceForm.valid) {
+      Swal.fire({
+        title: 'Confirm Invoice Submission',
+        text: 'Are you sure you want to submit this invoice?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Yes, submit',
+        cancelButtonText: 'Cancel'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const invoiceDto: CreateInvoiceDto = {
+            ...this.invoiceForm.value,
+            loanPeriodId: this.invoiceForm.value.loanPeriod, // Attach the selected loanPeriodId
+            items: this.invoiceForm.value.items.map((item: Item) => ({
+              ...item,
+              itemId: item.itemId || 0 // Set itemId to 0 if it's null
+            }))
+          };
+
+          if (this.isEditMode && this.invoice) {
+            this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
+              next: () => {
+                Swal.fire('Success', 'Invoice updated successfully', 'success');
+                this.saveInvoice.emit(invoiceDto);
+                this.router.navigate(['/view-invoice-template', this.invoice?.invoiceId]);
+              },
+              error: (error) => {
+                console.error('Error updating invoice:', error);
+                Swal.fire('Error', 'Failed to update invoice', 'error');
+              }
+            });
+          } else {
+            this.apiService.createInvoice(invoiceDto).subscribe({
+              next: (createdInvoiceId) => {
+                Swal.fire('Success', 'Invoice created successfully', 'success');
+                this.saveInvoice.emit(invoiceDto);
+                this.router.navigate(['/view-invoice-template', createdInvoiceId]);
+              },
+              error: (error) => {
+                console.error('Error creating invoice:', error);
+                Swal.fire('Error', 'Failed to create invoice', 'error');
+              }
+            });
+          }
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Cannot Create Invoice',
+        text: 'Please fill out all the fields.',
+        confirmButtonText: 'OK'
+      });
+    }
+  }
+
 
   createItem(): FormGroup {
     return this.fb.group({
@@ -213,64 +302,7 @@ export class CreateInvoiceComponent implements OnInit {
     this.manualTotalAmountEdit = true;
   }
 
-  onSubmit() {
-    if (this.invoiceForm.valid) {
-      Swal.fire({
-        title: 'Confirm Invoice Submission',
-        text: 'Are you sure you want to submit this invoice?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, submit',
-        cancelButtonText: 'Cancel'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const invoiceDto: CreateInvoiceDto = {
-            ...this.invoiceForm.value,
-            items: this.invoiceForm.value.items.map((item: Item) => ({
-              ...item,
-              itemId: item.itemId || 0 // Set itemId to 0 if it's null
-            }))
-          };
-
-          if (this.isEditMode && this.invoice) {
-            this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
-              next: () => {
-                Swal.fire('Success', 'Invoice updated successfully', 'success');
-                this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template', this.invoice?.invoiceId]);
-              },
-              error: (error) => {
-                console.error('Error updating invoice:', error);
-                Swal.fire('Error', 'Failed to update invoice', 'error');
-              }
-            });
-          } else {
-            this.apiService.createInvoice(invoiceDto).subscribe({
-              next: (createdInvoiceId) => {
-                Swal.fire('Success', 'Invoice created successfully', 'success');
-                this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template', createdInvoiceId]);
-              },
-              error: (error) => {
-                console.error('Error creating invoice:', error);
-                Swal.fire('Error', 'Failed to create invoice', 'error');
-              }
-            });
-          }
-        }
-      });
-    }
-    else{
-
-      Swal.fire({
-        icon: 'warning',
-        title: 'Cannot Create Invoice',
-        text: 'Please fill out all the fields.',
-        confirmButtonText: 'OK'
-      });
-
-    }
-  }
+  
 
   statusss() {
     console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus);

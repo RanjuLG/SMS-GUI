@@ -15,6 +15,7 @@ export interface Invoice {
     quantity: number;
     subTotal: number;
     interest: number;
+    loanPeriod: number;
 }
 
 export interface InvoiceDto {
@@ -34,6 +35,7 @@ export interface InvoiceDto {
     quantity: number;
     subTotal: number;
     interest: number;
+    loanPeriod: number;
 }
 export interface InvoiceDto_ {
     invoiceId: number;
@@ -53,6 +55,7 @@ export interface InvoiceDto_ {
     quantity: number;
     subTotal: number;
     interest: number;
+    loanPeriod: number;
 }
 export interface Item {
     itemDescription: string;
@@ -79,6 +82,7 @@ export interface Item {
     subTotal: number;
     interest: number;
     totalAmount: number;
+    loanPeriod: number;
   }
   
 
@@ -98,4 +102,10 @@ export interface UpdateInvoiceDto {
     quantity: number;
     subTotal: number;
     interest: number;
+}
+
+export interface LoanPeriod {
+
+  loanPeriodId: number;
+  loanPeriod: number;
 }
