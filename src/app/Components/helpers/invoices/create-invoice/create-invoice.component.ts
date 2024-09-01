@@ -304,7 +304,7 @@ export class CreateInvoiceComponent implements OnInit {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto).subscribe({
+            this.apiService.createInvoice(invoiceDto,'0',0).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);

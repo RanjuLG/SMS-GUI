@@ -25,6 +25,8 @@ export class CreateSettlementInvoiceComponent implements OnInit {
   manualTotalAmountEdit = false;
   customerItems: Item[] = [];
   isCustomerAutofilled = false; // Array to store items for the selected customer
+  initialInvoiceNumber = '0';
+  installmentNumber = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -246,7 +248,7 @@ export class CreateSettlementInvoiceComponent implements OnInit {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto).subscribe({
+            this.apiService.createInvoice(invoiceDto,this.initialInvoiceNumber,this.installmentNumber).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);

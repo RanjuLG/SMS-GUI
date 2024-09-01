@@ -19,6 +19,8 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
   invoiceForm: FormGroup;
   isEditMode = false;
   isCustomerAutofilled = false;
+  initialInvoiceNumber = '0';
+  installmentNumber = 0;
 
   constructor(
     private fb: FormBuilder,
@@ -127,7 +129,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto).subscribe({
+            this.apiService.createInvoice(invoiceDto,this.initialInvoiceNumber,this.installmentNumber).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);
