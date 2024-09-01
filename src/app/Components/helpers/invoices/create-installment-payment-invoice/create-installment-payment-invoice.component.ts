@@ -1,11 +1,12 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators,ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../../Services/api-service.service';
 import Swal from 'sweetalert2';
-import { CreateInvoiceDto } from '../../../invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto } from '../../../invoice-form/invoice.model';
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { CommonModule } from '@angular/common';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-create-installment-payment-invoice',
   standalone: true,
@@ -21,11 +22,13 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
   isCustomerAutofilled = false;
   initialInvoiceNumber = '0';
   installmentNumber = 0;
-
+  initialInvoices: InvoiceDto[] = []; // Add this line
+  selectedInvoice: InvoiceDto | null = null; // Add this line
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
-    private router: Router
+    private router: Router,
+    private modalService: NgbModal
   ) {
     this.invoiceForm = this.fb.group({
       customer: this.fb.group({
@@ -55,7 +58,56 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       }
     });
   }
+// New method to fetch invoices by NIC
+fetchInvoicesByNIC(nic: string): void {
+  this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
+    next: (invoices: InvoiceDto[]) => {
+      // Filter the invoices where invoiceTypeId equals 2
+      this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
+      
+      // Optionally check if no valid invoices are found and show a warning
+      if (this.initialInvoices.length === 0) {
+        Swal.fire('Warning', 'No valid installment payment invoices found for this customer', 'warning');
+      }
+    },
+    error: (error) => {
+      console.error('Error fetching invoices:', error);
+      Swal.fire('Error', 'Failed to fetch invoices for this customer', 'error');
+    }
+  });
+}
 
+
+// New method to handle selection of an initial invoice
+onInitialInvoiceSelected(event: Event): void {
+  const selectedInvoiceId = (event.target as HTMLSelectElement).value;
+  this.selectedInvoice = this.initialInvoices.find(invoice => invoice.invoiceId === +selectedInvoiceId) || null;
+  console.log("this.selectedInvoice",this.selectedInvoice)
+  if(this.selectedInvoice?.invoiceNo != null)
+    {
+      if (this.selectedInvoice && this.selectedInvoice.invoiceTypeId !== 1) 
+        {
+        this.showInvalidInvoiceWarning();
+      }
+      else
+      {
+
+        this.initialInvoiceNumber = this.selectedInvoice.invoiceNo;
+
+        const loanPeriod = this.selectedInvoice.loanPeriod;
+        console.log("this.selectedInvoice",this.selectedInvoice)
+        if (loanPeriod > 0) {
+          const installmentAmount = this.selectedInvoice.totalAmount / loanPeriod;
+          this.invoiceForm.patchValue({ totalAmount: installmentAmount });
+        } else {
+          Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
+        }
+
+      }
+
+    
+  }
+}
   autofillCustomerDetails(): void {
     const nic = this.invoiceForm.get('customer.customerNIC')?.value;
     if (nic) {
@@ -82,6 +134,8 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
           Swal.fire('Error', 'Customer does not exist', 'error');
         }
       });
+          // Fetch invoices after customer details are autofilled
+          this.fetchInvoicesByNIC(nic); // Add this line
     }
   }
 
@@ -100,6 +154,19 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
     this.invoiceForm.patchValue({ totalAmount });
   }
 
+  showInvalidInvoiceWarning() {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Invalid Invoice',
+      text: 'Please select a valid initial invoice.',
+      confirmButtonText: 'Ok',
+      confirmButtonColor: '#d33'
+    }).then(() => {
+      // Clear the selected invoice if invalid
+      this.selectedInvoice = null;
+    });
+  }
+
   onSubmit() {
     if (this.invoiceForm.valid) {
       Swal.fire({
@@ -113,6 +180,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
         if (result.isConfirmed) {
           const invoiceDto: CreateInvoiceDto = {
             ...this.invoiceForm.value,
+            initialInvoiceNumber: this.initialInvoiceNumber,
             items: [] // No items for installment payments
           };
 

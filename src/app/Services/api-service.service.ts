@@ -135,10 +135,11 @@ export class ApiService {
   }
 
 
+  //invoices
+
   createInvoice(invoiceDto: CreateInvoiceDto, initialInvoiceNumber: string, installmentNumber: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   
-    // Construct the URL using template literals correctly
     const url = `${this.configService.apiUrl}/api/invoices/${initialInvoiceNumber}/${installmentNumber}`; 
   
     return this.http.post(url, invoiceDto);
