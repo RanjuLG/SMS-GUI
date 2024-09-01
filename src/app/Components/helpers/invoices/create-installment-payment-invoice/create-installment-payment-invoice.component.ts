@@ -21,7 +21,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
   isEditMode = false;
   isCustomerAutofilled = false;
   initialInvoiceNumber = '0';
-  installmentNumber = 0;
+  //installmentNumber = 0;
   initialInvoices: InvoiceDto[] = []; // Add this line
   selectedInvoice: InvoiceDto | null = null; // Add this line
   constructor(
@@ -42,7 +42,8 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
       totalAmount: [0, Validators.required],
-      invoiceTypeId: [2, Validators.required] // Different invoice type ID for installment payments
+      invoiceTypeId: [2, Validators.required], // Different invoice type ID for installment payments
+      installmentNumber: [0,Validators.required]
     });
   }
 
@@ -169,6 +170,7 @@ onInitialInvoiceSelected(event: Event): void {
 
   onSubmit() {
     if (this.invoiceForm.valid) {
+      const installmentNumber = this.invoiceForm.get('installmentNumber')?.value;
       Swal.fire({
         title: 'Confirm Invoice Submission',
         text: 'Are you sure you want to submit this invoice?',
@@ -197,17 +199,27 @@ onInitialInvoiceSelected(event: Event): void {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto,this.initialInvoiceNumber,this.installmentNumber).subscribe({
-              next: (createdInvoiceId) => {
-                Swal.fire('Success', 'Invoice created successfully', 'success');
-                this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-installment-invoice-template', createdInvoiceId]);
-              },
-              error: (error) => {
-                console.error('Error creating invoice:', error);
-                Swal.fire('Error', 'Failed to create invoice', 'error');
-              }
-            });
+                    if(installmentNumber == 0){
+
+                      Swal.fire('Error', 'Please enter a valid installment number', 'error');
+
+                    }
+                    else{
+
+                      this.apiService.createInvoice(invoiceDto,this.initialInvoiceNumber,installmentNumber).subscribe({
+                        next: (createdInvoiceId) => {
+                          Swal.fire('Success', 'Invoice created successfully', 'success');
+                          this.saveInvoice.emit(invoiceDto);
+                          this.router.navigate(['/view-installment-invoice-template', createdInvoiceId]);
+                        },
+                        error: (error) => {
+                          console.error('Error creating invoice:', error);
+                          Swal.fire('Error', 'Failed to create invoice', 'error');
+                        }
+                      });
+
+                    }
+            
           }
         }
       });
