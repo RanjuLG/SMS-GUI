@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-body">
             <div class="text-center">
-              <h4 class="text">{{ isEditMode ? 'Edit Installment Payment Invoice' : 'Create Installment Payment Invoice' }}</h4>
+              <h4 class="text">{{ isEditMode ? 'Edit Settlement Payment Invoice' : 'Create Settlement Payment Invoice' }}</h4>
             </div>
 
             <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="pt-4">
@@ -163,33 +163,28 @@
                 </div>
                 -->
                  <!-- Installment Number -->
-                 <div class="col-md-4">
+                
+
+                 <div class="col-md-2">
                   <div class="form-group">
-                    <label for="installmentNumber">Installment Number</label>
-                    <input
-                      type="number"
-                      id="installmentNumber"
-                      class="form-control"
-                      formControlName="installmentNumber"
-                      required
-                    />
+                    <label for="subTotal">Subtotal</label>
+                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal"/>
                   </div>
                 </div>
-
-                <div class="col-md-4">
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label for="interest">Interest (%)</label>
+                    <input type="number" step="0.1" id="interest" class="form-control form-control-sm" formControlName="interest" />
+                  </div>
+                </div>
+                <div class="col-md-3">
                   <div class="form-group">
                     <label for="totalAmount">Total Amount</label>
-                    <input
-                      type="number"
-                      id="totalAmount"
-                      class="form-control"
-                      formControlName="totalAmount"
-                      required
-                      readonly
-                    />
+                    <input type="number" step="100" id="totalAmount" class="form-control form-control-sm" formControlName="totalAmount" />
                   </div>
                 </div>
               </div>
+              
               <div class="row">
 
                 <div class="d-flex justify-content-end mt-4">

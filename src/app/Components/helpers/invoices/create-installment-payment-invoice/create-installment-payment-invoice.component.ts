@@ -1,16 +1,17 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input, Output, EventEmitter, OnInit, ChangeDetectorRef } from '@angular/core';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ApiService } from '../../../../Services/api-service.service';
 import Swal from 'sweetalert2';
-import { CreateInvoiceDto, InvoiceDto } from '../../../invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, LoanInfoDto } from '../../../invoice-form/invoice.model';
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+
 @Component({
   selector: 'app-create-installment-payment-invoice',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './create-installment-payment-invoice.component.html',
   styleUrls: ['./create-installment-payment-invoice.component.scss']
 })
@@ -21,14 +22,15 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
   isEditMode = false;
   isCustomerAutofilled = false;
   initialInvoiceNumber = '0';
-  //installmentNumber = 0;
-  initialInvoices: InvoiceDto[] = []; // Add this line
-  selectedInvoice: InvoiceDto | null = null; // Add this line
+  initialInvoices: InvoiceDto[] = [];
+  selectedInvoice: InvoiceDto | null = null;
+
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
     private router: Router,
-    private modalService: NgbModal
+    private modalService: NgbModal,
+    private cdr: ChangeDetectorRef
   ) {
     this.invoiceForm = this.fb.group({
       customer: this.fb.group({
@@ -43,7 +45,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       interest: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [2, Validators.required], // Different invoice type ID for installment payments
-      installmentNumber: [0,Validators.required]
+      installmentNumber: [{ value: 0, disabled: true }, Validators.required]
     });
   }
 
@@ -59,56 +61,73 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       }
     });
   }
-// New method to fetch invoices by NIC
-fetchInvoicesByNIC(nic: string): void {
-  this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
-    next: (invoices: InvoiceDto[]) => {
-      // Filter the invoices where invoiceTypeId equals 2
-      this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
-      
-      // Optionally check if no valid invoices are found and show a warning
-      if (this.initialInvoices.length === 0) {
-        Swal.fire('Warning', 'No valid installment payment invoices found for this customer', 'warning');
-      }
-    },
-    error: (error) => {
-      console.error('Error fetching invoices:', error);
-      Swal.fire('Error', 'Failed to fetch invoices for this customer', 'error');
-    }
-  });
-}
 
-
-// New method to handle selection of an initial invoice
-onInitialInvoiceSelected(event: Event): void {
-  const selectedInvoiceId = (event.target as HTMLSelectElement).value;
-  this.selectedInvoice = this.initialInvoices.find(invoice => invoice.invoiceId === +selectedInvoiceId) || null;
-  console.log("this.selectedInvoice",this.selectedInvoice)
-  if(this.selectedInvoice?.invoiceNo != null)
-    {
-      if (this.selectedInvoice && this.selectedInvoice.invoiceTypeId !== 1) 
-        {
-        this.showInvalidInvoiceWarning();
-      }
-      else
-      {
-
-        this.initialInvoiceNumber = this.selectedInvoice.invoiceNo;
-
-        const loanPeriod = this.selectedInvoice.loanPeriod;
-        console.log("this.selectedInvoice",this.selectedInvoice)
-        if (loanPeriod > 0) {
-          const installmentAmount = this.selectedInvoice.totalAmount / loanPeriod;
-          this.invoiceForm.patchValue({ totalAmount: installmentAmount });
-        } else {
-          Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
+  fetchInvoicesByNIC(nic: string): void {
+    this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
+      next: (invoices: InvoiceDto[]) => {
+        this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
+        if (this.initialInvoices.length === 0) {
+          Swal.fire('Warning', 'No valid installment payment invoices found for this customer', 'warning');
         }
+      },
+      error: (error) => {
+        console.error('Error fetching invoices:', error);
+        Swal.fire('Error', 'Failed to fetch invoices for this customer', 'error');
+        this.clearInvoiceFields();
 
+        
       }
-
-    
+    });
   }
-}
+
+  onInitialInvoiceSelected(event: Event): void {
+    const selectedInvoiceId = (event.target as HTMLSelectElement).value;
+    this.selectedInvoice = this.initialInvoices.find(invoice => invoice.invoiceId === +selectedInvoiceId) || null;
+    console.log("this.selectedInvoice", this.selectedInvoice);
+
+    if (this.selectedInvoice?.invoiceNo != null) {
+      if (this.selectedInvoice.invoiceTypeId !== 1) {
+        this.showInvalidInvoiceWarning();
+      } else {
+        this.initialInvoiceNumber = this.selectedInvoice.invoiceNo;
+        console.log("this.initialInvoiceNumber", this.initialInvoiceNumber);
+
+        // Call API to get loan info based on the selected invoice number
+        this.apiService.getLoanInfoByInitialInvoiceNo(this.selectedInvoice.invoiceNo).subscribe({
+          next: (loanInfo: LoanInfoDto) => {
+            console.log("API Response: loanInfo", loanInfo);
+            if (loanInfo) {
+              console.log("Loan Info:", loanInfo);
+
+              if (loanInfo.isLoanSettled) {
+                Swal.fire('Warning', 'The loan is already settled. Please select a valid invoice', 'warning');
+                this.clearInvoiceFields();
+                return;
+              }
+
+              if (loanInfo.loanPeriod > 0) {
+                const installmentAmount = loanInfo.totalAmount / loanInfo.loanPeriod;
+                const installmentNo = loanInfo.numberOfInstallmentsPaid + 1;
+                this.invoiceForm.patchValue({ totalAmount: installmentAmount, installmentNumber: installmentNo });
+              } else {
+                Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
+                this.clearInvoiceFields();
+              }
+            } else {
+              Swal.fire('Error', 'No loan information found for this invoice', 'error');
+              this.clearInvoiceFields();
+            }
+          },
+          error: (error) => {
+            console.error('Error fetching loan info:', error);
+            Swal.fire('Error', 'Failed to fetch loan information', 'error');
+            this.clearInvoiceFields();
+          }
+        });
+      }
+    }
+  }
+
   autofillCustomerDetails(): void {
     const nic = this.invoiceForm.get('customer.customerNIC')?.value;
     if (nic) {
@@ -127,16 +146,18 @@ onInitialInvoiceSelected(event: Event): void {
           this.invoiceForm.get('customer.customerName')?.disable();
           this.invoiceForm.get('customer.customerContactNo')?.disable();
           this.invoiceForm.get('customer.customerAddress')?.disable();
+
+          // Fetch invoices after customer details are autofilled
+          this.fetchInvoicesByNIC(nic);
         },
         error: (error) => {
           this.isCustomerAutofilled = false;
           this.resetCustomerFields();
+          this.clearInvoiceFields();
           console.error('Error fetching customer details:', error);
           Swal.fire('Error', 'Customer does not exist', 'error');
         }
       });
-          // Fetch invoices after customer details are autofilled
-          this.fetchInvoicesByNIC(nic); // Add this line
     }
   }
 
@@ -147,6 +168,23 @@ onInitialInvoiceSelected(event: Event): void {
     this.invoiceForm.get('customer.customerAddress')?.enable();
     this.invoiceForm.get('customer')?.reset();
   }
+
+  clearInvoiceFields(): void {
+    this.selectedInvoice = null;
+    this.initialInvoiceNumber = '';
+    this.invoiceForm.patchValue({
+      totalAmount: 0,
+      installmentNumber: 0,
+      initialInvoiceNumber: ''
+    });
+  
+    // Reset dropdown value
+    const dropdown = document.getElementById('initialInvoiceNumber') as HTMLSelectElement;
+    if (dropdown) {
+      dropdown.value = ''; // Set the dropdown to its default option
+    }
+  }
+  
 
   onSubTotalOrInterestChange() {
     const subTotal = this.invoiceForm.get('subTotal')?.value;
@@ -163,8 +201,7 @@ onInitialInvoiceSelected(event: Event): void {
       confirmButtonText: 'Ok',
       confirmButtonColor: '#d33'
     }).then(() => {
-      // Clear the selected invoice if invalid
-      this.selectedInvoice = null;
+      this.clearInvoiceFields();
     });
   }
 
@@ -199,24 +236,20 @@ onInitialInvoiceSelected(event: Event): void {
               }
             });
           } else {
-                    if(installmentNumber == 0){
-
-                      Swal.fire('Error', 'Please enter a valid installment number', 'error');
-
-                    }
-                    else{
-
-                      this.apiService.createInvoice(invoiceDto,this.initialInvoiceNumber,installmentNumber).subscribe({
-                        next: (createdInvoiceId) => {
-                          Swal.fire('Success', 'Invoice created successfully', 'success');
-                          this.saveInvoice.emit(invoiceDto);
-                          this.router.navigate(['/view-installment-invoice-template', createdInvoiceId]);
-                        },
-                        error: (error) => {
-                          console.error('Error creating invoice:', error);
-                          Swal.fire('Error', 'Failed to create invoice', 'error');
-                        }
-                      });
+            if (installmentNumber == 0) {
+              Swal.fire('Error', 'Please enter a valid installment number', 'error');
+            } else {
+              this.apiService.createInvoice(invoiceDto, this.initialInvoiceNumber, installmentNumber).subscribe({
+                next: (createdInvoiceId) => {
+                  Swal.fire('Success', 'Invoice created successfully', 'success');
+                  this.saveInvoice.emit(invoiceDto);
+                  this.router.navigate(['/view-installment-invoice-template', createdInvoiceId]);
+                },
+                error: (error) => {
+                  console.error('Error creating invoice:', error);
+                  Swal.fire('Error', 'Failed to create invoice', 'error');
+                }
+              });
 
                     }
             

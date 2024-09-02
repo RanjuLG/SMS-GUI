@@ -184,9 +184,9 @@ export class ApiService {
     return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
   }
 
-  getLoanInfoByInitialInvoiceNo(invoiceNo: string): Observable<LoanInfoDto[]> {
+  getLoanInfoByInitialInvoiceNo(invoiceNo: string): Observable<LoanInfoDto> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<LoanInfoDto[]>(`${this.configService.apiUrl}/api/invoices/InitialInvoice/${invoiceNo}`);
+    return this.http.get<LoanInfoDto>(`${this.configService.apiUrl}/api/invoices/InitialInvoice/${invoiceNo}`);
   }
 
 
