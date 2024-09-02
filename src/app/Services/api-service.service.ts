@@ -5,7 +5,7 @@ import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/cust
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
-import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
 import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
@@ -184,6 +184,10 @@ export class ApiService {
     return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
   }
 
+  getLoanInfoByInitialInvoiceNo(invoiceNo: string): Observable<LoanInfoDto[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+    return this.http.get<LoanInfoDto[]>(`${this.configService.apiUrl}/api/invoices/InitialInvoice/${invoiceNo}`);
+  }
 
 
  // Transactions

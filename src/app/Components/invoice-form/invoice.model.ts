@@ -122,3 +122,16 @@ export interface LoanPeriod {
   loanPeriodId: number;
   loanPeriod: number;
 }
+
+export interface LoanInfoDto {
+  loanAmount: number;
+  interestRate: number;
+  interestAmount: number;
+  totalAmount: number;
+  loanPeriod: number;
+  numberOfInstallments: number;
+  numberOfInstallmentsPaid: number;
+  InstallmentValue: number;
+  numberOfInstallmentsToBePaid: number;
+  isLoanSettled: boolean;
+}
