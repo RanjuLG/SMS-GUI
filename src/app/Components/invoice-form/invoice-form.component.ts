@@ -267,8 +267,14 @@ export class InvoiceFormComponent implements OnInit {
   viewInvoiceTemplate() {
     this.router.navigate(['/view-invoice-template/37']);
   }
-  viewInvoice(invoiceId: number) {
-    this.router.navigate([`/view-invoice-template/${invoiceId}`]);
+  viewInvoice(invoiceId: number,invoiceTypeId:number) {
+    if(invoiceTypeId == 1){
+      this.router.navigate([`/view-invoice-template/${invoiceId}`]);
+    }
+    else if(invoiceTypeId==2){
+      this.router.navigate([`/view-installment-invoice-template/${invoiceId}`]);
+    }
+   
   }
 
   onStartDateChange(event: any): void{
@@ -295,4 +301,14 @@ export class InvoiceFormComponent implements OnInit {
     }
     this.cdr.markForCheck();
   }
+  
+  getInvoiceType(invoiceTypeId: number): string {
+    switch (invoiceTypeId) {
+      case 1: return 'Initial Pawn Invoice';
+      case 2: return 'Installment Payment Invoice';
+      case 3: return 'Settlement Invoice';
+      default: return 'N/A';
+    }
+  }
+  
 }

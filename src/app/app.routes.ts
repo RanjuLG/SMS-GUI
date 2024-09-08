@@ -16,6 +16,9 @@ import { UnauthorizedComponent } from './Components/helpers/unauthorized/unautho
 import { SignUpComponent } from './Components/sign-up/sign-up.component';
 import { AddCustomerComponent } from './Components/helpers/customer/add-customer/add-customer.component';
 import { KaratValueComponent } from './Components/pricing/karat-value.component';
+import { CreateInstallmentPaymentInvoiceComponent } from './Components/helpers/invoices/create-installment-payment-invoice/create-installment-payment-invoice.component';
+import { InstallmentInvoiceTemplateComponent } from './Components/helpers/invoices/installment-invoice-template/installment-invoice-template.component';
+import { CreateSettlementInvoiceComponent } from './Components/helpers/invoices/create-settlement-invoice/create-settlement-invoice.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -24,8 +27,11 @@ export const routes: Routes = [
     {path: 'item-form',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'invoices',component: InvoiceFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    { path: 'create-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'create-initial-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'create-installment-invoice', component: CreateInstallmentPaymentInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'create-settlement-invoice', component: CreateSettlementInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'view-installment-invoice-template/:invoiceId', component: InstallmentInvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     {path:'cash-balance',component: CashBalanceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'auth/sign-in',component: SignInComponent},
    // { path: 'login', component: LoginComponent },

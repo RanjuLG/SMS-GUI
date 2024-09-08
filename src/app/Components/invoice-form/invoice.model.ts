@@ -1,5 +1,6 @@
 export interface Invoice {
     invoiceId: number;
+    invoiceTypeId: number;
     invoiceNo: string;
     customerName: string;
     customerAddress: string;
@@ -14,10 +15,12 @@ export interface Invoice {
     quantity: number;
     subTotal: number;
     interest: number;
+    loanPeriod: number;
 }
 
 export interface InvoiceDto {
     invoiceId: number;
+    invoiceTypeId: number;
     invoiceNo: string;
     customerName: string;
     customerAddress: string;
@@ -32,9 +35,11 @@ export interface InvoiceDto {
     quantity: number;
     subTotal: number;
     interest: number;
+    loanPeriod: number;
 }
 export interface InvoiceDto_ {
     invoiceId: number;
+    invoiceTypeId: number;
     invoiceNo: string;
     transactionId:number;
     customerName: string;
@@ -50,6 +55,7 @@ export interface InvoiceDto_ {
     quantity: number;
     subTotal: number;
     interest: number;
+    loanPeriod: number;
 }
 export interface Item {
     itemDescription: string;
@@ -68,6 +74,7 @@ export interface Item {
   
   export interface CreateInvoiceDto {
     invoiceId: number;
+    invoiceTypeId: number;
     customer: Customer;
     items: Item[];
     dateGenerated: string; // Should be in ISO 8601 format, e.g., "2024-07-31T19:33:04.057Z"
@@ -75,6 +82,20 @@ export interface Item {
     subTotal: number;
     interest: number;
     totalAmount: number;
+    loanPeriod: number;
+  }
+
+  export interface CreateInstallmentInvoiceDto {
+    invoiceId: number;
+    invoiceTypeId: number;
+    customer: Customer;
+    items: Item[];
+    dateGenerated: string; // Should be in ISO 8601 format, e.g., "2024-07-31T19:33:04.057Z"
+    paymentStatus: boolean; // Changed to boolean for better clarity
+    subTotal: number;
+    interest: number;
+    totalAmount: number;
+    loanPeriod: number;
   }
   
 
@@ -94,4 +115,23 @@ export interface UpdateInvoiceDto {
     quantity: number;
     subTotal: number;
     interest: number;
+}
+
+export interface LoanPeriod {
+
+  loanPeriodId: number;
+  loanPeriod: number;
+}
+
+export interface LoanInfoDto {
+  loanAmount: number;
+  interestRate: number;
+  interestAmount: number;
+  totalAmount: number;
+  loanPeriod: number;
+  numberOfInstallments: number;
+  numberOfInstallmentsPaid: number;
+  InstallmentValue: number;
+  numberOfInstallmentsToBePaid: number;
+  isLoanSettled: boolean;
 }

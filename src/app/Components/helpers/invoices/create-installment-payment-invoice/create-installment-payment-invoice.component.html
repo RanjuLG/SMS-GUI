@@ -1,0 +1,208 @@
+<div class="invoice-page-wrapper">
+  <div class="invoice-page-content container-fluid">
+    <div class="row justify-content-center">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <div class="text-center">
+              <h4 class="text">{{ isEditMode ? 'Edit Installment Payment Invoice' : 'Create Installment Payment Invoice' }}</h4>
+            </div>
+
+            <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="pt-4">
+              <!-- Customer Information -->
+              <h5 class="section-title">Customer Information</h5>
+              <div class="row">
+                <div class="col-md-3">
+                  <div class="form-group" formGroupName="customer">
+                    <label for="customerNIC">NIC</label>
+                    <div class="input-group">
+                      <input
+                        type="text"
+                        id="customerNIC"
+                        class="form-control"
+                        formControlName="customerNIC"
+                        required
+                        [disabled]="isCustomerAutofilled"
+                      />
+                      <button type="button" class="btn btn-info btn-sm" (click)="autofillCustomerDetails()">
+                        Autofill
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group" formGroupName="customer">
+                    <label for="customerName">Customer Name</label>
+                    <input
+                      type="text"
+                      id="customerName"
+                      class="form-control"
+                      formControlName="customerName"
+                      required
+                      [disabled]="isCustomerAutofilled"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group" formGroupName="customer">
+                    <label for="customerContactNo">Contact No.</label>
+                    <input
+                      type="text"
+                      id="customerContactNo"
+                      class="form-control"
+                      formControlName="customerContactNo"
+                      required
+                      [disabled]="isCustomerAutofilled"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group" formGroupName="customer">
+                    <label for="customerAddress">Address</label>
+                    <textarea
+                      id="customerAddress"
+                      class="form-control"
+                      rows="2"
+                      formControlName="customerAddress"
+                      required
+                      [disabled]="isCustomerAutofilled"
+                    ></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Initial Invoice Detail Section -->
+              <h5 class="section-title">Initial Invoice Detail</h5>
+              <div class="row">
+                <!-- Add dropdown for initial invoice selection -->
+                <div class="col-md-3" *ngIf="initialInvoices.length > 0">
+                  <div class="form-group">
+                    <label for="initialInvoiceNumber">Select Initial Invoice</label>
+                    <select id="initialInvoiceNumber" class="form-control" (change)="onInitialInvoiceSelected($event)">
+                      <option value="">-- Select Invoice --</option>
+                      <option *ngFor="let invoice of initialInvoices" [value]="invoice.invoiceId">
+                        {{ invoice.invoiceNo }} - {{ invoice.totalAmount }}
+                      </option>
+                    </select>
+                  </div>
+                </div>
+                
+              </div>
+
+              <!-- Display selected initial invoice details in the same row -->
+              <div *ngIf="selectedInvoice">
+                <div class="row">
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="invoiceType">Invoice Type</label>
+                      <input
+                        type="text"
+                        id="invoiceType"
+                        class="form-control"
+                        [value]="selectedInvoice.invoiceTypeId == 1 ? 'Initial Payment Invoice' : 'Invalid Invoice'"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="form-group">
+                      <label for="invoiceTotalAmount">Total Initial Amount</label>
+                      <input
+                        type="text"
+                        id="invoiceTotalAmount"
+                        class="form-control"
+                        [value]="selectedInvoice.totalAmount"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Information -->
+              <h5 class="section-title">Payment Information</h5>
+              <div class="row">
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="date">Date</label>
+                    <input
+                      type="date"
+                      id="date"
+                      class="form-control form-control-sm"
+                      formControlName="date"
+                      required
+                    />
+                  </div>
+                </div>
+                <!--
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="subTotal">SubTotal (Principal Amount)</label>
+                    <input
+                      type="number"
+                      id="subTotal"
+                      class="form-control"
+                      formControlName="subTotal"
+                      required
+                      (input)="onSubTotalOrInterestChange()"
+                    />
+                  </div>
+                </div>
+                <div class="col-md-3">
+                  <div class="form-group">
+                    <label for="interest">Interest (%)</label>
+                    <input
+                      type="number"
+                      id="interest"
+                      class="form-control"
+                      formControlName="interest"
+                      required
+                      (input)="onSubTotalOrInterestChange()"
+                    />
+                  </div>
+                </div>
+                -->
+                 <!-- Installment Number -->
+                 <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="installmentNumber">Installment Number</label>
+                    <input
+                      type="number"
+                      id="installmentNumber"
+                      class="form-control"
+                      formControlName="installmentNumber"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label for="totalAmount">Total Installment Amount</label>
+                    <input
+                      type="number"
+                      id="totalAmount"
+                      class="form-control"
+                      formControlName="totalAmount"
+                      required
+                      readonly
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+
+                <div class="d-flex justify-content-end mt-4">
+                  <button type="button" class="btn btn-secondary me-2 btn-sm" (click)="onCancel()">Cancel</button>
+                  <button type="submit" class="btn btn-primary btn-sm">{{ isEditMode ? 'Update' : 'Create' }}</button>
+                </div>
+
+              </div>
+              
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

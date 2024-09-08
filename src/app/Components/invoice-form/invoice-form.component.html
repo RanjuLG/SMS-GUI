@@ -5,7 +5,7 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h4 class="card-title mb-0">Manage Invoices</h4>
             <div>
-              <button type="button" class="btn btn-primary add-btn" routerLink="/create-invoice">
+              <button type="button" class="btn btn-primary add-btn" routerLink="/create-initial-invoice">
                 <i class="ri-add-line align-bottom me-1"></i> Create Invoice
               </button>
               <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedInvoices()">
@@ -44,9 +44,10 @@
                       </div>
                     </th>
                     <th scope="col">Invoice No.</th>
+                    <th scope="col">Invoice Type</th>
                     <th scope="col">Customer NIC</th>
-                    <th scope="col">Total Amount (Rs.)</th>
-                  <!-- <th scope="col">Payment Status</th> --> 
+                    <th scope="col">Loan Period (months)</th>
+                  <th scope="col">Payment Status</th>
                     <th scope="col">Date</th>
                     <th scope="col"></th>
                   </tr>
@@ -59,13 +60,14 @@
                       </div>
                     </td>
                     <td>{{ invoice.invoiceNo }}</td>
+                    <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
                     <td>{{ invoice.customerNIC }}</td>
-                    <td>{{ invoice.totalAmount }}</td>
-                   <!--- <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td> -->
+                    <td>{{ invoice.loanPeriod? invoice.loanPeriod:'N/A' }}</td>
+                   <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td>
                     <td>{{ invoice.dateGenerated }}</td>
                     <td>
                       <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-success" (click)="viewInvoice(invoice.invoiceId)">
+                        <button class="btn btn-sm btn-success" (click)="viewInvoice(invoice.invoiceId,invoice.invoiceTypeId)">
                           <i class="ri-eye-line align-bottom me-1"></i>
                         </button>
                         <button class="btn btn-sm btn-warning" (click)="editInvoice(invoice.invoiceId)">

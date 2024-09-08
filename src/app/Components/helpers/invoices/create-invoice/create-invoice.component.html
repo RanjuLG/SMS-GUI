@@ -5,7 +5,7 @@
         <div class="card">
           <div class="card-body">
             <div class="text-center">
-              <h4 class="text">{{ isEditMode ? 'Edit Invoice' : 'Create Invoice' }}</h4>
+              <h4 class="text">{{ isEditMode ? 'Edit Initial Payment Invoice' : 'Create Initial Payment Invoice' }}</h4>
             </div>
 
             <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="pt-4">
@@ -41,6 +41,16 @@
                   </div>
                 </div>
               </div>
+              <div class="col-md-2">
+                <div class="form-group">
+                  <label for="loanPeriod">Loan Period (months)</label>
+                  <select id="loanPeriod" class="form-control form-control-sm" formControlName="loanPeriod" required>
+                    <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">
+                      {{ period.period }}
+                    </option>
+                  </select>
+                </div>
+              </div>
 
               <!-- Item Details -->
               <h5 class="section-title">Item Details</h5>
@@ -52,7 +62,7 @@
                       <select id="itemSelection" class="form-control form-control-sm" (change)="onItemSelected($event, i)">
                         <option value="">-- Create New Item --</option>
                         <option *ngFor="let existingItem of customerItems" [value]="existingItem.itemId">
-                          {{ existingItem.itemId }} - {{ existingItem.itemDescription }}
+                          {{ existingItem.itemDescription }}
                         </option>
                       </select>
                     </div>
@@ -66,7 +76,14 @@
                   <div class="col-md-1">
                     <div class="form-group">
                       <label for="itemCaratage">Karat</label>
-                      <input type="number" step="1" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required />
+                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required>
+                        <option *ngFor="let karat of karats" [value]="karat.karatValue">
+                          {{ karat.karatValue }}K
+                        </option>
+                      </select>
+                      
+                      <!-- Show read-only input for existing items -->
+                      <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" readonly />
                     </div>
                   </div>
                   <div class="col-md-2">
@@ -103,13 +120,16 @@
                     <input type="date" id="date" class="form-control form-control-sm" formControlName="date" required />
                   </div>
                 </div>
-                <div class="col-md-3">
+               
+                
+                
+                <div class="col-md-2">
                   <div class="form-group">
                     <label for="subTotal">Subtotal</label>
                     <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal" required (input)="onSubTotalOrInterestChange()" />
                   </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                   <div class="form-group">
                     <label for="interest">Interest (%)</label>
                     <input type="number" step="0.1" id="interest" class="form-control form-control-sm" formControlName="interest" required (input)="onSubTotalOrInterestChange()" />

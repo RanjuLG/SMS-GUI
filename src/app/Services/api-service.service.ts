@@ -5,7 +5,7 @@ import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/cust
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
-import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
 import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
@@ -135,10 +135,14 @@ export class ApiService {
   }
 
 
-  //Invoices
-  createInvoice(invoiceDto: CreateInvoiceDto): Observable<any> {
+  //invoices
+
+  createInvoice(invoiceDto: CreateInvoiceDto, initialInvoiceNumber: string, installmentNumber: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.post(`${this.configService.apiUrl}/api/invoices`, invoiceDto);
+  
+    const url = `${this.configService.apiUrl}/api/invoices/${initialInvoiceNumber}/${installmentNumber}`; 
+  
+    return this.http.post(url, invoiceDto);
   }
 
   updateInvoice(invoiceId: number, invoiceDto: CreateInvoiceDto): Observable<any> {
@@ -180,6 +184,10 @@ export class ApiService {
     return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
   }
 
+  getLoanInfoByInitialInvoiceNo(invoiceNo: string): Observable<LoanInfoDto> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+    return this.http.get<LoanInfoDto>(`${this.configService.apiUrl}/api/invoices/InitialInvoice/${invoiceNo}`);
+  }
 
 
  // Transactions
@@ -355,7 +363,7 @@ deletePricing(pricingId: number): Observable<any> {
 }
 
 // Custom Operation: Get Pricings by Karat and LoanPeriod
-getPricingsByKaratAndLoanPeriod(karatId: number, loanPeriodId: number): Observable<Pricing[]> {
+getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<Pricing[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
 }

@@ -8,11 +8,12 @@ import { CustomerDto } from '../../../customer-form/customer.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { LoanPeriod, Karat } from '../../../pricing/karat-value.model';
 
 @Component({
   selector: 'app-create-invoice',
   standalone: true,
-  imports: [ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './create-invoice.component.html',
   styleUrls: ['./create-invoice.component.scss']
 })
@@ -23,7 +24,9 @@ export class CreateInvoiceComponent implements OnInit {
   isEditMode = false;
   manualTotalAmountEdit = false;
   customerItems: Item[] = [];
-  isCustomerAutofilled = false; // Array to store items for the selected customer
+  isCustomerAutofilled = false; // Flag to check if customer details are autofilled
+  loanPeriods: LoanPeriod[] = [];  // Available loan periods
+  karats: Karat[] = []; // Array to store karat values
 
   constructor(
     private fb: FormBuilder,
@@ -40,25 +43,76 @@ export class CreateInvoiceComponent implements OnInit {
       }),
       items: this.fb.array([this.createItem()]),
       date: [new Date().toISOString().substring(0, 10), Validators.required], // Set the default date to today
+      loanPeriod: [null, Validators.required], // Updated to hold loanPeriodId
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
       interest: [0, Validators.required],
-      totalAmount: [0, Validators.required]
+      totalAmount: [0, Validators.required],
+      invoiceTypeId: [1, Validators.required]
     });
-    
   }
 
   ngOnInit(): void {
+    const newItem = this.createItem();
+    this.items().push(newItem);
     if (this.invoice) {
-      
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
     }
     this.subscribeToFormChanges();
-
+  
+    // Load karat values and loan periods from API
+    this.loadKaratValues(); 
+    this.loadLoanPeriods();
+  
+    // Reset customer fields if NIC changes
     this.invoiceForm.get('customer.customerNIC')?.valueChanges.subscribe(() => {
       if (this.isCustomerAutofilled) {
         this.resetCustomerFields();
+      }
+    });
+  
+    // Subscribe to changes in gold weight, loan period, and karat
+    this.invoiceForm.get('loanPeriod')?.valueChanges.subscribe(() => {
+      this.items().controls.forEach((item, index) => {
+        this.loadPricingForNewItem(index);
+      });
+    });
+  
+    this.items().controls.forEach((item, index) => {
+      item.get('itemGoldWeight')?.valueChanges.subscribe(() => {
+        this.loadPricingForNewItem(index);
+      });
+  
+      item.get('itemCaratage')?.valueChanges.subscribe(() => {
+        this.loadPricingForNewItem(index);
+      });
+    });
+
+    this.subscribeToItemChanges(newItem);
+  }
+  
+
+  loadKaratValues(): void {
+    this.apiService.getAllKarats().subscribe({
+      next: (karats) => {
+        this.karats = karats;
+      },
+      error: (error) => {
+        console.error('Error fetching karat values:', error);
+        Swal.fire('Error', 'Failed to fetch karat values', 'error');
+      }
+    });
+  }
+
+  loadLoanPeriods(): void {
+    this.apiService.getAllLoanPeriods().subscribe({
+      next: (loanPeriods) => {
+        this.loanPeriods = loanPeriods;
+      },
+      error: (error) => {
+        console.error('Error fetching loan periods:', error);
+        Swal.fire('Error', 'Failed to fetch loan periods', 'error');
       }
     });
   }
@@ -77,8 +131,6 @@ export class CreateInvoiceComponent implements OnInit {
     return this.invoiceForm.get('items') as FormArray;
   }
 
-
-
   removeItem(index: number): void {
     if (this.items().length > 1) {
       this.items().removeAt(index);
@@ -91,7 +143,6 @@ export class CreateInvoiceComponent implements OnInit {
       });
     }
   }
-  
 
   onItemSelected(event: Event, index: number): void {
     const selectedItemId = (event.target as HTMLSelectElement).value;
@@ -106,7 +157,7 @@ export class CreateInvoiceComponent implements OnInit {
           itemGoldWeight: selectedItem.itemGoldWeight,
           itemValue: selectedItem.itemValue
         });
-  
+
         // Disable form controls for existing items
         itemFormGroup.get('itemDescription')?.disable();
         itemFormGroup.get('itemCaratage')?.disable();
@@ -121,9 +172,13 @@ export class CreateInvoiceComponent implements OnInit {
       itemFormGroup.get('itemCaratage')?.enable();
       itemFormGroup.get('itemGoldWeight')?.enable();
       itemFormGroup.get('itemValue')?.enable();
+
+
+    // Load pricing based on karat and loan period
+    this.loadPricingForNewItem(index);
     }
   }
-  
+
   addItem(): void {
     const newItem = this.createItem();
     this.items().push(newItem);
@@ -133,7 +188,6 @@ export class CreateInvoiceComponent implements OnInit {
     newItem.get('itemGoldWeight')?.enable();
     newItem.get('itemValue')?.enable();
   }
-  
 
   autofillCustomerDetails(): void {
     const nic = this.invoiceForm.get('customer.customerNIC')?.value;
@@ -185,6 +239,11 @@ export class CreateInvoiceComponent implements OnInit {
     this.addItem();
   }
 
+  isExistingItem(index: number): boolean {
+    const itemId = this.items().at(index).get('itemId')?.value;
+    return !!itemId;
+  }
+
   subscribeToFormChanges(): void {
     this.items().valueChanges.subscribe(() => {
       this.calculateSubTotal();
@@ -193,12 +252,12 @@ export class CreateInvoiceComponent implements OnInit {
 
   calculateSubTotal(): void {
     const subTotal = this.items().controls.reduce((total, item) => {
-      return total + item.get('itemValue')?.value;
+      return total + (item.get('itemValue')?.value || 0);
     }, 0);
     this.invoiceForm.get('subTotal')?.setValue(subTotal);
     this.onSubTotalOrInterestChange();
   }
-
+  
   onSubTotalOrInterestChange() {
     if (!this.manualTotalAmountEdit) {
       const subTotal = this.invoiceForm.get('subTotal')?.value;
@@ -225,6 +284,7 @@ export class CreateInvoiceComponent implements OnInit {
         if (result.isConfirmed) {
           const invoiceDto: CreateInvoiceDto = {
             ...this.invoiceForm.value,
+            loanPeriodId: this.invoiceForm.value.loanPeriod, // Attach the selected loanPeriodId
             items: this.invoiceForm.value.items.map((item: Item) => ({
               ...item,
               itemId: item.itemId || 0 // Set itemId to 0 if it's null
@@ -244,7 +304,7 @@ export class CreateInvoiceComponent implements OnInit {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto).subscribe({
+            this.apiService.createInvoice(invoiceDto,'0',0).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);
@@ -258,24 +318,16 @@ export class CreateInvoiceComponent implements OnInit {
           }
         }
       });
-    }
-    else{
-
+    } else {
       Swal.fire({
         icon: 'warning',
         title: 'Cannot Create Invoice',
         text: 'Please fill out all the fields.',
         confirmButtonText: 'OK'
       });
-
     }
   }
 
-  statusss() {
-    console.log("paymentStatus: ", this.invoiceForm.value.paymentStatus);
-  }
-
-  
   onCancel() {
     Swal.fire({
       title: 'Cancel Changes',
@@ -295,4 +347,50 @@ export class CreateInvoiceComponent implements OnInit {
       }
     });
   }
+
+
+  loadPricingForNewItem(index: number): void {
+    const itemFormGroup = this.items().at(index);
+    const karatValue = itemFormGroup.get('itemCaratage')?.value;
+    const loanPeriodId = this.invoiceForm.value.loanPeriod;
+    const goldWeight = itemFormGroup.get('itemGoldWeight')?.value;
+
+    if (!karatValue || !loanPeriodId || !goldWeight) {
+        return; // Exit if any of the values are missing
+    }
+
+    const numericKaratValue = Number(karatValue);
+    const selectedKarat = this.karats.find(k => k.karatValue === numericKaratValue);
+    const karatId = selectedKarat ? selectedKarat.karatId : null;
+
+    if (karatId && loanPeriodId && goldWeight) {
+        this.apiService.getPricingsByKaratAndLoanPeriod(karatId, loanPeriodId).subscribe({
+            next: (pricings) => {
+                if (pricings && pricings.length > 0) {
+                    const pricing = pricings[0];
+                    const itemValue = (pricing.price / 8) * goldWeight; // Example calculation
+                    itemFormGroup.patchValue({ itemValue });
+                    this.calculateSubTotal();
+                }
+            },
+            error: (error) => {
+                console.error('Error loading pricing:', error);
+                Swal.fire('Error', 'Failed to load pricing for this item', 'error');
+            }
+        });
+    }
 }
+
+private subscribeToItemChanges(item: FormGroup): void {
+  item.get('itemGoldWeight')?.valueChanges.subscribe(() => {
+      this.loadPricingForNewItem(this.items().controls.indexOf(item));
+  });
+
+  item.get('itemCaratage')?.valueChanges.subscribe(() => {
+      this.loadPricingForNewItem(this.items().controls.indexOf(item));
+  });
+}
+
+
+}
+
