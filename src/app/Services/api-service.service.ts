@@ -12,6 +12,7 @@ import { map, switchMap } from 'rxjs/operators'; // Make sure these models are c
 import { AuthService } from './auth.service';
 import { User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing } from '../Components/pricing/karat-value.model';
+import { ReportByCustomer } from '../Components/reports/reports.model';
 
 @Injectable({
   providedIn: 'root'
@@ -366,6 +367,15 @@ deletePricing(pricingId: number): Observable<any> {
 getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<Pricing[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
+}
+
+
+
+// Reports
+
+getReportByCustomer(customerNIC: any): Observable<ReportByCustomer> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<ReportByCustomer>(`${this.configService.apiUrl}/api/reports/customer/${customerNIC}`);
 }
 
 }

@@ -19,6 +19,8 @@ import { KaratValueComponent } from './Components/pricing/karat-value.component'
 import { CreateInstallmentPaymentInvoiceComponent } from './Components/helpers/invoices/create-installment-payment-invoice/create-installment-payment-invoice.component';
 import { InstallmentInvoiceTemplateComponent } from './Components/helpers/invoices/installment-invoice-template/installment-invoice-template.component';
 import { CreateSettlementInvoiceComponent } from './Components/helpers/invoices/create-settlement-invoice/create-settlement-invoice.component';
+import { ReportsComponent } from './Components/reports/reports.component';
+import { ReportByCustomerComponent } from './Components/helpers/reports/report-by-customer/report-by-customer.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -41,6 +43,10 @@ export const routes: Routes = [
     { path: 'auth/sign-up', component: SignUpComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     {path:'customers/create-customer',component: AddCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'karatages',component: KaratValueComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path:'reports',component: ReportsComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path:'by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
 
 ];
-//AddCustomerComponent
+
+
+//ReportByCustomerComponent

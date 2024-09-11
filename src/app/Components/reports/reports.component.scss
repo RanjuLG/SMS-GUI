@@ -1,0 +1,74 @@
+/* Container styling */
+.container-fluid {
+    padding: 0.5rem;
+  }
+  
+  /* Grid and card layout */
+  .card-hover {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    cursor: pointer;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    background-color: #fff;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-5px); /* Slight lift-up effect */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Card image styling */
+  .card-img-top {
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    border-bottom: 1px solid #e9ecef;
+    
+  }
+  
+  /* Card body and title */
+  .card-body {
+    padding: 0.5rem;
+    
+  }
+  
+  .card-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #333;
+  }
+  
+  /* Responsive typography */
+  h6 {
+    font-size: 0.8rem;
+    color: #495057;
+    text-align: center;
+  }
+  
+  @media (min-width: 768px) {
+    h6 {
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    h6 {
+      font-size: 1rem;
+    }
+  }
+  
+  /* Utility classes */
+  .my-4 {
+    margin-top: 0.5rem !important;
+    margin-bottom: 0.5rem !important;
+  }
+  .center-title {
+    text-align: center;
+  }
+  
+  .container-fluid{
+  
+  
+  }
