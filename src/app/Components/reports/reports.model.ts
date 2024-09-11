@@ -2,9 +2,6 @@ export interface ReportByCustomer {
     customerId: number;
     customerName: string;
     customerNIC: string;
-    totalLoanedAmount: number;
-    totalAmountPaid: number;
-    totalOutstandingAmount: number;
     loans: Loan[];
   }
   
@@ -13,6 +10,9 @@ export interface ReportByCustomer {
     transactionId: number;
     startDate: string; // ISO date string
     endDate: string; // ISO date string
+    amountPaid:number;
+    outstandingAmount:number;
+    isSettled: boolean;
     transaction: Transaction;
     installments: Installment[];
   }

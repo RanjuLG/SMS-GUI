@@ -1,113 +1,104 @@
 <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card shadow-sm">
-          <div class="card-header">
-            <h4 class="card-title mb-0">Customer Report</h4>
-          </div>
-          <div class="card-body">
-            <!-- Form for Customer NIC -->
-            <form [formGroup]="form" (ngSubmit)="onSubmit()">
-              <table class="table">
-                <tbody>
-                  <tr>
-                    <td><label for="customerNIC">Customer NIC:</label></td>
-                    <td>
-                      <input
-                        id="customerNIC"
-                        formControlName="customerNIC"
-                        class="form-control"
-                        placeholder="Enter customer NIC"
-                      />
-                    </td>
-                    <td><button type="submit" class="btn btn-primary">Get Report</button></td>
-                  </tr>
-                </tbody>
-              </table>
-            </form>
-  
-            <!-- Customer Details -->
-            <div *ngIf="report" class="mt-4">
-              <h2>Customer Details</h2>
-              <table class="table table-bordered">
-                <tbody>
-                  <tr>
-                    <td><strong>Name:</strong></td>
-                    <td>{{ report.customerName }}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>NIC:</strong></td>
-                    <td>{{ report.customerNIC }}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Total Loaned Amount:</strong></td>
-                    <td>{{ report.totalLoanedAmount | currency }}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Total Amount Paid:</strong></td>
-                    <td>{{ report.totalAmountPaid | currency }}</td>
-                  </tr>
-                  <tr>
-                    <td><strong>Total Outstanding Amount:</strong></td>
-                    <td>{{ report.totalOutstandingAmount | currency }}</td>
-                  </tr>
-                </tbody>
-              </table>
-  
-              <!-- Loans and Installments -->
-              <h3 class="mt-4">Loans</h3>
-              <div *ngFor="let loan of report.loans; let i = index">
-                <table class="table table-bordered mb-4">
-                  <thead class="thead-light">
-                    <tr (click)="toggleInstallments(i)">
-                      <th>Loan ID</th>
-                      <th>Transaction ID</th>
-                      <th>Start Date</th>
-                      <th>End Date</th>
-                      <th>Expand</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>{{ loan.loanId }}</td>
-                      <td>{{ loan.transactionId }}</td>
-                      <td>{{ loan.startDate | date }}</td>
-                      <td>{{ loan.endDate | date }}</td>
-                      <td>
-                        <button class="btn btn-link" (click)="toggleInstallments(i)">
-                          {{ showInstallments[i] ? 'Hide Installments' : 'Show Installments' }}
-                        </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-  
-                <!-- Installments (Visible Only When Toggled) -->
-                <div *ngIf="showInstallments[i]">
-                  <h4>Installments</h4>
-                  <table class="table table-bordered">
-                    <thead class="thead-light">
-                      <tr>
-                        <th>Amount Paid</th>
-                        <th>Date Paid</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr *ngFor="let installment of loan.installments">
-                        <td>{{ installment.amountPaid | currency }}</td>
-                        <td>{{ installment.datePaid | date }}</td>
-                      </tr>
-                      <tr *ngIf="loan.installments.length === 0">
-                        <td colspan="2" class="text-center">No installments yet.</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="card-title mb-0">Customer Report</h4>
+        </div>
+        <div class="card-body">
+          <!-- Form for Customer NIC -->
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mb-4">
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <input
+                  id="customerNIC"
+                  formControlName="customerNIC"
+                  class="form-control"
+                  placeholder="Enter customer NIC"
+                />
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-primary">
+                  <i class="ri-search-line align-bottom me-1"></i> Get Report
+                </button>
               </div>
             </div>
-          </div><!-- end card body -->
-        </div><!-- end card -->
-      </div><!-- end col -->
-    </div><!-- end row -->
-  </div><!-- end container-fluid -->
-  
+          </form>
+
+          <!-- Customer Details -->
+          <div *ngIf="report" class="mt-4">
+            <h6>Customer Details</h6>
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td><strong>Name:</strong></td>
+                  <td>{{ report.customerName }}</td>
+                </tr>
+                <tr>
+                  <td><strong>NIC:</strong></td>
+                  <td>{{ report.customerNIC }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- Loans Table -->
+            <h6 class="mt-4">Loans</h6>
+            <div class="table-responsive table-card mt-3 mb-1">
+              <table class="table table-hover">
+                <thead>
+                  <tr class="bg-light text-muted">
+                    <th scope="col" style="width: 50px;"></th>
+                    <th class="sort" data-sort="totalAmount">Total Amount</th>
+                    <th class="sort" data-sort="startDate">Start Date</th>
+                    <th class="sort" data-sort="endDate">End Date</th>
+                    <th class="sort" data-sort="amountPaid">Amount Paid</th>
+                    <th class="sort" data-sort="outstandingAmount">Outstanding Amount</th>
+                    <th class="sort" data-sort="isSettled">Status</th>
+                    <th class="sort"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let loan of paginatedLoans">
+                    <th scope="row"></th>
+                    <td>{{ loan.transaction.totalAmount }}</td>
+                    <td>{{ loan.startDate | date: 'shortDate' }}</td>
+                    <td>{{ loan.endDate | date: 'shortDate' }}</td>
+                    <td>{{ loan.amountPaid }}</td>
+                    <td>{{ loan.outstandingAmount }}</td>
+                    <td>
+                      <span 
+                        [ngClass]="loan.isSettled ? 'status-label status-paid' : 'status-label status-unpaid'">
+                        {{ loan.isSettled ? 'Settled' : 'Not Settled' }}
+                      </span>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-primary" (click)="openLoanModal(loan)">
+                        <i class="ri-eye-line align-bottom me-1"></i> View
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Pagination Controls -->
+           <!-- Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage" (change)="onItemsPerPageChange()">
+            <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+          </select>
+
+          <div>
+            Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ report?.loans?.length }} entries
+          </div>
+
+          <!-- Add id to pagination-controls -->
+          <pagination-controls id="loan-pagination" (pageChange)="onPageChange($event)"></pagination-controls>
+        </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

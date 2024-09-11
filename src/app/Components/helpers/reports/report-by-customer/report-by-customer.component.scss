@@ -78,5 +78,18 @@
   }
   
   
+  .status-label {
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    color: #fff;
+    font-weight: 500;
+  }
   
+  .status-paid {
+    background-color: #67b173; /* Primary color */
+  }
+  
+  .status-unpaid {
+    background-color: #f17171; /* Danger color */
+  }
   
