@@ -65,23 +65,20 @@ export class ReportByCustomerComponent implements OnInit {
   onSubmit(): void {
     const customerNIC = this.form.get('customerNIC')?.value;
     if (customerNIC) {
-      this.showConfirmation().then((result) => {
-        if (result.isConfirmed) {
-          this.getReportByCustomer(customerNIC).subscribe({
-            next: (data) => {
-              this.report = data;
-              this.error = null;
-              this.showInstallments = new Array(data.loans.length).fill(false); // Initialize the array for toggling
-              this.updatePaginatedLoans();
-              Swal.fire('Success', 'Report fetched successfully!', 'success');
-            },
-            error: (err) => {
-              console.error(err);
-              this.clearTable();
-              this.showError('Failed to fetch the report. Please check the NIC and try again.');
-            },
-          });
-        }
+      // Removed showConfirmation logic
+      this.getReportByCustomer(customerNIC).subscribe({
+        next: (data) => {
+          this.report = data;
+          this.error = null;
+          this.showInstallments = new Array(data.loans.length).fill(false); // Initialize the array for toggling
+          this.updatePaginatedLoans();
+          Swal.fire('Success', 'Report fetched successfully!', 'success');
+        },
+        error: (err) => {
+          console.error(err);
+          this.clearTable();
+          this.showError('Failed to fetch the report. Please check the NIC and try again.');
+        },
       });
     }
   }

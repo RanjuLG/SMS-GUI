@@ -43,7 +43,6 @@
                                         <th scope="col">Item Description</th>
                                         <th scope="col">Karat</th>
                                         <th scope="col">Total Gold Weight (g)</th>
-                                        <th scope="col">Amount per Karat</th>
                                         <th scope="col">Item Value</th>
                                         <th scope="col">Item Status</th>
                                         <th scope="col">Customer NIC</th>
@@ -64,14 +63,24 @@
                                         <td>{{ item.itemDescription }}</td>
                                         <td>{{ item.itemCaratage }}</td>
                                         <td>{{ item.itemGoldWeight }}</td>
-                                        <td>{{ item.amountPerCaratage }}</td>
                                         <td>{{ item.itemValue }}</td>
                                         <td>
-                                            <span 
-                                              [ngClass]="item.status === 1 ? 'status-label status-paid' : 'status-label status-unpaid'">
-                                              {{ item.status === 1 ? 'Paid' : 'Unpaid' }}
-                                            </span>
-                                          </td>
+                                            <span
+                                        [ngClass]="
+                                          item.status === 2 ? 'status-label status-redeemed' : 
+                                          item.status === 1 ? 'status-label status-in-stock' :
+                                          item.status === 3 ? 'status-label status-defaulted' :
+                                          'status-label status-unknown' 
+                                        ">
+                                        {{ 
+                                          item.status === 2 ? 'Redeemed' : 
+                                          item.status === 1 ? 'In Stock' :
+                                          item.status === 3 ? 'Defaulted' :
+                                          'Unknown Status' 
+                                        }}
+                                      </span>
+                                        </td>
+                                        
                                           
                                         <td>{{ item.customerNIC }}</td>
                                         <td>

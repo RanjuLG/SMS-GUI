@@ -63,16 +63,21 @@
 }
 
 .status-label {
-  padding: 0.2rem 0.5rem;
+  padding: 0.1rem 0.3rem; /* Reduced padding */
+  font-size: 0.8rem; /* Smaller font size */
   border-radius: 0.25rem;
   color: #fff;
   font-weight: 500;
 }
 
-.status-paid {
+.status-redeemed {
   background-color: #5b71b9; /* Primary color */
 }
 
-.status-unpaid {
-  background-color: #f56c6c; /* Danger color */
+.status-defaulted {
+  background-color: #29badb; /* Danger color */
+}
+
+.status-in-stock {
+  background-color: #67b173; /* Danger color */
 }
