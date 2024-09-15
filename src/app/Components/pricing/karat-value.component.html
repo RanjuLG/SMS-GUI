@@ -11,6 +11,10 @@
                         <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedPricings()">
                             <i class="ri-delete-bin-2-line"></i> Delete Selected
                         </button>
+                        <input type="file" id="fileInput" (change)="handleFileInput($event)" style="display: none;" accept=".xlsx, .xls, .csv" />
+                        <button type="button" class="btn btn-success ms-2" (click)="triggerFileInput()">
+                            <i class="ri-file-upload-line"></i> Upload Excel
+                        </button>
                     </div>
                 </div>
                 <div class="card-body">

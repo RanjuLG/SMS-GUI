@@ -27,6 +27,12 @@ export interface CreatePricing {
     loanPeriodId: number; // Selected Loan Period ID
 }
 
+export interface PricingBatchDTO {
+    price: number; // The price offering for this combination of Karat and LoanPeriod
+    karatValue: number; // Selected Karat ID
+    period: number; // Selected Loan Period ID
+}
+
 
 export interface EditPricing {
     price: number; // The price to be updated

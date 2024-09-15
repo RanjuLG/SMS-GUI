@@ -1,13 +1,14 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { Pricing, Karat, LoanPeriod } from './karat-value.model';
+import { Pricing, Karat, LoanPeriod, PricingBatchDTO } from './karat-value.model';
 import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
 import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 import { AddPricingComponent } from '../helpers/pricing/add-pricing/add-pricing.component';
+import * as XLSX from 'xlsx';
 
 export interface ExtendedPricingDto extends Pricing {
   selected?: boolean;
@@ -156,4 +157,61 @@ export class KaratValueComponent implements OnInit {
       this.cdr.markForCheck();
     });
   }
+
+   triggerFileInput(): void {
+        const fileInput = document.getElementById('fileInput') as HTMLInputElement;
+        fileInput.click();
+    }
+
+    handleFileInput(event: any): void {
+        const file = event.target.files[0];
+        if (file) {
+            this.readExcelFile(file);
+        }
+    }
+
+    readExcelFile(file: File): void {
+      console.log("file: ", file)
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+            const pricingBatch: PricingBatchDTO[] = [];
+
+            // Assuming the first row contains headers, skip it and parse the rows
+            (jsonData.slice(1) as any[][]).forEach((row: any[]) => {
+                const pricingDTO: PricingBatchDTO = {
+                    price: parseFloat(row[0]),   // Assuming price is in the first column
+                    karatValue: parseInt(row[1]), // Assuming karat value is in the second column
+                    period: parseInt(row[2])     // Assuming loan period is in the third column
+                };
+                pricingBatch.push(pricingDTO);
+            });
+
+            // Call the backend API to send the batch data
+            this.uploadPricingBatch(pricingBatch);
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    uploadPricingBatch(pricingBatch: PricingBatchDTO[]): void {
+      this.apiService.createPricingBatch(pricingBatch).subscribe({
+          next: (response) => {
+              Swal.fire('Success!', 'Pricings have been uploaded successfully.', 'success');
+              this.loadPricings();  // Reload pricings after upload
+              this.cdr.markForCheck();
+          },
+          error: (error) => {
+              Swal.fire('Error!', 'Failed to upload some pricings. Please check the errors.', 'error');
+              console.error(error);
+              this.loadPricings();  // Reload pricings after upload
+              this.cdr.markForCheck();
+          }
+      });
+  }
+  
 }
