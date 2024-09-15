@@ -21,6 +21,7 @@ import { InstallmentInvoiceTemplateComponent } from './Components/helpers/invoic
 import { CreateSettlementInvoiceComponent } from './Components/helpers/invoices/create-settlement-invoice/create-settlement-invoice.component';
 import { ReportsComponent } from './Components/reports/reports.component';
 import { ReportByCustomerComponent } from './Components/helpers/reports/report-by-customer/report-by-customer.component';
+import { SettlementInvoiceTemplateComponent } from './Components/helpers/invoices/settlement-invoice-template/settlement-invoice-template.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -34,6 +35,7 @@ export const routes: Routes = [
     { path: 'create-settlement-invoice', component: CreateSettlementInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'view-installment-invoice-template/:invoiceId', component: InstallmentInvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'view-settlement-invoice-template/:invoiceId', component: SettlementInvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     {path:'cash-balance',component: CashBalanceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'auth/sign-in',component: SignInComponent},
    // { path: 'login', component: LoginComponent },

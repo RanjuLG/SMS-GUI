@@ -274,6 +274,9 @@ export class InvoiceFormComponent implements OnInit {
     else if(invoiceTypeId==2){
       this.router.navigate([`/view-installment-invoice-template/${invoiceId}`]);
     }
+    else if(invoiceTypeId==3){
+      this.router.navigate([`/view-settlement-invoice-template/${invoiceId}`]);
+    }
    
   }
 
