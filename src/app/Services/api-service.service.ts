@@ -11,7 +11,8 @@ import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
 import { User, UserDTO } from '../Components/user-management/user.model';
-import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing } from '../Components/pricing/karat-value.model';
+import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
+import { ReportByCustomer } from '../Components/reports/reports.model';
 
 @Injectable({
   providedIn: 'root'
@@ -351,6 +352,10 @@ createPricing(pricing: CreatePricing): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.post(`${this.configService.apiUrl}/api/karatage/pricings`, pricing);
 }
+createPricingBatch(pricing: PricingBatchDTO[]): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.post(`${this.configService.apiUrl}/api/karatage/pricings/batch`, pricing);
+}
 
 updatePricing(pricingId: number, pricing: EditPricing): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
@@ -366,6 +371,15 @@ deletePricing(pricingId: number): Observable<any> {
 getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<Pricing[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
+}
+
+
+
+// Reports
+
+getReportByCustomer(customerNIC: any): Observable<ReportByCustomer> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<ReportByCustomer>(`${this.configService.apiUrl}/api/reports/customer/${customerNIC}`);
 }
 
 }

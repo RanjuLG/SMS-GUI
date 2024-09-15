@@ -2,27 +2,38 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
+                <div class="card-header d-flex flex-wrap justify-content-between align-items-center">
                     <h4 class="card-title mb-0">Manage Pricings</h4>
-                    <div>
-                        <button type="button" class="btn btn-primary" (click)="openAddPricingModal()">
+                    <div class="d-flex flex-wrap justify-content-end mt-2 mt-md-0">
+                        
+                        <button type="button" class="btn btn-primary ms-2 mb-2 mb-md-0" (click)="openAddPricingModal()">
                             <i class="ri-add-line align-bottom me-1"></i> Add Pricing
                         </button>
-                        <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedPricings()">
+                        <input type="file" id="fileInput" (change)="handleFileInput($event)" style="display: none;" accept=".xlsx, .xls, .csv" />
+                        <button type="button" class="btn btn-success ms-2 mb-2 mb-md-0" (click)="triggerFileInput()">
+                            <i class="ri-file-upload-line"></i>Batch Upload
+                        </button>
+                        <button type="button" class="btn btn-info ms-2 mb-2 mb-md-0" (click)="downloadExcelTemplate()">
+                            <i class="ri-download-line"></i> Download Template
+                        </button>
+                        <button type="button" class="btn btn-danger ms-2 mb-2 mb-md-0" (click)="deleteSelectedPricings()">
                             <i class="ri-delete-bin-2-line"></i> Delete Selected
                         </button>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row mb-3 align-items-center">
+                        <div class="col-md-8 d-flex align-items-center">
+                            <input type="text" class="form-control search-karat" id="searchKarat" 
+                               placeholder="Search by Karat Value..." [formControl]="searchControl" />
+                        </div>
                         <div class="table-responsive table-card mt-3 mb-1">
                             <table class="table table-hover">
                                 <thead>
                                     <tr class="bg-light text-muted">
                                         <th scope="col">
                                             <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="checkAll"
-                                                    (change)="toggleAllSelections($event)">
+                                                <input class="form-check-input" type="checkbox" id="checkAll" (change)="toggleAllSelections($event)">
                                             </div>
                                         </th>
                                         <th scope="col">Karat</th>
@@ -45,12 +56,12 @@
                                             <div class="d-flex gap-2">
                                                 <div class="edit">
                                                     <button class="btn btn-sm btn-warning" (click)="editPricing(pricing)">
-                                                        <i class="ri-edit-box-line align-bottom me-1"></i> Edit
+                                                        <i class="ri-edit-box-line align-bottom me-1"></i>
                                                     </button>
                                                 </div>
                                                 <div class="remove">
                                                     <button class="btn btn-sm btn-danger" (click)="deletePricing(pricing.pricingId)">
-                                                        <i class="ri-delete-bin-line align-bottom me-1"></i> Delete
+                                                        <i class="ri-delete-bin-line align-bottom me-1"></i>
                                                     </button>
                                                 </div>
                                             </div>
@@ -59,18 +70,15 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            
-                            <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
-                                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}
-                                </option>
+                        <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mb-3">
+                            <select id="itemsPerPage" class="form-select mb-2 mb-md-0" [(ngModel)]="itemsPerPage">
+                                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
                             </select>
-                        
-                        <div>
-                            Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ pricings.length }} entries
+                            <div>
+                                Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ pricings.length }} entries
+                            </div>
+                            <pagination-controls class="mt-2 mt-md-0" (pageChange)="page = $event"></pagination-controls>
                         </div>
-                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
-                    </div>
                     </div>
                 </div>
             </div>

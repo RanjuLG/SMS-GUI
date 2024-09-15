@@ -1,7 +1,7 @@
 import { Component, Input, Output, EventEmitter, ChangeDetectorRef, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
-import { CommonModule } from '@angular/common';  // Added for ngFor directive support
+import { CommonModule } from '@angular/common';  
 import { Pricing, Karat, LoanPeriod } from '../../../pricing/karat-value.model';
 import { ApiService } from '../../../../Services/api-service.service';
 import Swal from 'sweetalert2';
@@ -10,7 +10,7 @@ import { forkJoin } from 'rxjs';
 @Component({
   selector: 'app-add-pricing',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],  // Added CommonModule for ngFor
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './add-pricing.component.html',
   styleUrls: ['./add-pricing.component.scss']
 })
@@ -31,13 +31,10 @@ export class AddPricingComponent implements OnInit {
   ngOnInit() {
     this.initForm();
   
-    // Load dropdown data and disable controls if editing
     if (this.pricing) {
       this.loadDropdownData(() => {
-        // Ensure that this.pricing is not null before patching values
         if (this.pricing) {
           this.pricingForm.patchValue(this.pricing);
-          // Disable the dropdowns if editing
           this.pricingForm.controls['karatId'].disable();
           this.pricingForm.controls['loanPeriodId'].disable();
         }
@@ -46,7 +43,6 @@ export class AddPricingComponent implements OnInit {
       this.loadDropdownData();
     }
   }
-  
 
   initForm() {
     this.pricingForm = this.fb.group({
@@ -65,10 +61,8 @@ export class AddPricingComponent implements OnInit {
         this.karats = result.karats;
         this.loanPeriods = result.loanPeriods;
 
-        // Trigger change detection to ensure UI is updated
         this.cdr.detectChanges();
 
-        // Execute the callback if provided (used for patching values after loading dropdown data)
         if (callback) callback();
       },
       error: (error) => {
@@ -93,7 +87,7 @@ export class AddPricingComponent implements OnInit {
           if (this.pricing) {
             this.apiService.updatePricing(this.pricing.pricingId, { price: pricingData.price }).subscribe({
               next: (response) => {
-                this.savePricing.emit(response); // Emit event after updating
+                this.savePricing.emit(response);
                 this.activeModal.close();
               },
               error: () => Swal.fire('Error', 'Failed to save changes. Please try again.', 'error')
@@ -101,7 +95,7 @@ export class AddPricingComponent implements OnInit {
           } else {
             this.apiService.createPricing(pricingData).subscribe({
               next: (response) => {
-                this.savePricing.emit(response); // Emit event after adding
+                this.savePricing.emit(response);
                 this.activeModal.close();
               },
               error: () => Swal.fire('Error', 'Failed to add pricing. Please try again.', 'error')

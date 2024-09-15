@@ -1,0 +1,67 @@
+<!-- Loan Info Modal -->
+<div class="modal-header">
+    <h5 class="modal-title">Loan Information</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+<div class="modal-body">
+    <div *ngIf="loan">
+        <h5 class="section-title">Loan Details</h5>
+        <table class="table table-bordered">
+            <tbody>
+                <tr>
+                    <td><strong>Loan Amount:</strong></td>
+                    <td>{{ loan.transaction.totalAmount }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Start Date:</strong></td>
+                    <td>{{ loan.startDate | date }}</td>
+                </tr>
+                <tr>
+                    <td><strong>End Date:</strong></td>
+                    <td>{{ loan.endDate | date }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Amount Paid:</strong></td>
+                    <td>{{ loan.amountPaid }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Outstanding Amount:</strong></td>
+                    <td>{{ loan.outstandingAmount }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Loan Status:</strong></td>
+                    <td>
+                        <span [ngClass]="loan.isSettled ? 'badge bg-success' : 'badge bg-danger'">
+                            {{ loan.isSettled ? 'Settled' : 'Not Settled' }}
+                        </span>
+                    </td>
+
+
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Installments Section -->
+        <h5 class="section-title">Installments</h5>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Amount Paid</th>
+                    <th>Date Paid</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let installment of loan.installments">
+                    <td>{{ installment.amountPaid }}</td>
+                    <td>{{ installment.datePaid | date }}</td>
+                </tr>
+                <tr *ngIf="loan.installments.length === 0">
+                    <td colspan="2" class="text-center">No installments paid yet.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="onCancel()">Close</button>
+</div>
