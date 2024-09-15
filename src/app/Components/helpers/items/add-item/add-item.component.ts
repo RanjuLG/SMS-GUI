@@ -22,7 +22,6 @@ export class AddItemComponent implements OnInit {
       itemDescription: ['', Validators.required],
       itemCaratage: ['', Validators.required],
       itemGoldWeight: ['', Validators.required],
-      amountPerCaratage: ['', Validators.required],
       itemValue: [{ value: ''}, Validators.required],
       customerNIC: ['', Validators.required],
       status: ['', Validators.required]
@@ -65,8 +64,10 @@ export class AddItemComponent implements OnInit {
         confirmButtonText: 'Yes, save',
         cancelButtonText: 'Cancel'
       }).then((result) => {
+        console.log("results: ",result)
         if (result.isConfirmed) {
           const itemDto: CreateItemDto = this.itemForm.getRawValue();
+          console.log("itemDto: ",itemDto)
           if (this.item) {
             this.apiService.updateItem(this.item.itemId, itemDto).subscribe({
               next: (response: any) => {

@@ -100,8 +100,6 @@ export class CustomerFormComponent implements OnInit {
   
 
   loadCustomers(): void {
-    console.log("$",this.from)
-    console.log("$$",this.to)
     this.apiService.getCustomers(this.from, this.to).subscribe({
       next: (customers: ExtendedCustomerDto[]) => {
         this.customers = customers.map(customer => ({
@@ -110,7 +108,6 @@ export class CustomerFormComponent implements OnInit {
           selected: false
         }));
         this.cdr.markForCheck(); // Trigger change detection
-        console.log(this.customers);
       },
       error: (error: any) => {
         console.error('Failed to load customers', error);
@@ -123,14 +120,29 @@ export class CustomerFormComponent implements OnInit {
   }
 
   editCustomer(customer: ExtendedCustomerDto): void {
-    const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
-    modalRef.componentInstance.customer = { ...customer };
-    modalRef.componentInstance.saveCustomer.subscribe((updatedCustomer: ExtendedCustomerDto) => {
-      // Update the local customers array or reload customers from API
-      this.loadCustomers(); // Reload customers after editing
-      Swal.fire('Updated!', 'Customer has been updated.', 'success');
+    Swal.fire({
+      title: 'Edit Customer',
+      text: `Are you sure you want to edit customer '${customer.customerName}'?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#007bff',
+      confirmButtonText: 'Yes, edit it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
+        modalRef.componentInstance.customer = { ...customer };
+        modalRef.componentInstance.saveCustomer.subscribe((updatedCustomer: ExtendedCustomerDto) => {
+          // Update the local customers array or reload customers from API
+          this.loadCustomers(); // Reload customers after editing
+          Swal.fire('Updated!', 'Customer has been updated.', 'success');
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Customer editing cancelled.', 'info');
+      }
     });
   }
+  
 
   removeCustomer(customer: ExtendedCustomerDto): void {
     Swal.fire({

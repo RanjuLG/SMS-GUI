@@ -1,0 +1,89 @@
+<div class="row justify-content-center" id="printable-template">
+    <div class="col-xxl-11">
+      <div class="card" id="receipt">
+        <div class="row">
+          <div class="col-lg-12">
+            <div class="card-header border-bottom-dashed p-4 text-center">
+              <div class="row">
+                <div class="col-lg-4 text-start">
+                  <p class="text-muted text-uppercase fw-semibold">Date</p>
+                  <h6 class="text-muted"><span id="receipt-date">{{dateGenerated}}</span></h6>
+                  <p class="text-muted text-uppercase fw-semibold">Invoice No</p>
+                  <h6 class="text-muted"><span id="receipt-no">{{invoice?.invoiceNo}}</span></h6>
+                </div>
+                <div class="col-lg-4 text-center">
+                  <h5 class="text-muted text-uppercase fw-semibold">Gold Cash <h6>(Pvt) Ltd.</h6></h5>
+                </div>
+                <div class="col-lg-4 text-end">
+                  <p class="text-muted mb-0">Legal Registration No: <span id="legal-register-no">987654</span></p>
+                  <p class="text-muted mb-0">Email: <span id="email">goldcash#gmail.com</span></p>
+                  <p class="text-muted mb-0">Contact No: <span id="contact-no">+(94) 81 222 1234</span></p>
+                  <p class="text-muted">Address: <span id="address-details">Muruthalawa, Sri Lanka</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="card-body p-4">
+              <div class="row">
+                <div class="col-lg-4">
+                  <p class="text-muted text-uppercase fw-semibold">Customer Information</p>
+                  <p class="fw-medium mb-1">{{customer?.customerName}}</p>
+                  <p class="text-muted mb-1">{{customer?.customerAddress}}</p>
+                  <p class="text-muted mb-1">NIC: {{customer?.customerNIC}}</p>
+                  <p class="text-muted mb-1">Phone: {{customer?.customerContactNo}}</p>
+                </div>
+                <div class="col-lg-8">
+                  <div class="border-top-dashed mt-3">
+                    <table class="table table-borderless table-nowrap align-middle ms-auto" style="width:250px">
+                      <tbody>
+                        <tr>
+                          <td>Sub Total</td>
+                          <td class="text-end">{{transaction?.subTotal}}</td>
+                        </tr>
+                        <tr>
+                          <td>Interest (%)</td>
+                          <td class="text-end">{{transaction?.interestRate}}</td>
+                        </tr>
+                        <tr class="border-top border-top-dashed fs-15">
+                          <th scope="row">Total Amount</th>
+                          <th class="text-end">{{transaction?.totalAmount}}</th>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-12">
+            <div class="card-body p-4">
+              <div class="mt-4">
+                <div class="row text-center">
+                  <div class="col-md-4">
+                    <hr>
+                    <p class="text-muted mb-0"><strong>Cashier's Signature</strong></p>
+                  </div>
+                  <div class="col-md-4">
+                    <hr>
+                    <p class="text-muted mb-0"><strong>Manager's Signature</strong></p>
+                  </div>
+                  <div class="col-md-4">
+                    <hr>
+                    <p class="text-muted mb-0"><strong>Customer's Signature</strong></p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-11">
+    <div class="hstack gap-2 justify-content-end d-print-none mt-4">
+      <button class="btn btn-sm btn-success" (click)="printTemplate()"><i class="ri-printer-line align-bottom me-1"></i> Print</button>
+      <button class="btn btn-sm btn-primary" (click)="downloadTemplate()"><i class="ri-download-2-line align-bottom me-1"></i> Download</button>
+    </div>
+  </div>
+  

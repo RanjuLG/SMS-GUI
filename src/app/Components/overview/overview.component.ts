@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import {RouterLink} from '@angular/router'
+import {RouterLink} from '@angular/router';
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 

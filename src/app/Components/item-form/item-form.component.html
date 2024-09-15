@@ -17,7 +17,7 @@
                     <div class="row mb-3 align-items-center">
                       <div class="col-md-8 d-flex align-items-center">
                             <mat-form-field class="small-date-range me-2">
-                                <mat-label>Enter a date range</mat-label>
+                                <mat-label>Select a date range</mat-label>
                                 <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
                                   <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
                                   <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
@@ -41,9 +41,8 @@
                                         <th scope="col">Added Date</th>
                                         <th scope="col">Item Number</th>
                                         <th scope="col">Item Description</th>
-                                        <th scope="col">Karatage</th>
+                                        <th scope="col">Karat</th>
                                         <th scope="col">Total Gold Weight (g)</th>
-                                        <th scope="col">Amount per Karatage</th>
                                         <th scope="col">Item Value</th>
                                         <th scope="col">Item Status</th>
                                         <th scope="col">Customer NIC</th>
@@ -64,11 +63,25 @@
                                         <td>{{ item.itemDescription }}</td>
                                         <td>{{ item.itemCaratage }}</td>
                                         <td>{{ item.itemGoldWeight }}</td>
-                                        <td>{{ item.amountPerCaratage }}</td>
                                         <td>{{ item.itemValue }}</td>
                                         <td>
-                                            <span class="badge badge-danger">Test Badge</span>
+                                            <span
+                                        [ngClass]="
+                                          item.status === 2 ? 'status-label status-redeemed' : 
+                                          item.status === 1 ? 'status-label status-in-stock' :
+                                          item.status === 3 ? 'status-label status-defaulted' :
+                                          'status-label status-unknown' 
+                                        ">
+                                        {{ 
+                                          item.status === 2 ? 'Redeemed' : 
+                                          item.status === 1 ? 'In Stock' :
+                                          item.status === 3 ? 'Defaulted' :
+                                          'Unknown Status' 
+                                        }}
+                                      </span>
                                         </td>
+                                        
+                                          
                                         <td>{{ item.customerNIC }}</td>
                                         <td>
                                             <div class="d-flex gap-2">

@@ -15,6 +15,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import {RouterLink} from '@angular/router'
 
 export interface ExtendedInvoiceDto extends InvoiceDto {
   selected?: boolean;
@@ -31,7 +32,8 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
     MatDatepickerModule,
     MatHint,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    RouterLink
   ],
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],
@@ -155,21 +157,37 @@ export class InvoiceFormComponent implements OnInit {
     window.open(url, '_blank', 'noopener,noreferrer');
   }
   
-  editInvoice(invoiceId: number) {
-    this.apiService.getInvoiceById(invoiceId).subscribe(invoice => {
-      const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
-      modalRef.componentInstance.invoice = invoice;
-      modalRef.result.then((result) => {
-        if (result === 'submitted') {
-          this.loadInvoices();
-        }
-      }).catch((error) => {
-        console.error('Modal dismissed:', error);
-      });
-    }, error => {
-      console.error('Error fetching invoice:', error);
+  editInvoice(invoiceId: number): void {
+    Swal.fire({
+      title: 'Edit Invoice',
+      text: `Are you sure you want to edit this invoice?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#007bff',
+      confirmButtonText: 'Yes, edit it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.getInvoiceById(invoiceId).subscribe(invoice => {
+          const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
+          modalRef.componentInstance.invoice = invoice;
+          modalRef.result.then((result) => {
+            if (result === 'submitted') {
+              this.loadInvoices();
+              Swal.fire('Updated!', 'Invoice has been updated.', 'success');
+            }
+          }).catch((error) => {
+            console.error('Modal dismissed:', error);
+          });
+        }, error => {
+          console.error('Error fetching invoice:', error);
+        });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        Swal.fire('Cancelled', 'Invoice editing cancelled.', 'info');
+      }
     });
   }
+  
 
   deleteInvoice(invoiceId: number) {
     console.log("invo id: ",invoiceId )
@@ -249,6 +267,18 @@ export class InvoiceFormComponent implements OnInit {
   viewInvoiceTemplate() {
     this.router.navigate(['/view-invoice-template/37']);
   }
+  viewInvoice(invoiceId: number,invoiceTypeId:number) {
+    if(invoiceTypeId == 1){
+      this.router.navigate([`/view-invoice-template/${invoiceId}`]);
+    }
+    else if(invoiceTypeId==2){
+      this.router.navigate([`/view-installment-invoice-template/${invoiceId}`]);
+    }
+    else if(invoiceTypeId==3){
+      this.router.navigate([`/view-settlement-invoice-template/${invoiceId}`]);
+    }
+   
+  }
 
   onStartDateChange(event: any): void{
     this.from = new Date(event.value)
@@ -274,4 +304,14 @@ export class InvoiceFormComponent implements OnInit {
     }
     this.cdr.markForCheck();
   }
+  
+  getInvoiceType(invoiceTypeId: number): string {
+    switch (invoiceTypeId) {
+      case 1: return 'Initial Pawn Invoice';
+      case 2: return 'Installment Payment Invoice';
+      case 3: return 'Settlement Invoice';
+      default: return 'N/A';
+    }
+  }
+  
 }

@@ -1,51 +1,86 @@
-.position-content {
-    padding-bottom: 2px;
+.navbar {
+  height: 60px; 
+  background-color: #ffffff; 
+  margin-bottom: 1%;
+  box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2);
+}
+
+.navbar-brand img.navbar-logo {
+  height: 50px; 
+  width: auto; 
+  vertical-align: middle; 
+}
+
+.user-logo {
+  width: 40px;
+  height: 40px;
+}
+
+.text-style {
+  color: #d4af37; 
+  font-size: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.nav-item {
+  font-size: 1rem;
+  margin: 10px;
+}
+
+.nav-link {
+  color: #d4af37;
+  font-size: 0.9rem;
+}
+
+.nav-icon {
+  margin-right: 5px;
+}
+
+/* Dropdown hover */
+.navbar-nav .dropdown:hover .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+.dropdown-menu .dropdown-item {
+  color: #6c757d;
+}
+
+.dropdown-menu .dropdown-item:hover {
+  color: #343a40;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .navbar-brand {
+    font-size: 1.25rem;
   }
   
-  .navbar {
-    height: 60px; /* Set the desired height for the navbar */
-    background-color: #ffffff; /* Dark blue background */
-    /*border-radius: 5px;  Rounded corners */
-    margin-bottom: 1%;
-    box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2);
+  .navbar-logo {
+    height: 40px;
   }
-  
-  .navbar-brand img.navbar-logo {
-    height: 100%; /* Make the image height 100% of the navbar height */
-    width: auto; /* Maintain the aspect ratio */
-    vertical-align: middle; /* Center the image vertically */
-    height: 90px;
+
+  .user-logo {
+    width: 35px;
+    height: 35px;
   }
-  
-  .active-link {
-   /* background-color: #002147;  Golden yellow background for active link */
-    color: #0059ff !important; /* Dark blue text color */
-    border-radius: 4px; /* Rounded corners for active link */
-    display: inline-block; /* Ensure the background only covers the text */
+}
+
+@media (max-width: 576px) {
+  .navbar-brand {
+    font-size: 1rem;
   }
-  
-  .text-style {
-    color: #d4af37; /* Golden yellow text color */
-    font-size: xx-large;
-    font-family: poppins;
-  }
-  
+
   .nav-item {
-    font-size: larger;
-    margin: 10px;
+    margin: 5px 0;
   }
-  
-  .nav-link {
-    color: #d4af37;
-    font-size: 0.9rem;     
+
+  .user-logo {
+    width: 30px;
+    height: 30px;
   }
-  
-  .btn{
-    color: #002147;
+
+  .navbar-nav .nav-link {
+    font-size: 0.8rem;
   }
-  
-  .nav-icon {
-    margin-right: 5px; /* Space between icon and text */
-  }
-  
-  
+}

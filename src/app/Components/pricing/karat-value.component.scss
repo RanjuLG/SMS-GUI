@@ -1,0 +1,51 @@
+.card {
+  border-radius: 0.5rem;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.table thead th {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+.table tbody tr:hover {
+  background-color: #f1f3f5;
+}
+
+.btn {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.form-select {
+  max-width: 100px;
+}
+.search-karat {
+  width: 225px; /* Set width independently */
+}
+
+@media (max-width: 576px) {
+  .table-responsive {
+      overflow-x: scroll;
+  }
+
+  .card-header .btn {
+      width: 100%; /* Buttons take full width on mobile */
+      margin-bottom: 0.5rem;
+  }
+
+  .d-flex {
+      flex-direction: column; /* Buttons stack vertically on small screens */
+  }
+}
+
+@media (min-width: 768px) {
+  .form-select {
+      max-width: 150px;
+  }
+}

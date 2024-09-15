@@ -1,0 +1,29 @@
+<div class="modal-header">
+    <h5 class="modal-title">Edit User</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+<div class="modal-body">
+    <form [formGroup]="userForm" (ngSubmit)="onSubmit()">
+        <div class="mb-3">
+            <label for="userName" class="form-label">Name</label>
+            <input type="text" id="userName" formControlName="userName" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="userEmail" class="form-label">Email</label>
+            <input type="email" id="userEmail" formControlName="email" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label for="role-input" class="form-label">Role</label>
+            <select class="form-select" id="role-input" formControlName="roles">
+                <option value="Admin">Admin</option> <!-- Capital "A" -->
+                <option value="Cashier">Cashier</option> <!-- Capital "C" -->
+            </select>            
+            
+        </div>
+        <div class="modal-footer">
+            <div class="hstack gap-2 justify-content-end">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </form>
+</div>

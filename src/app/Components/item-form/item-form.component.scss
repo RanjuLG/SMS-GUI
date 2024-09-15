@@ -62,3 +62,22 @@
   width: 100%; /* Ensure date range picker takes full width of its container */
 }
 
+.status-label {
+  padding: 0.1rem 0.3rem; /* Reduced padding */
+  font-size: 0.8rem; /* Smaller font size */
+  border-radius: 0.25rem;
+  color: #fff;
+  font-weight: 500;
+}
+
+.status-redeemed {
+  background-color: #5b71b9; /* Primary color */
+}
+
+.status-defaulted {
+  background-color: #29badb; /* Danger color */
+}
+
+.status-in-stock {
+  background-color: #67b173; /* Danger color */
+}
