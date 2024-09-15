@@ -49,7 +49,26 @@ export class KaratValueComponent implements OnInit {
     this.loadKarats();
     this.loadLoanPeriods();
     this.loadPricings();
+    // Subscribe to search changes to filter pricings by karat value
+    this.searchControl.valueChanges.subscribe((searchTerm: string) => {
+      this.filterPricingsByKarat(searchTerm);
+  });
   }
+  filterPricingsByKarat(searchTerm: string): void {
+    if (!searchTerm) {
+        // If no search term, load all pricings
+        this.loadPricings();
+        return;
+    }
+
+    const searchValue = parseInt(searchTerm, 10);
+
+    // Filter pricings based on karat value
+    this.apiService.getAllPricings().subscribe((data) => {
+        this.pricings = data.filter((pricing) => pricing.karat?.karatValue === searchValue);
+        this.cdr.markForCheck();
+    });
+}
 
   loadKarats(): void {
     this.apiService.getAllKarats().subscribe((data) => {

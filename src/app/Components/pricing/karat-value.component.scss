@@ -25,6 +25,9 @@
 .form-select {
   max-width: 100px;
 }
+.search-karat {
+  width: 225px; /* Set width independently */
+}
 
 @media (max-width: 576px) {
   .table-responsive {
