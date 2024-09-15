@@ -9,6 +9,7 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import Swal from 'sweetalert2';
 import { AddPricingComponent } from '../helpers/pricing/add-pricing/add-pricing.component';
 import * as XLSX from 'xlsx';
+import * as FileSaver from 'file-saver';
 
 export interface ExtendedPricingDto extends Pricing {
   selected?: boolean;
@@ -164,11 +165,24 @@ export class KaratValueComponent implements OnInit {
     }
 
     handleFileInput(event: any): void {
-        const file = event.target.files[0];
-        if (file) {
-            this.readExcelFile(file);
-        }
-    }
+      const file = event.target.files[0];
+      if (file) {
+          Swal.fire({
+              title: 'Confirm Upload',
+              text: `You are about to upload ${file.name}. Are you sure?`,
+              icon: 'question',
+              showCancelButton: true,
+              confirmButtonColor: '#3085d6',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'Yes, upload!'
+          }).then((result) => {
+              if (result.isConfirmed) {
+                  this.readExcelFile(file); // Proceed with reading the file
+              }
+          });
+      }
+  }
+  
 
     readExcelFile(file: File): void {
       console.log("file: ", file)
@@ -213,5 +227,25 @@ export class KaratValueComponent implements OnInit {
           }
       });
   }
-  
+  downloadExcelTemplate(): void {
+    // Define the template data
+    const templateData = [
+      ['Price', 'Karat Value', 'Loan Period (months)'],  // Header row
+      [1000, 22, 12],  // Example row
+      [1500, 24, 6],   // Example row
+    ];
+
+    // Create a new workbook and worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Template');
+
+    // Create a blob from the workbook
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+
+    // Use FileSaver to save the file
+    FileSaver.saveAs(blob, 'Pricing_Template.xlsx');
+  }
+
 }
