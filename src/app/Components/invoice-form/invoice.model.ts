@@ -81,6 +81,7 @@ export interface Item {
     paymentStatus: boolean; // Changed to boolean for better clarity
     subTotal: number;
     interest: number;
+    interestAmount: number;
     totalAmount: number;
     loanPeriod: number;
   }

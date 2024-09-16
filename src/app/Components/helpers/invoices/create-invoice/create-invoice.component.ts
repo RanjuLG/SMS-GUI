@@ -46,7 +46,7 @@ export class CreateInvoiceComponent implements OnInit {
       loanPeriod: [null, Validators.required], // Updated to hold loanPeriodId
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
-      interest: [0, Validators.required],
+      interestRate: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [1, Validators.required]
     });
@@ -81,11 +81,11 @@ export class CreateInvoiceComponent implements OnInit {
   
     this.items().controls.forEach((item, index) => {
       item.get('itemGoldWeight')?.valueChanges.subscribe(() => {
-        this.loadPricingForNewItem(index);
+        setTimeout(() => this.loadPricingForNewItem(index), 100); // Wait for value to update
       });
-  
+    
       item.get('itemCaratage')?.valueChanges.subscribe(() => {
-        this.loadPricingForNewItem(index);
+        setTimeout(() => this.loadPricingForNewItem(index), 100);
       });
     });
 
@@ -257,15 +257,25 @@ export class CreateInvoiceComponent implements OnInit {
     this.invoiceForm.get('subTotal')?.setValue(subTotal);
     this.onSubTotalOrInterestChange();
   }
-  
   onSubTotalOrInterestChange() {
     if (!this.manualTotalAmountEdit) {
-      const subTotal = this.invoiceForm.get('subTotal')?.value;
-      const interest = this.invoiceForm.get('interest')?.value;
-      const totalAmount = subTotal + (subTotal * interest / 100);
+      const subTotalValue = this.invoiceForm.get('subTotal')?.value;
+      const interestRateValue = this.invoiceForm.get('interestRate')?.value;
+  
+      // Convert to numbers
+      const subTotal = parseFloat(subTotalValue) || 0;
+      const interestRate = parseFloat(interestRateValue) || 0;
+  
+      console.log("interestRate: ", interestRate);
+      console.log("subTotal: ", subTotal);
+  
+      const totalAmount = subTotal + (subTotal * interestRate / 100);
+      console.log("totalAmount: ", totalAmount);
+  
       this.invoiceForm.patchValue({ totalAmount });
     }
   }
+  
 
   onTotalAmountChange() {
     this.manualTotalAmountEdit = true;
@@ -355,29 +365,37 @@ export class CreateInvoiceComponent implements OnInit {
     const loanPeriodId = this.invoiceForm.value.loanPeriod;
     const goldWeight = itemFormGroup.get('itemGoldWeight')?.value;
 
-    if (!karatValue || !loanPeriodId || !goldWeight) {
-        return; // Exit if any of the values are missing
-    }
+    console.log("KaratValue:", karatValue); // Debugging
+    console.log("LoanPeriodId:", loanPeriodId); // Debugging
+    console.log("GoldWeight:", goldWeight); // Debugging
+    
+    if (!karatValue || karatValue <= 0 || !goldWeight || goldWeight <= 0 || !loanPeriodId) {
+      console.warn("Missing or invalid values:", { karatValue, goldWeight, loanPeriodId });
+      return; // Stop execution if values are not valid
+  }
 
     const numericKaratValue = Number(karatValue);
     const selectedKarat = this.karats.find(k => k.karatValue === numericKaratValue);
     const karatId = selectedKarat ? selectedKarat.karatId : null;
 
     if (karatId && loanPeriodId && goldWeight) {
-        this.apiService.getPricingsByKaratAndLoanPeriod(karatId, loanPeriodId).subscribe({
-            next: (pricings) => {
-                if (pricings && pricings.length > 0) {
-                    const pricing = pricings[0];
-                    const itemValue = (pricing.price / 8) * goldWeight; // Example calculation
-                    itemFormGroup.patchValue({ itemValue });
-                    this.calculateSubTotal();
-                }
-            },
-            error: (error) => {
-                console.error('Error loading pricing:', error);
-                Swal.fire('Error', 'Failed to load pricing for this item', 'error');
-            }
-        });
+      this.apiService.getPricingsByKaratAndLoanPeriod(karatId, loanPeriodId).subscribe({
+        next: (pricings) => {
+          if (pricings && pricings.length > 0) {
+            const pricing = pricings[0];
+            const itemValue = (pricing.price / 8) * goldWeight;
+            itemFormGroup.patchValue({ itemValue: itemValue.toFixed(2) });
+            
+          } else {
+            console.warn("No pricing available for the selected karat and loan period.");
+          }
+        },
+        error: (error) => {
+          console.error("Error fetching pricing data:", error);
+          Swal.fire('Error', 'Failed to load pricing data.', 'error');
+        }
+      });
+      console.log("itemValue: ",itemFormGroup.get('itemValue')?.value)
     }
 }
 
