@@ -5,7 +5,7 @@ import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/cust
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
-import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
 import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
@@ -175,9 +175,9 @@ export class ApiService {
     return this.http.delete(`${this.configService.apiUrl}/api/invoices/delete-multiple`, { body: invoiceIds });
   }
 
-  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto[]> {
+  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto2[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
+    return this.http.get<InvoiceDto2[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
   }
 
   getInvoiceByInvoiceNo(invoiceNo: string): Observable<InvoiceDto[]> {

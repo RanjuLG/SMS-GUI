@@ -92,7 +92,7 @@
               <!-- Display selected initial invoice details in the same row -->
               <div *ngIf="selectedInvoice">
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-3">
                     <div class="form-group">
                       <label for="invoiceType">Invoice Type</label>
                       <input
@@ -104,9 +104,33 @@
                       />
                     </div>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-3">
                     <div class="form-group">
-                      <label for="invoiceTotalAmount">Total Initial Amount</label>
+                      <label for="invoicePrincipleAmount">Principle Loan Amount</label>
+                      <input
+                        type="text"
+                        id="invoicePrincipleAmount"
+                        class="form-control"
+                        [value]="selectedInvoice.principleAmount"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="invoiceInterestAmount">Interest Amount</label>
+                      <input
+                        type="text"
+                        id="invoiceInterestAmount"
+                        class="form-control"
+                        [value]="selectedInvoice.interestAmount"
+                        readonly
+                      />
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-group">
+                      <label for="invoiceTotalAmount">Total Loan Amount</label>
                       <input
                         type="text"
                         id="invoiceTotalAmount"
@@ -134,10 +158,10 @@
                     />
                   </div>
                 </div>
-                <!--
+             
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label for="subTotal">SubTotal (Principal Amount)</label>
+                    <label for="subTotal">Principal Amount</label>
                     <input
                       type="number"
                       id="subTotal"
@@ -150,32 +174,17 @@
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label for="interest">Interest (%)</label>
+                    <label for="interestAmount">Interest Amount</label>
                     <input
                       type="number"
-                      id="interest"
+                      id="interestAmount"
                       class="form-control"
-                      formControlName="interest"
+                      formControlName="interestAmount"
                       required
                       (input)="onSubTotalOrInterestChange()"
                     />
                   </div>
                 </div>
-                -->
-                 <!-- Installment Number -->
-                 <div class="col-md-4">
-                  <div class="form-group">
-                    <label for="installmentNumber">Installment Number</label>
-                    <input
-                      type="number"
-                      id="installmentNumber"
-                      class="form-control"
-                      formControlName="installmentNumber"
-                      required
-                    />
-                  </div>
-                </div>
-
                 <div class="col-md-4">
                   <div class="form-group">
                     <label for="totalAmount">Total Installment Amount</label>
@@ -184,8 +193,8 @@
                       id="totalAmount"
                       class="form-control"
                       formControlName="totalAmount"
-                      required
                       readonly
+                      required
                     />
                   </div>
                 </div>

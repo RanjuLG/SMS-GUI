@@ -47,6 +47,7 @@ export class CreateInvoiceComponent implements OnInit {
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
       interestRate: [0, Validators.required],
+      interestAmount: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [1, Validators.required]
     });
@@ -81,11 +82,11 @@ export class CreateInvoiceComponent implements OnInit {
   
     this.items().controls.forEach((item, index) => {
       item.get('itemGoldWeight')?.valueChanges.subscribe(() => {
-        setTimeout(() => this.loadPricingForNewItem(index), 100); // Wait for value to update
+        this.loadPricingForNewItem(index);
       });
-    
+  
       item.get('itemCaratage')?.valueChanges.subscribe(() => {
-        setTimeout(() => this.loadPricingForNewItem(index), 100);
+        this.loadPricingForNewItem(index);
       });
     });
 
@@ -97,6 +98,7 @@ export class CreateInvoiceComponent implements OnInit {
     this.apiService.getAllKarats().subscribe({
       next: (karats) => {
         this.karats = karats;
+        console.log(" this.karats: ", this.karats)
       },
       error: (error) => {
         console.error('Error fetching karat values:', error);
@@ -257,25 +259,22 @@ export class CreateInvoiceComponent implements OnInit {
     this.invoiceForm.get('subTotal')?.setValue(subTotal);
     this.onSubTotalOrInterestChange();
   }
+  
   onSubTotalOrInterestChange() {
     if (!this.manualTotalAmountEdit) {
-      const subTotalValue = this.invoiceForm.get('subTotal')?.value;
-      const interestRateValue = this.invoiceForm.get('interestRate')?.value;
-  
-      // Convert to numbers
-      const subTotal = parseFloat(subTotalValue) || 0;
-      const interestRate = parseFloat(interestRateValue) || 0;
-  
-      console.log("interestRate: ", interestRate);
-      console.log("subTotal: ", subTotal);
-  
-      const totalAmount = subTotal + (subTotal * interestRate / 100);
-      console.log("totalAmount: ", totalAmount);
-  
-      this.invoiceForm.patchValue({ totalAmount });
+      const subTotal = this.invoiceForm.get('subTotal')?.value;
+      const interestRate = this.invoiceForm.get('interestRate')?.value;
+      if (subTotal && interestRate) {
+        const interestAmount = (subTotal * interestRate) / 100;
+        this.invoiceForm.patchValue({ interestAmount });
+
+        if (interestAmount) {
+          const totalAmount = subTotal + interestAmount;
+          this.invoiceForm.patchValue({ totalAmount });
+        }
+      }
     }
   }
-  
 
   onTotalAmountChange() {
     this.manualTotalAmountEdit = true;
@@ -283,6 +282,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   onSubmit() {
     if (this.invoiceForm.valid) {
+      console.log("interestAmount: ",this.invoiceForm.value.interestAmount),
       Swal.fire({
         title: 'Confirm Invoice Submission',
         text: 'Are you sure you want to submit this invoice?',
@@ -294,13 +294,14 @@ export class CreateInvoiceComponent implements OnInit {
         if (result.isConfirmed) {
           const invoiceDto: CreateInvoiceDto = {
             ...this.invoiceForm.value,
-            loanPeriodId: this.invoiceForm.value.loanPeriod, // Attach the selected loanPeriodId
+            loanPeriodId: this.invoiceForm.value.loanPeriod,
+            interestAmount: this.invoiceForm.value.interestAmount,
             items: this.invoiceForm.value.items.map((item: Item) => ({
               ...item,
               itemId: item.itemId || 0 // Set itemId to 0 if it's null
             }))
           };
-
+  
           if (this.isEditMode && this.invoice) {
             this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
               next: () => {
@@ -314,7 +315,7 @@ export class CreateInvoiceComponent implements OnInit {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto,'0',0).subscribe({
+            this.apiService.createInvoice(invoiceDto, '0', 0).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);
@@ -328,6 +329,7 @@ export class CreateInvoiceComponent implements OnInit {
           }
         }
       });
+
     } else {
       Swal.fire({
         icon: 'warning',
@@ -337,7 +339,8 @@ export class CreateInvoiceComponent implements OnInit {
       });
     }
   }
-
+  
+  
   onCancel() {
     Swal.fire({
       title: 'Cancel Changes',
@@ -365,37 +368,30 @@ export class CreateInvoiceComponent implements OnInit {
     const loanPeriodId = this.invoiceForm.value.loanPeriod;
     const goldWeight = itemFormGroup.get('itemGoldWeight')?.value;
 
-    console.log("KaratValue:", karatValue); // Debugging
-    console.log("LoanPeriodId:", loanPeriodId); // Debugging
-    console.log("GoldWeight:", goldWeight); // Debugging
-    
-    if (!karatValue || karatValue <= 0 || !goldWeight || goldWeight <= 0 || !loanPeriodId) {
+    if (!karatValue || !loanPeriodId || !goldWeight) {
       console.warn("Missing or invalid values:", { karatValue, goldWeight, loanPeriodId });
-      return; // Stop execution if values are not valid
-  }
+        return; // Exit if any of the values are missing
+    }
 
     const numericKaratValue = Number(karatValue);
     const selectedKarat = this.karats.find(k => k.karatValue === numericKaratValue);
     const karatId = selectedKarat ? selectedKarat.karatId : null;
 
     if (karatId && loanPeriodId && goldWeight) {
-      this.apiService.getPricingsByKaratAndLoanPeriod(karatId, loanPeriodId).subscribe({
-        next: (pricings) => {
-          if (pricings && pricings.length > 0) {
-            const pricing = pricings[0];
-            const itemValue = (pricing.price / 8) * goldWeight;
-            itemFormGroup.patchValue({ itemValue: itemValue.toFixed(2) });
-            
-          } else {
-            console.warn("No pricing available for the selected karat and loan period.");
-          }
-        },
-        error: (error) => {
-          console.error("Error fetching pricing data:", error);
-          Swal.fire('Error', 'Failed to load pricing data.', 'error');
-        }
-      });
-      console.log("itemValue: ",itemFormGroup.get('itemValue')?.value)
+        this.apiService.getPricingsByKaratAndLoanPeriod(karatId, loanPeriodId).subscribe({
+            next: (pricings) => {
+                if (pricings && pricings.length > 0) {
+                    const pricing = pricings[0];
+                    const itemValue = (pricing.price / 8) * goldWeight; // Example calculation
+                    itemFormGroup.patchValue({ itemValue });
+                    this.calculateSubTotal();
+                }
+            },
+            error: (error) => {
+                console.error('Error loading pricing:', error);
+                Swal.fire('Error', 'Failed to load pricing for this item', 'error');
+            }
+        });
     }
 }
 
@@ -411,4 +407,3 @@ private subscribeToItemChanges(item: FormGroup): void {
 
 
 }
-

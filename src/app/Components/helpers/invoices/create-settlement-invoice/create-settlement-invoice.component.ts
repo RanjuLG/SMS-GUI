@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } fr
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ApiService } from '../../../../Services/api-service.service';
-import { CreateInvoiceDto, InvoiceDto, Item } from '../../../invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, Item } from '../../../invoice-form/invoice.model';
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -26,8 +26,8 @@ export class CreateSettlementInvoiceComponent implements OnInit {
   isCustomerAutofilled = false;
   initialInvoiceNumber = '0';
   //installmentNumber = 0;
-  initialInvoices: InvoiceDto[] = []; // Add this line
-  selectedInvoice: InvoiceDto | null = null; // Add this line
+  initialInvoices: InvoiceDto2[] = []; // Add this line
+  selectedInvoice: InvoiceDto2 | null = null; // Add this line
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -66,7 +66,7 @@ export class CreateSettlementInvoiceComponent implements OnInit {
 // New method to fetch invoices by NIC
 fetchInvoicesByNIC(nic: string): void {
   this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
-    next: (invoices: InvoiceDto[]) => {
+    next: (invoices: InvoiceDto2[]) => {
       // Filter the invoices where invoiceTypeId equals 2
       this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
       
