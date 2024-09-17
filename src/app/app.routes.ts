@@ -22,6 +22,7 @@ import { CreateSettlementInvoiceComponent } from './Components/helpers/invoices/
 import { ReportsComponent } from './Components/reports/reports.component';
 import { ReportByCustomerComponent } from './Components/helpers/reports/report-by-customer/report-by-customer.component';
 import { SettlementInvoiceTemplateComponent } from './Components/helpers/invoices/settlement-invoice-template/settlement-invoice-template.component';
+import { DashboardComponent } from './Components/dashboard/dashboard.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -30,15 +31,14 @@ export const routes: Routes = [
     {path: 'item-form',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'invoices',component: InvoiceFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    { path: 'create-initial-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
-    { path: 'create-installment-invoice', component: CreateInstallmentPaymentInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
-    { path: 'create-settlement-invoice', component: CreateSettlementInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+   // { path: 'create-initial-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+   // { path: 'create-installment-invoice', component: CreateInstallmentPaymentInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+   // { path: 'create-settlement-invoice', component: CreateSettlementInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'view-invoice-template/:invoiceId', component: InvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'view-installment-invoice-template/:invoiceId', component: InstallmentInvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'view-settlement-invoice-template/:invoiceId', component: SettlementInvoiceTemplateComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     {path:'cash-balance',component: CashBalanceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'auth/sign-in',component: SignInComponent},
-   // { path: 'login', component: LoginComponent },
     { path: 'auth/register', component: RegisterComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'users', component: UserManagementComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'unauthorized', component: UnauthorizedComponent },
@@ -47,8 +47,6 @@ export const routes: Routes = [
     {path:'karatages',component: KaratValueComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports',component: ReportsComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path:'create-invoice',component: DashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
 
 ];
-
-
-//ReportByCustomerComponent

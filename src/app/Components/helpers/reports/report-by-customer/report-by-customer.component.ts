@@ -29,13 +29,13 @@ export class ReportByCustomerComponent implements OnInit {
   error: string | null = null;
   showInstallments: boolean[] = []; // Array to track which loan's installments are visible
   selectedLoan: Loan | null = null;  // Stores the currently selected loan for modal
-
+  isReportsLoaded: boolean = false;
   // Pagination properties
   page: number = 1;
   itemsPerPage: number = 10;
   itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   paginatedLoans: Loan[] = [];
-
+  searchInvoiceNo: string = ''; 
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -70,14 +70,18 @@ export class ReportByCustomerComponent implements OnInit {
         next: (data) => {
           this.report = data;
           this.error = null;
+          this.isReportsLoaded = true
           this.showInstallments = new Array(data.loans.length).fill(false); // Initialize the array for toggling
           this.updatePaginatedLoans();
           Swal.fire('Success', 'Report fetched successfully!', 'success');
+          console.log("this.report: ", this.report)
         },
         error: (err) => {
           console.error(err);
           this.clearTable();
           this.showError('Failed to fetch the report. Please check the NIC and try again.');
+          this.isReportsLoaded = false
+
         },
       });
     }
@@ -87,17 +91,18 @@ clearTable(): void {
   this.report = null;
   this.paginatedLoans = [];
   this.showInstallments = [];
-  this.page = 1; // Reset to the first page
+  this.page = 1;
+  this.isReportsLoaded = false;
 }
   // Update the loans to display based on pagination
   updatePaginatedLoans(): void {
     if (this.report?.loans) {
-      //console.log("this.report?.loans: ",this.report?.loans)
-      const startIndex = (this.page - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      // Ensure you're slicing the array correctly based on the current page and items per page
-      this.paginatedLoans = this.report.loans.slice(startIndex, endIndex);
-      console.log(" this.paginatedLoans: ", this.paginatedLoans)
+      this.paginatedLoans = this.report.loans.slice(
+        (this.page - 1) * this.itemsPerPage,
+        this.page * this.itemsPerPage
+      );
+      // Apply filter
+      this.filterLoansByInvoiceNo();
     }
   }
   
@@ -157,5 +162,18 @@ onPageChange(pageNumber: number): void {
 
     // Pass the loan data to the modal component
     modalRef.componentInstance.loan = loan;
+  }
+
+  // Filter loans by invoice number
+  filterLoansByInvoiceNo(): void {
+    if (this.report?.loans) {
+      const filteredLoans = this.report.loans.filter((loan) =>
+        loan.invoiceNo.toLowerCase().includes(this.searchInvoiceNo.toLowerCase())
+      );
+      this.paginatedLoans = filteredLoans.slice(
+        (this.page - 1) * this.itemsPerPage,
+        this.page * this.itemsPerPage
+      );
+    }
   }
 }

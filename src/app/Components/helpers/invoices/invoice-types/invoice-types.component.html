@@ -1,0 +1,44 @@
+<div class="container-fluid my-4">
+    <div class="row justify-content-center g-1">
+        <!-- Create Invoice Section -->
+        <div class="col-lg-1 col-md-2 col-sm-3 col-4">
+            <div class="card h-100 shadow-sm card-hover" (click)="showInvoiceType = 'initial'">
+                <img src="reports/down-payment.png" class="card-img-top" alt="Create Initial Invoice">
+                <div class="card-body p-2">
+                    <h6 class="card-title center-title mb-1">Initial <br> Invoice</h6>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-1 col-md-2 col-sm-3 col-4">
+            <div class="card h-100 shadow-sm card-hover" (click)="showInvoiceType = 'installment'">
+                <img src="reports/installment-payment.png" class="card-img-top" alt="Create Installment Invoice">
+                <div class="card-body p-2">
+                    <h6 class="card-title center-title mb-1">Installment Invoice</h6>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-2 col-sm-3 col-4">
+            <div class="card h-100 shadow-sm card-hover" (click)="showInvoiceType = 'settlement'">
+                <img src="reports/invoice.png" class="card-img-top" alt="Create Settlement Invoice">
+                <div class="card-body p-2">
+                    <h6 class="card-title center-title mb-1">Settlement Invoice</h6>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conditionally load invoice component in the same container -->
+<div class="container-fluid my-4">
+    <div *ngIf="showInvoiceType === 'initial'">
+        <app-create-invoice></app-create-invoice>
+    </div>
+    <div *ngIf="showInvoiceType === 'installment'">
+        <app-create-installment-payment-invoice></app-create-installment-payment-invoice>
+    </div>
+    <div *ngIf="showInvoiceType === 'settlement'">
+        <app-create-settlement-invoice></app-create-settlement-invoice>
+    </div>
+</div>

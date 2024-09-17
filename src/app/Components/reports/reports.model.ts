@@ -23,6 +23,7 @@ export interface ReportByCustomer {
     createdAt: string; // ISO date string
     subTotal: number;
     interestRate: number;
+    interestAmount:number;
     totalAmount: number;
     customer: TransactionCustomer;
     items: TransactionItem[];
@@ -52,7 +53,9 @@ export interface ReportByCustomer {
     installmentId: number;
     loanId: number;
     InvoiceNo: string;
-    amountPaid: number;
+    principleAmountPaid: number;
+    interestAmountPaid:number;
+    totalAmountPaid: number;
     datePaid: string; // ISO date string
   }
   
