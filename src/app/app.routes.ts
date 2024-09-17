@@ -23,6 +23,7 @@ import { ReportsComponent } from './Components/reports/reports.component';
 import { ReportByCustomerComponent } from './Components/helpers/reports/report-by-customer/report-by-customer.component';
 import { SettlementInvoiceTemplateComponent } from './Components/helpers/invoices/settlement-invoice-template/settlement-invoice-template.component';
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
+import { IncomeReportComponent } from './Components/helpers/reports/income-report/income-report.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -47,6 +48,7 @@ export const routes: Routes = [
     {path:'config/pricings',component: KaratValueComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports',component: ReportsComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path:'reports/income',component: IncomeReportComponent, canActivate: [AuthGuard], data: { role: 'Admin' }},
     {path:'create-invoice',component: DashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
 
 ];

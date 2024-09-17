@@ -1,0 +1,165 @@
+<div class="container-fluid">
+    <div class="row">
+      <!-- First Card: Transactions -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">All Transactions</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive table-card mt-3 mb-1">
+              <table class="table table-hover">
+                <thead>
+                  <tr class="bg-light text-muted">
+                    <th scope="col">Date</th>
+                    <th scope="col">Invoice No</th>
+                    <th scope="col">Customer NIC</th>
+                    <th scope="col">Principle Amount</th>
+                    <th scope="col">Interest Amount</th>
+                    <th scope="col">Total Amount (Rs.)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let transaction of loanIssuetransactions | paginate: { itemsPerPage: transactionsPerPage, currentPage: loanPage }">
+                    <td>{{ transaction.createdAt | date }}</td>
+                    <td>{{ transaction.invoice.invoiceNo }}</td>
+                    <td>{{ transaction.customer.customerNIC }}</td>
+                    <td>{{ transaction.subTotal }}</td>
+                    <td>{{ transaction.interestAmount }}</td>
+                    <td>{{ transaction.totalAmount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <select id="itemsPerPage" class="form-select" [(ngModel)]="transactionsPerPage">
+                <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
+              </select>
+              Showing {{ getLoanStartIndex() }} to {{ getLoanEndIndex() }} of {{ loanIssuetransactions.length }} entries
+              <pagination-controls (pageChange)="loanPage = $event"></pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Second Card: Installment Transactions -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">All Installment Transactions</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive table-card mt-3 mb-1">
+              <table class="table table-hover">
+                <thead>
+                  <tr class="bg-light text-muted">
+                    <th scope="col">Date</th>
+                    <th scope="col">Invoice No</th>
+                    <th scope="col">Customer NIC</th>
+                    <th scope="col">Principle Amount</th>
+                    <th scope="col">Interest Amount</th>
+                    <th scope="col">Total Amount (Rs.)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let transaction of installmenttransactions | paginate: { itemsPerPage: installmentTransactionsPerPage, currentPage: installmentPage }">
+                    <td>{{ transaction.createdAt | date }}</td>
+                    <td>{{ transaction.invoice.invoiceNo }}</td>
+                    <td>{{ transaction.customer.customerNIC }}</td>
+                    <td>{{ transaction.subTotal }}</td>
+                    <td>{{ transaction.interestAmount }}</td>
+                    <td>{{ transaction.totalAmount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <select id="itemsPerPage" class="form-select" [(ngModel)]="installmentTransactionsPerPage">
+                <option *ngFor="let option of loanTransactionsPerPageOptions" [value]="option">{{ option }}</option>
+              </select>
+              Showing {{ getInstallmentStartIndex() }} to {{ getInstallmentEndIndex() }} of {{ installmenttransactions.length }} entries
+              <pagination-controls (pageChange)="installmentPage = $event"></pagination-controls>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Repeat the similar structure for principleInstallmenttransactions and interestInstallmenttransactions -->
+      <!-- Third Card: Principle Installment Transactions -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Installment Transactions</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive table-card mt-3 mb-1">
+              <table class="table table-hover">
+                <thead>
+                  <tr class="bg-light text-muted">
+                    <th scope="col">Date</th>
+                    <th scope="col">Invoice No</th>
+                    <th scope="col">Customer NIC</th>
+                    <th scope="col">Principle Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let transaction of principleInstallmenttransactions | paginate: { itemsPerPage: principleTransactionsPerPage, currentPage: principlePage }">
+                    <td>{{ transaction.createdAt | date }}</td>
+                    <td>{{ transaction.invoice.invoiceNo }}</td>
+                    <td>{{ transaction.customer.customerNIC }}</td>
+                    <td>{{ transaction.subTotal }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <select id="itemsPerPage" class="form-select" [(ngModel)]="principleTransactionsPerPage">
+                  <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
+                </select>
+                Showing {{ getPrincipleInstallmentStartIndex() }} to {{ getPrincipleInstallmentEndIndex() }} of {{ principleInstallmenttransactions.length }} entries
+                <pagination-controls (pageChange)="principlePage = $event"></pagination-controls>
+              </div>
+          </div>
+        </div>
+      </div>
+  
+      <!-- Fourth Card: Interest Installment Transactions -->
+      <div class="col-lg-6 mb-4">
+        <div class="card shadow-sm">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Interest Only Installment Transactions</h5>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive table-card mt-3 mb-1">
+              <table class="table table-hover">
+                <thead>
+                  <tr class="bg-light text-muted">
+                    <th scope="col">Date</th>
+                    <th scope="col">Invoice No</th>
+                    <th scope="col">Customer NIC</th>
+                    <th scope="col">Interest Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let transaction of interestInstallmenttransactions | paginate: { itemsPerPage: interestTransactionsPerPage, currentPage: interestPage }">
+                    <td>{{ transaction.createdAt | date }}</td>
+                    <td>{{ transaction.invoice.invoiceNo }}</td>
+                    <td>{{ transaction.customer.customerNIC }}</td>
+                    <td>{{ transaction.interestAmount }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <select id="itemsPerPage" class="form-select" [(ngModel)]="interestTransactionsPerPage">
+                  <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
+                </select>
+                Showing {{ getInterestInstallmentStartIndex() }} to {{ getInterestInstallmentEndIndex() }} of {{ interestInstallmenttransactions.length }} entries
+                <pagination-controls (pageChange)="interestPage = $event"></pagination-controls>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
