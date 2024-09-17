@@ -48,6 +48,7 @@
                 <thead>
                   <tr class="bg-light text-muted">
                     <th scope="col" style="width: 50px;"></th>
+                    <th class="sort" data-sort="invoiceNo">Invoice No</th>
                     <th class="sort" data-sort="totalAmount">Total Amount</th>
                     <th class="sort" data-sort="startDate">Start Date</th>
                     <th class="sort" data-sort="endDate">End Date</th>
@@ -60,6 +61,7 @@
                 <tbody>
                   <tr *ngFor="let loan of paginatedLoans">
                     <th scope="row"></th>
+                    <td>{{ loan.invoiceNo }}</td>
                     <td>{{ loan.transaction.totalAmount }}</td>
                     <td>{{ loan.startDate | date: 'shortDate' }}</td>
                     <td>{{ loan.endDate | date: 'shortDate' }}</td>

@@ -7,6 +7,7 @@ export interface ReportByCustomer {
   
   export interface Loan {
     loanId: number;
+    invoiceNo: string;
     transactionId: number;
     startDate: string; // ISO date string
     endDate: string; // ISO date string
@@ -50,6 +51,7 @@ export interface ReportByCustomer {
   export interface Installment {
     installmentId: number;
     loanId: number;
+    InvoiceNo: string;
     amountPaid: number;
     datePaid: string; // ISO date string
   }
