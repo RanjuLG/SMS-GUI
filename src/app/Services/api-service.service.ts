@@ -10,7 +10,7 @@ import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
-import { User, UserDTO } from '../Components/user-management/user.model';
+import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
 import { ReportByCustomer } from '../Components/reports/reports.model';
 
@@ -259,12 +259,17 @@ getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transac
   .pipe(catchError(this.handleError));
 }
 
+//users
 getUsers(){
-
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<User[]>(`${this.configService.apiUrl}/api/account/users`)
   .pipe(catchError(this.handleError));
+}
 
+addUser(token: string,UserDto:CreateUserDTO){
+  
+  if(!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.put(`${this.configService.apiUrl}/api/account/register?token=${token}`,UserDto);
 }
 
 updateUser(userId: string,UserDto:UserDTO){

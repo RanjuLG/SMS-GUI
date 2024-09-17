@@ -55,16 +55,31 @@
               <li><a class="dropdown-item" routerLink="/cash-balance" routerLinkActive="active-link">Cash Balance</a></li>
             </ul>
           </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted" href="#" id="financialDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="ri-tools-line nav-icon"></i> Configuration
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="financialDropdown">
+              <li><a class="dropdown-item" routerLink="/config/pricings" routerLinkActive="active-link">Pricings</a></li>
+              <li><a class="dropdown-item" routerLink="/config/users" routerLinkActive="active-link">Users</a></li>
+            </ul>
+          </li>
         </ul>
       </div>
       <div class="d-flex ms-auto align-items-center">
         <img src="nav-bar/user-logo.png" alt="Dropdown Image" class="rounded-circle me-2 user-logo" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
           <li>
+            <a class="dropdown-item" routerLink="/auth/sign-in"  href="javascript:void(0);">
+              Settings
+            </a>
+          </li>
+          <li>
             <a class="dropdown-item" routerLink="/auth/sign-in" (click)="signOut()" href="javascript:void(0);">
               Sign Out
             </a>
           </li>
+
         </ul>
       </div>
     </div>
