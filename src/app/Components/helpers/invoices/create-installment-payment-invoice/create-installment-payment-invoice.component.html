@@ -74,21 +74,24 @@
               <!-- Initial Invoice Detail Section -->
               <h5 class="section-title">Initial Invoice Detail</h5>
               <div class="row">
-                <!-- Add dropdown for initial invoice selection -->
                 <div class="col-md-3" *ngIf="initialInvoices.length > 0">
-                  <div class="form-group">
-                    <label for="initialInvoiceNumber">Select Initial Invoice</label>
-                    <select id="initialInvoiceNumber" class="form-control" (change)="onInitialInvoiceSelected($event)">
-                      <option value="">-- Select Invoice --</option>
-                      <option *ngFor="let invoice of initialInvoices" [value]="invoice.invoiceId">
-                        {{ invoice.invoiceNo }} - {{ invoice.totalAmount }}
-                      </option>
-                    </select>
-                  </div>
+                    <div class="form-group">
+                        <div class="dropdown"> 
+                            <button class="btn btn-secondary dropdown-toggle form-control" type="button" id="initialInvoiceNumberDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                Select Initial Invoice
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="initialInvoiceNumberDropdown">
+                                <li *ngFor="let invoice of initialInvoices">
+                                    <a class="dropdown-item" (click)="onInitialInvoiceSelected($event)" [attr.data-invoice-id]="invoice.invoiceId">
+                                        {{ invoice.invoiceNo }} - {{ invoice.totalAmount }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+            
+                    </div>
                 </div>
-                
-              </div>
-
+            </div>
               <!-- Display selected initial invoice details in the same row -->
               <div *ngIf="selectedInvoice">
                 <div class="row">
