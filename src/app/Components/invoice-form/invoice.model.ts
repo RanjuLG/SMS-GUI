@@ -37,6 +37,20 @@ export interface InvoiceDto {
     interest: number;
     loanPeriod: number;
 }
+export interface InvoiceDto2 {
+  invoiceId: number;
+  invoiceTypeId: number;
+  invoiceNo: string;
+  transactionId: number;
+  customerNIC: string;
+  principleAmount: number;
+  interestRate:number;
+  interestAmount:number;
+  totalAmount: number;
+  dateGenerated: string;
+  status:number;
+  loanPeriod: number;
+}
 export interface InvoiceDto_ {
     invoiceId: number;
     invoiceTypeId: number;
@@ -81,6 +95,7 @@ export interface Item {
     paymentStatus: boolean; // Changed to boolean for better clarity
     subTotal: number;
     interest: number;
+    interestAmount: number;
     totalAmount: number;
     loanPeriod: number;
   }
@@ -124,14 +139,14 @@ export interface LoanPeriod {
 }
 
 export interface LoanInfoDto {
-  loanAmount: number;
+  principleAmount: number;
   interestRate: number;
   interestAmount: number;
   totalAmount: number;
   loanPeriod: number;
   numberOfInstallments: number;
+  installmentValue: number;
   numberOfInstallmentsPaid: number;
-  InstallmentValue: number;
   numberOfInstallmentsToBePaid: number;
   isLoanSettled: boolean;
 }

@@ -75,27 +75,27 @@
                   </div>
                   <div class="col-md-1">
                     <div class="form-group">
-                      <label for="itemCaratage">Karat</label>
-                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required>
+                      <label for="itemCaratage">Karat (K)</label>
+                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage"  min="0" required>
                         <option *ngFor="let karat of karats" [value]="karat.karatValue">
-                          {{ karat.karatValue }}K
+                          {{ karat.karatValue }}
                         </option>
                       </select>
                       
                       <!-- Show read-only input for existing items -->
-                      <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" readonly />
+                      <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage"  min="0" readonly />
                     </div>
                   </div>
                   <div class="col-md-2">
                     <div class="form-group">
                       <label for="itemGoldWeight">Total Gold Weight (g)</label>
-                      <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm" formControlName="itemGoldWeight" required />
+                      <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm" formControlName="itemGoldWeight"  min="0" required />
                     </div>
                   </div>
                   <div class="col-md-2">
                     <div class="form-group">
                       <label for="itemValue">Item Value</label>
-                      <input type="number" step="100" id="itemValue" class="form-control form-control-sm" formControlName="itemValue" />
+                      <input type="number" step="100" id="itemValue" class="form-control form-control-sm" formControlName="itemValue"  min="0" />
                     </div>
                   </div>
                   <div class="col-md-2 d-flex justify-content-end ">
@@ -120,25 +120,28 @@
                     <input type="date" id="date" class="form-control form-control-sm" formControlName="date" required />
                   </div>
                 </div>
-               
-                
-                
                 <div class="col-md-2">
                   <div class="form-group">
                     <label for="subTotal">Subtotal</label>
-                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal" required (input)="onSubTotalOrInterestChange()" />
+                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal" required (input)="onSubTotalOrInterestChange()"  min="0" />
                   </div>
                 </div>
                 <div class="col-md-2">
                   <div class="form-group">
-                    <label for="interest">Interest (%)</label>
-                    <input type="number" step="0.1" id="interest" class="form-control form-control-sm" formControlName="interest" required (input)="onSubTotalOrInterestChange()" />
+                    <label for="interestRate">Interest (%)</label>
+                    <input type="number" step="0.1" id="interestRate" class="form-control form-control-sm" formControlName="interestRate" required (input)="onSubTotalOrInterestChange()"  min="0" />
+                  </div>
+                </div>
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label for="interestAmount">Interest Amount</label>
+                    <input type="number" step="1" id="interestAmount" class="form-control form-control-sm" formControlName="interestAmount" required (input)="onSubTotalOrInterestChange()"  min="0" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="totalAmount">Total Amount</label>
-                    <input type="number" step="100" id="totalAmount" class="form-control form-control-sm" formControlName="totalAmount" required (input)="onTotalAmountChange()" />
+                    <input type="number" step="100" id="totalAmount" class="form-control form-control-sm" formControlName="totalAmount" required (input)="onTotalAmountChange()"  min="0" />
                   </div>
                 </div>
               </div>
