@@ -266,12 +266,6 @@ getUsers(){
   .pipe(catchError(this.handleError));
 }
 
-addUser(token: string,UserDto:CreateUserDTO){
-  
-  if(!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.put(`${this.configService.apiUrl}/api/account/register?token=${token}`,UserDto);
-}
-
 updateUser(userId: string,UserDto:UserDTO){
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.put(`${this.configService.apiUrl}/api/account/user/${userId}`,UserDto);
