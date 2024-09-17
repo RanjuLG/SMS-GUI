@@ -212,9 +212,6 @@ onInitialInvoiceSelected(event: Event): void {
                           Swal.fire('Error', 'Failed to create invoice', 'error');
                         }
                       });
-
-                    
-            
           }
         }
       });

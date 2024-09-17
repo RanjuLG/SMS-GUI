@@ -92,10 +92,12 @@ clearTable(): void {
   // Update the loans to display based on pagination
   updatePaginatedLoans(): void {
     if (this.report?.loans) {
+      //console.log("this.report?.loans: ",this.report?.loans)
       const startIndex = (this.page - 1) * this.itemsPerPage;
       const endIndex = startIndex + this.itemsPerPage;
       // Ensure you're slicing the array correctly based on the current page and items per page
       this.paginatedLoans = this.report.loans.slice(startIndex, endIndex);
+      console.log(" this.paginatedLoans: ", this.paginatedLoans)
     }
   }
   

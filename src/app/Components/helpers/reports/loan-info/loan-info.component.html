@@ -35,28 +35,27 @@
                             {{ loan.isSettled ? 'Settled' : 'Not Settled' }}
                         </span>
                     </td>
-
-
                 </tr>
             </tbody>
         </table>
-
         <!-- Installments Section -->
         <h5 class="section-title">Installments</h5>
         <table class="table table-bordered">
             <thead>
                 <tr>
+                    <th>Invoice No</th>
                     <th>Amount Paid</th>
                     <th>Date Paid</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let installment of loan.installments">
+                    <td>{{ installment.invoiceNo }}</td>
                     <td>{{ installment.amountPaid }}</td>
                     <td>{{ installment.datePaid | date }}</td>
                 </tr>
                 <tr *ngIf="loan.installments.length === 0">
-                    <td colspan="2" class="text-center">No installments paid yet.</td>
+                    <td colspan="3" class="text-center">No installments paid yet.</td>
                 </tr>
             </tbody>
         </table>

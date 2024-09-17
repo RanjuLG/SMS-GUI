@@ -55,7 +55,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   ngOnInit(): void {
     const newItem = this.createItem();
-    this.items().push(newItem);
+    //this.items().push(newItem);
     if (this.invoice) {
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
@@ -184,6 +184,8 @@ export class CreateInvoiceComponent implements OnInit {
   addItem(): void {
     const newItem = this.createItem();
     this.items().push(newItem);
+    // Subscribe to changes in the newly added item's fields
+  this.subscribeToItemChanges(newItem);
     // Enable form controls for new items
     newItem.get('itemDescription')?.enable();
     newItem.get('itemCaratage')?.enable();
