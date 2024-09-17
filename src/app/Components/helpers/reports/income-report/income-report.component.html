@@ -32,7 +32,7 @@
               </table>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <select id="itemsPerPage" class="form-select" [(ngModel)]="transactionsPerPage">
+              <select class="form-select" [(ngModel)]="transactionsPerPage">
                 <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
               Showing {{ getLoanStartIndex() }} to {{ getLoanEndIndex() }} of {{ loanIssuetransactions.length }} entries
@@ -74,7 +74,7 @@
               </table>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
-              <select id="itemsPerPage" class="form-select" [(ngModel)]="installmentTransactionsPerPage">
+              <select class="form-select" [(ngModel)]="installmentTransactionsPerPage">
                 <option *ngFor="let option of loanTransactionsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
               Showing {{ getInstallmentStartIndex() }} to {{ getInstallmentEndIndex() }} of {{ installmenttransactions.length }} entries
@@ -113,7 +113,7 @@
               </table>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <select id="itemsPerPage" class="form-select" [(ngModel)]="principleTransactionsPerPage">
+                <select class="form-select" [(ngModel)]="principleTransactionsPerPage">
                   <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
                 </select>
                 Showing {{ getPrincipleInstallmentStartIndex() }} to {{ getPrincipleInstallmentEndIndex() }} of {{ principleInstallmenttransactions.length }} entries
@@ -151,7 +151,7 @@
               </table>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <select id="itemsPerPage" class="form-select" [(ngModel)]="interestTransactionsPerPage">
+                <select class="form-select" [(ngModel)]="interestTransactionsPerPage">
                   <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
                 </select>
                 Showing {{ getInterestInstallmentStartIndex() }} to {{ getInterestInstallmentEndIndex() }} of {{ interestInstallmenttransactions.length }} entries
