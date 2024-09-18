@@ -35,7 +35,9 @@
               <select class="form-select" [(ngModel)]="transactionsPerPage">
                 <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
+              <span class="entries-info">
               Showing {{ getLoanStartIndex() }} to {{ getLoanEndIndex() }} of {{ loanIssuetransactions.length }} entries
+              </span>
               <pagination-controls (pageChange)="loanPage = $event"></pagination-controls>
             </div>
           </div>
@@ -77,7 +79,9 @@
               <select class="form-select" [(ngModel)]="installmentTransactionsPerPage">
                 <option *ngFor="let option of loanTransactionsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
+              <span class="entries-info">
               Showing {{ getInstallmentStartIndex() }} to {{ getInstallmentEndIndex() }} of {{ installmenttransactions.length }} entries
+              </span>
               <pagination-controls (pageChange)="installmentPage = $event"></pagination-controls>
             </div>
           </div>
@@ -116,7 +120,9 @@
                 <select class="form-select" [(ngModel)]="principleTransactionsPerPage">
                   <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
                 </select>
+                <span class="entries-info">
                 Showing {{ getPrincipleInstallmentStartIndex() }} to {{ getPrincipleInstallmentEndIndex() }} of {{ principleInstallmenttransactions.length }} entries
+                </span>
                 <pagination-controls (pageChange)="principlePage = $event"></pagination-controls>
               </div>
           </div>
@@ -154,7 +160,9 @@
                 <select class="form-select" [(ngModel)]="interestTransactionsPerPage">
                   <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
                 </select>
+                <span class="entries-info">
                 Showing {{ getInterestInstallmentStartIndex() }} to {{ getInterestInstallmentEndIndex() }} of {{ interestInstallmenttransactions.length }} entries
+                </span>
                 <pagination-controls (pageChange)="interestPage = $event"></pagination-controls>
               </div>
           </div>

@@ -54,9 +54,9 @@
     <select class="form-select" [(ngModel)]="transactionsPerPage" (change)="onItemsPerPageChange($event)">
       <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
     </select>
-    
+    <span class="entries-info">
     Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ transactions.length }} entries
-    
+    </span>
     <pagination-controls (pageChange)="pageChange.emit($event)"></pagination-controls>
   </div>
   

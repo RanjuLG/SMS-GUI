@@ -86,9 +86,9 @@
               <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
                 <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
-              <div>
+              <span class="entries-info">
                 Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ customers.length }} entries
-              </div>
+              </span>
               <pagination-controls (pageChange)="page = $event" [responsive]="true"></pagination-controls>
             </div>
           </div>

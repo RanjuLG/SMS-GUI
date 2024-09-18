@@ -86,9 +86,9 @@
               <select id="itemsPerPage" class="form-select" [(ngModel)]="invoicesPerPage">
                 <option *ngFor="let option of invoicesPerPageOptions" [value]="option">{{ option }}</option>
               </select>
-          
+              <span class="entries-info">
                 Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ invoices.length }} entries
-              
+              </span>
               <pagination-controls (pageChange)="page = $event"></pagination-controls>
             </div>
           </div>

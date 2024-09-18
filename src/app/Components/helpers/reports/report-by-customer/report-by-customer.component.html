@@ -71,7 +71,7 @@
                     </td>
                     <td>
                       <button class="btn btn-sm btn-primary" (click)="openLoanModal(loan)">
-                        <i class="ri-menu-line align-bottom me-1"></i> More
+                        <i class="ri-menu-line align-bottom me-1"></i> More Info
                       </button>
                     </td>
                   </tr>
@@ -88,9 +88,9 @@
                 <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
 
-              <div>
+              <span class="entries-info">
                 Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ report?.loans?.length }} entries
-              </div>
+              </span>
 
 
 
