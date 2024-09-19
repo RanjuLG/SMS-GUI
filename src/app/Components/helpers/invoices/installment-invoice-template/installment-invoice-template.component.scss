@@ -1,72 +1,77 @@
-#receipt {
-    font-size: 12px;
-    font-family: 'Roboto', sans-serif;
-    color: #333;
+/* General Styling */
+.invoice-container {
+  background-color: #fff;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 800px; /* Adjust width for smaller layout */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.invoice-container .invoice-header,
+.invoice-container .invoice-body,
+.invoice-container .invoice-summary,
+.invoice-container .invoice-footer {
+  margin-bottom: 15px;
+}
+
+.invoice-container .company-logo {
+  width: 70px;
+  height: auto;
+}
+
+/* Table adjustments for clarity */
+.invoice-container table {
+  font-size: 0.6rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.invoice-container p {
+  font-size: 0.7rem;
+  width: 100%;
+  //margin-bottom: 1rem;
+}
+
+.invoice-container .table-bordered th,
+.invoice-container .table-bordered td {
+  padding: 0.6rem; /* Increased padding for better readability */
+  border: 1px solid #dee2e6; /* Ensure borders are visible in PDF */
+}
+
+.invoice-container .table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Print and PDF-specific styles */
+@media print {
+  body {
+    -webkit-print-color-adjust: exact;
   }
-  
-  .card-header, .card-body {
-    padding: 1rem;
-  }
-  
-  h6, p {
+  .invoice-container {
     margin: 0;
-    font-weight: 600;
-    font-size: 0.8rem;
+    padding: 0;
   }
-  
-  .table-active {
-    background-color: #f1f3f5;
+  .invoice-container table {
+    page-break-inside: auto;
   }
-  
-  .table th, .table td {
-    padding: 0.5rem;
-    vertical-align: middle;
+  .invoice-container .table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
   }
-  
-  .border-bottom-dashed {
-    border-bottom: 1px dashed #dee2e6;
+  .invoice-container .invoice-footer {
+    page-break-before: always;
   }
-  
-  .border-top-dashed {
-    border-top: 1px dashed #dee2e6;
+  .invoice-container .d-print-none {
+    display: none !important;
   }
-  
-  .alert {
-    padding: 0.5rem;
-    margin-bottom: 1rem;
-    background-color: #e9f7fd;
-    border-color: #b8daff;
+}
+
+@media screen {
+  .invoice-container .pdf-export-only {
+    display: none;
   }
-  
-  .text-uppercase {
-    text-transform: uppercase;
-  }
-  
-  .text-end {
-    text-align: right;
-  }
-  
-  .mt-2 {
-    margin-top: 0.5rem;
-  }
-  
-  .mb-1 {
-    margin-bottom: 0.5rem;
-  }
-  
-  .company-logo {
-    width: 100%;
-    height: auto;
-    max-width: 150px;
-    margin-bottom: 10px;
-  }
-  
-  @media print {
-    .d-print-none {
-      display: none !important;
-    }
-  }
-  
-  
-  
-  
+}
+
+/* Style for PDF download */
+.invoice-container .pdf-export-only {
+  font-size: 0.85rem;
+}
