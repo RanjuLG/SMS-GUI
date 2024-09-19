@@ -1,69 +1,77 @@
-#receipt {
-  font-size: 12px;
-  font-family: 'Roboto', sans-serif;
-  color: #333;
+/* General Styling */
+.invoice-container {
+  background-color: #fff;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 800px; /* Adjust width for smaller layout */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-.card-header, .card-body {
-  padding: 1rem;
+.invoice-container .invoice-header,
+.invoice-container .invoice-body,
+.invoice-container .invoice-summary,
+.invoice-container .invoice-footer {
+  margin-bottom: 15px;
 }
 
-h6, p {
-  margin: 0;
-  font-weight: 600;
-  font-size: 0.8rem;
-}
-
-.table-active {
-  background-color: #f1f3f5;
-}
-
-.table th, .table td {
-  padding: 0.5rem;
-  vertical-align: middle;
-}
-
-.border-bottom-dashed {
-  border-bottom: 1px dashed #dee2e6;
-}
-
-.border-top-dashed {
-  border-top: 1px dashed #dee2e6;
-}
-
-.alert {
-  padding: 0.5rem;
-  margin-bottom: 1rem;
-  background-color: #f8f9fa;
-  border-color: #e2e3e5;
-  color: #333;
-}
-
-.text-uppercase {
-  text-transform: uppercase;
-}
-
-.text-end {
-  text-align: right;
-}
-
-.mt-2 {
-  margin-top: 0.5rem;
-}
-
-.mb-1 {
-  margin-bottom: 0.5rem;
-}
-
-.company-logo {
-  width: 100%;
+.invoice-container .company-logo {
+  width: 70px;
   height: auto;
-  max-width: 100px; /* Adjusted size for a more compact logo display */
-  margin-bottom: 10px;
 }
 
+/* Table adjustments for clarity */
+.invoice-container table {
+  font-size: 0.6rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+.invoice-container p {
+  font-size: 0.7rem;
+  width: 100%;
+  //margin-bottom: 1rem;
+}
+
+.invoice-container .table-bordered th,
+.invoice-container .table-bordered td {
+  padding: 0.6rem; /* Increased padding for better readability */
+  border: 1px solid #dee2e6; /* Ensure borders are visible in PDF */
+}
+
+.invoice-container .table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+/* Print and PDF-specific styles */
 @media print {
-  .d-print-none {
+  body {
+    -webkit-print-color-adjust: exact;
+  }
+  .invoice-container {
+    margin: 0;
+    padding: 0;
+  }
+  .invoice-container table {
+    page-break-inside: auto;
+  }
+  .invoice-container .table tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+  .invoice-container .invoice-footer {
+    page-break-before: always;
+  }
+  .invoice-container .d-print-none {
     display: none !important;
   }
+}
+
+@media screen {
+  .invoice-container .pdf-export-only {
+    display: none;
+  }
+}
+
+/* Style for PDF download */
+.invoice-container .pdf-export-only {
+  font-size: 0.85rem;
 }
