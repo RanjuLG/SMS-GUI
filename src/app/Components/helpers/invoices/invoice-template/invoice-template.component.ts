@@ -4,7 +4,7 @@ import { ActivatedRoute } from '@angular/router';
 import { InvoiceDto } from '../../../invoice-form/invoice.model';
 import { GetCustomerDTO, GetItemDTO, TransactionDto } from '../../../transaction-history/transaction.model';
 import html2pdf from 'html2pdf.js';
-import { NgModule } from '@angular/core';
+import { ConfigService } from '../../../../Services/config-service.service';
 import { CommonModule } from '@angular/common';
 import { DateService } from '../../../../Services/date-service.service';
 
@@ -25,15 +25,20 @@ export class InvoiceTemplateComponent implements OnInit {
   dateGenerated: string | null = null;
   errorMessage: string | null = null;
 
+  customWidth = 229; // Custom width in mm
+  customHeight = 180; // Custom height in mm
+
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
     private dateService: DateService,
+    private configService: ConfigService,
   ) {}
 
   ngOnInit(): void {
     this.invoiceId = +this.route.snapshot.paramMap.get('invoiceId')!;
     this.getInvoiceDetails();
+    this.getInvoiceSettings()
   }
 
   getInvoiceDetails(): void {
@@ -73,26 +78,37 @@ export class InvoiceTemplateComponent implements OnInit {
     }
   }
 
-  // Function to download the invoice as a PDF using html2pdf.js
-  // Function to download the invoice as a PDF using html2pdf.js
-downloadTemplate(): void {
-  const element = document.getElementById('printable-template');
-  if (element) {
-    const options = {
-      margin: 0,  // Consistent margin for all sides
-      filename: `${this.invoice?.invoiceNo}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },  // Set a balance between quality and file size
-      html2canvas: {
-        scale: 4,  // Higher scale for better quality
-        useCORS: true  // Use this to avoid cross-origin image issues
-      },
-      jsPDF: { format: 'a4', orientation: 'landscape' }  // Use portrait orientation
-    };
-    html2pdf().from(element).set(options).save();
-  }
-}
+ getInvoiceSettings(): void {
 
+  var settings = this.configService.invoiceSettings;
+
+  console.log("this.settings: ",settings)
+  this.customWidth = settings.width;
+  this.customHeight = settings.height;
+ }
+  // Function to download the invoice as a PDF using html2pdf.js
+  downloadTemplate(): void {
+    const element = document.getElementById('printable-template');
+    if (element) {
+      const options = {
+        margin: 0,
+        filename: `${this.invoice?.invoiceNo}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 4,
+          useCORS: true
+        },
+        jsPDF: { 
+          unit: 'mm', // Specify the unit as millimeters
+          format: [this.customWidth, this.customHeight], // Custom dimensions in mm
+          orientation: 'portrait' // Orientation: 'portrait' or 'landscape'
+        }
+      };
   
-  
+      html2pdf().from(element).set(options).save();
+    }
+  }
   
 }
+  
+
