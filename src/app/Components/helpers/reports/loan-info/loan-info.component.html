@@ -13,11 +13,7 @@
                     <td>{{ loan.invoiceNo }}</td>
                 </tr>
                 <tr>
-                    <td><strong>Loan Amount:</strong></td>
-                    <td>{{ loan.transaction.totalAmount }}</td>
-                </tr>
-                <tr>
-                    <td><strong>Subtotal:</strong></td>
+                    <td><strong>Principle Loan Amount:</strong></td>
                     <td>{{ loan.transaction.subTotal }}</td>
                 </tr>
                 <tr>
@@ -27,6 +23,10 @@
                 <tr>
                     <td><strong>Interest Amount:</strong></td>
                     <td>{{ loan.transaction.interestAmount }}</td>
+                </tr>
+                <tr>
+                    <td><strong>Total Loan Amount:</strong></td>
+                    <td>{{ loan.transaction.totalAmount }}</td>
                 </tr>
                 <tr>
                     <td><strong>Total Amount Paid:</strong></td>
