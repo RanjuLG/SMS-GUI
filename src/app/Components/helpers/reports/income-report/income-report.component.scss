@@ -1,111 +1,72 @@
-.card {
-    border-radius: 0.5rem;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+.modal-header,
+.modal-footer {
+  padding: 1rem 1.2rem;
+}
+
+h4 {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+
+.section-title {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-weight: 500;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+
+  label {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
   }
-  
-  .card-title {
-    font-size: 1.25rem;
-    font-weight: 500;
+
+  .form-control {
+    font-size: 1rem;
+    padding: 0.5rem 0.75rem;
   }
-  
-  .table thead th {
-    background-color: #f8f9fa;
-    color: #6c757d;
+}
+
+.btn {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .modal-header,
+  .modal-footer {
+    padding: 0.75rem 1rem;
   }
-  
-  .table tbody tr:hover {
-    background-color: #f1f3f5;
-  }
-  
-  .table .badge {
-    font-size: 0.875rem;
-  }
-  
+
+  .modal-title,
+  .section-title,
+  .form-group label,
   .btn {
     font-size: 0.875rem;
-    font-weight: 500;
   }
-  
-  .btn-outline-warning,
-  .btn-outline-danger {
-    color: #6c757d;
+
+  .form-group .form-control {
+    font-size: 0.875rem;
+    padding: 0.375rem 0.75rem;
   }
-  
-  #searchResultList {
-    max-width: 100%;
-  }
-  
-  .form-select {
-    max-width: 100px;
-  }
-  
-  .pagination-controls {
-    .pagination {
-      margin: 0;
-    }
-  }
-  .search-nic {
-    width: 225px; /* Set width independently */
-  }
-  
-  .d-flex > div {
-    display: flex;
-    align-items: center;
-  }
-  
-  .me-2 {
-    margin-right: 0.5rem; /* Space between the date range picker and search box */
-  }
-  
-  .w-100 {
-    width: 100%; /* Ensure date range picker takes full width of its container */
-  }
-  
-  
-    .gridjs-pagination {
-      .gridjs-pages button {
-          margin-left: 0.3rem;
-          border-radius: 0.25rem !important; /* Adjusted border-radius */
-          border: 1px solid #dee2e6; /* Light grey border */
-          background-color: #f8f9fa; /* Light background color */
-          color: #343a40; /* Dark grey text color */
-  
-          &:last-child {
-              border-right: 1px solid #dee2e6;
-          }
-  
-          &:disabled,
-          &:hover:disabled,
-          &[disabled] {
-              color: #6c757d; /* Grey color for disabled state */
-              background-color: #f8f9fa;
-          }
-  
-          &:hover {
-              background-color: #e2e6ea; /* Slightly darker background on hover */
-              color: #343a40; /* Same text color on hover */
-          }
-  
-          &:focus {
-              box-shadow: none;
-          }
-  
-          &:last-child,
-          &:first-child {
-              &:hover {
-                  background-color: transparent;
-              }
-          }
-  
-          &.gridjs-currentPage {
-              background-color: #007bff; /* Primary blue background for active page */
-              color: #fff; /* White text color for active page */
-              border-color: #007bff; /* Primary blue border color for active page */
-              font-weight: 500; /* Medium font weight */
-          }
-      }
-  
-      
-  }
-  
-  
+}
+
+:host ::ng-deep .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da; /* Optional: Reset the border color */
+}
+
+:host ::ng-deep .form-control:focus {
+  box-shadow: none;
+  border-color: #ced4da; /* Optional: Reset the border color */
+}
+
+.invoice-section {
+  padding-top: 10px; /* Adjust as needed */
+}
+
+.row {
+  align-items: center;
+}
+
