@@ -1,32 +1,33 @@
 <div class="container-fluid my-4">
-    <div class="row justify-content-center g-1">
-        <!-- Create Invoice Section -->
-        <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-            <div class="card h-100 shadow-sm card-hover" (click)="showInvoiceType = 'initial'">
-                <img src="reports/down-payment.png" class="card-img-top" alt="Create Initial Invoice">
-                <div class="card-body p-2">
-                    <h6 class="card-title center-title mb-1">Initial <br> Invoice</h6>
-                </div>
-            </div>
+    <div class="row justify-content-center g-3">
+      
+      <!-- Initial Invoice -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100  p-3 card-hover" (click)="showInvoiceType = 'initial'">
+          <h5 class="card-title">Initial Invoice</h5>
+          <p class="card-text">Generate the first invoice for newly pawning items.</p>
         </div>
-        <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-            <div class="card h-100 shadow-sm card-hover" (click)="showInvoiceType = 'installment'">
-                <img src="reports/installment-payment.png" class="card-img-top" alt="Create Installment Invoice">
-                <div class="card-body p-2">
-                    <h6 class="card-title center-title mb-1">Installment Invoice</h6>
-                </div>
-            </div>
+      </div>
+  
+      <!-- Installment Invoice  -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100  p-3 card-hover" (click)="showInvoiceType = 'installment'">
+          <h5 class="card-title">Installment Invoice</h5>
+          <p class="card-text">Generate an invoice for installment or interest payments.</p>
         </div>
-        <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-            <div class="card h-100 shadow-sm card-hover" (click)="showInvoiceType = 'settlement'">
-                <img src="reports/invoice.png" class="card-img-top" alt="Create Settlement Invoice">
-                <div class="card-body p-2">
-                    <h6 class="card-title center-title mb-1">Settlement Invoice</h6>
-                </div>
-            </div>
+      </div>
+  
+      <!-- Settlement Invoice  -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100  p-3 card-hover" (click)="showInvoiceType = 'settlement'">
+          <h5 class="card-title">Settlement Invoice</h5>
+          <p class="card-text">Generate the final invoice to settle loans.</p>
         </div>
+      </div>
+  
     </div>
-</div>
+  </div>
+  
 
 <!-- Conditionally load invoice component in the same container -->
 <div class="container-fluid my-4">

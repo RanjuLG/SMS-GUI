@@ -18,28 +18,6 @@
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
   }
   
-  /* Card image styling */
-  .card-img-top {
-    object-fit: cover;
-    width: 100%;
-    height: auto;
-    max-width: 100%;
-    border-bottom: 1px solid #e9ecef;
-    
-  }
-  
-  /* Card body and title */
-  .card-body {
-    padding: 0.5rem;
-    
-  }
-  
-  .card-title {
-    font-size: 0.8rem;
-    font-weight: 500;
-    color: #333;
-  }
-  
   /* Responsive typography */
   h6 {
     font-size: 0.8rem;
@@ -67,3 +45,33 @@
   .center-title {
     text-align: center;
   }
+/* Container styling */
+.container-fluid {
+  padding: 1rem;
+}
+
+/* Card title and text styling */
+.card-title {
+  font-size: 0.8rem !important;
+  font-weight: bold;
+  color: #333;
+}
+
+.card-text {
+  font-size: 0.7rem !important;
+  color: #3d78e3;
+}
+
+
+/* Column heading styling */
+h4 {
+  font-size: 1.25rem;
+  color: #333;
+  margin-bottom: 1rem;
+}
+
+/* Utility classes */
+.my-4 {
+  margin-top: 1.5rem !important;
+  margin-bottom: 1.5rem !important;
+}

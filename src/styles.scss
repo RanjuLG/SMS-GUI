@@ -45,7 +45,10 @@ font-weight: bold !important;
   font-size: 0.9rem !important;
 }
 
-
+.btn-close ,.btn {
+  box-shadow: none !important;
+  outline: none !important;
+}
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
