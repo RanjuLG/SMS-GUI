@@ -106,12 +106,14 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
               }
 
               if (loanInfo.loanPeriod > 0) {
-                const principleAmount = (loanInfo.principleAmount / loanInfo.loanPeriod).toFixed(2);
-                const interestAmount = (loanInfo.interestAmount / loanInfo.loanPeriod).toFixed(2);
+                console.log("this.loanInfo: ", loanInfo)
+                const principleAmount = (loanInfo.principleAmount / loanInfo.loanPeriod).toFixed(0);
+                const interestAmount = (loanInfo.interestAmount / loanInfo.loanPeriod).toFixed(0);
+                const dailyInterstAmount = loanInfo.dailyInterestAmount.toFixed(0);
                 const totalAmount = Number(principleAmount) + Number(interestAmount); 
                // const installmentNo = loanInfo.numberOfInstallmentsPaid + 1;
                 this.invoiceForm.patchValue({ subTotal: principleAmount});
-                this.invoiceForm.patchValue({ interestAmount: interestAmount});
+                this.invoiceForm.patchValue({ interestAmount: dailyInterstAmount});
                 this.invoiceForm.patchValue({ totalAmount: totalAmount});
               } else {
                 Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
