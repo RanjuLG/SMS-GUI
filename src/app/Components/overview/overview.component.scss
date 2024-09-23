@@ -72,3 +72,15 @@ h6 {
 
 
 }
+
+.highlight {
+  border: 2px solid #007bff; /* Blue border */
+  background-color: #e9f5ff; /* Light blue background */
+}
+
+/* Optional: Add hover effect to further highlight the card */
+.highlight:hover {
+  background-color: #d0ebff;
+  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+}
+
