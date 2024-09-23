@@ -7,13 +7,13 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../../../Services/api-service.service'; 
 import { DateService } from '../../../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
-import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import {TransactionReportDto,TransactionType } from '../../../reports/reports.model';
+import { TransactionReportDto, TransactionType } from '../../../reports/reports.model';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 @Component({
   selector: 'app-installment-transaction-history',
@@ -27,29 +27,22 @@ import {TransactionReportDto,TransactionType } from '../../../reports/reports.mo
     MatFormFieldModule,
     MatInputModule],
   templateUrl: './installment-transaction-history.component.html',
-  styleUrl: './installment-transaction-history.component.scss'
+  styleUrl: './installment-transaction-history.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InstallmentTransactionHistoryComponent {
+export class InstallmentTransactionHistoryComponent implements OnInit {
   @Input() from: Date = new Date(); // Take `from` as input from parent
   @Input() to: Date = new Date();   // Take `to` as input from parent
+  
   transactions: TransactionReportDto[] = [];
   installmenttransactions: TransactionReportDto[] = [];
-
-/// Separate items per page for each table
-transactionsPerPage: number = 5;
-installmentTransactionsPerPage: number = 5;
-installmentTransactionsPerPageOptions: number[] = [1,2,5,10]; // Modify as per your requirements
-loanPage:number = 1;
-installmentPage: number = 1;
-principlePage: number = 1;
-interestPage: number = 1;
   
-  searchControl = new FormControl();
-  transactionIds?: number[];
-  transactionIds_delete?: number[];
-  private readonly _currentDate = new Date();
-  readonly maxDate = new Date(this._currentDate);
+  transactionsPerPage: number = 5;
+  installmentTransactionsPerPage: number = 5;
+  installmentTransactionsPerPageOptions: number[] = [1, 2, 5, 10];
+  installmentPage: number = 1;
   
+  totalInstallmentAmount: number = 0; // New property to hold total installment amount
 
   constructor(
     private modalService: NgbModal, 
@@ -61,14 +54,12 @@ interestPage: number = 1;
     this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadTransactions();
-    this.cdr.detectChanges()
+    this.cdr.detectChanges();
   }
   
-
   loadTransactions(): void {
     this.apiService.getTransactions(this.from, this.to).subscribe({
       next: (transactions: TransactionReportDto[]) => {
-        // Apply filtering based on a condition before mapping
         const filteredTransactions = transactions
           .map(transaction => ({
             ...transaction,
@@ -76,8 +67,10 @@ interestPage: number = 1;
             selected: false,
             customerNIC: transaction.customer.customerNIC
           }));
-          this.addToInstallmentTransactions(filteredTransactions);
+          
+        this.addToInstallmentTransactions(filteredTransactions);
         this.transactions = filteredTransactions;
+        this.totalInstallmentAmount = this.calculateTotalAmount(this.installmenttransactions); // Calculate total installment amount
         this.cdr.markForCheck(); // Trigger change detection
       },
       error: (error: any) => {
@@ -88,56 +81,48 @@ interestPage: number = 1;
   }
 
   addToInstallmentTransactions(transactions: TransactionReportDto[]): void {
-    // Filter based on a condition after loading
     const filteredTransactions = transactions.filter(transaction => {
-      // Return the condition to filter only installment payments
       return transaction.transactionType === TransactionType.InstallmentPayment;
     });
-
-    // Add filtered transactions to the installment transactions list
     this.installmenttransactions = [...this.installmenttransactions, ...filteredTransactions];
-    this.cdr.detectChanges()
-}
-
-
-  
-
-  formatDate(dateString: string): string {
-    return this.dateService.formatDateTime(dateString);
+    this.cdr.detectChanges();
   }
 
-  
-  onStartDateChange(event: any): void{
-    this.from = new Date(event.value)
-    console.log("this.from: ", this.from);
-
-
+  calculateTotalAmount(transactions: TransactionReportDto[]): number {
+    const total = transactions.reduce((sum, transaction) => sum + (transaction.totalAmount || 0), 0);
+    return Math.ceil(total); // Round up the total value
   }
-  onDateRangeChange(event: any): void {
-   
-    if (event && event.value) 
-    {
-      const {end } = event.value;
-      
-        this.to = new Date(event.value);
-        this.to.setDate(this.to.getDate() + 1);
-        
-        console.log("this.to: ", this.to);
-        this.loadTransactions();
   
-    } 
-    else {
-      console.error('Event or event value is null');
-    }
-    this.cdr.markForCheck();
+
+  exportToExcel(): void {
+    const year = this.from.getFullYear();
+    const month = this.from.toLocaleString('default', { month: 'long' });
+    
+    const exportData = this.installmenttransactions.map(transaction => ({
+      Date: transaction.createdAt,
+      'Invoice No': transaction.invoice.invoiceNo,
+      'Customer NIC': transaction.customer.customerNIC,
+      'Principle Amount': transaction.subTotal,
+      'Interest Amount': transaction.interestAmount,
+      'Total Amount (Rs.)': transaction.totalAmount
+    }));
+
+    const titleRow = [{ Date: `Installment Transactions Report`, 'Invoice No': year, 'Customer NIC': month }];
+    const headerRow = [{ Date: 'Date', 'Invoice No': 'Invoice No', 'Customer NIC': 'Customer NIC', 'Principle Amount': 'Principle Amount', 'Interest Amount': 'Interest Amount', 'Total Amount (Rs.)': 'Total Amount (Rs.)' }];
+    const exportDataWithTitleAndHeader = [...titleRow, ...headerRow, ...exportData];
+    
+    const worksheet = XLSX.utils.json_to_sheet(exportDataWithTitleAndHeader, { skipHeader: true });
+    const workbook = { Sheets: { 'Installment Transactions': worksheet }, SheetNames: ['Installment Transactions'] };
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    saveAs(blob, `Installment_Transactions_${year}-${month}.xlsx`);
   }
 
-getInstallmentStartIndex(): number {
-  return (this.installmentPage - 1) * this.installmentTransactionsPerPage + 1;
-}
+  getInstallmentStartIndex(): number {
+    return (this.installmentPage - 1) * this.installmentTransactionsPerPage + 1;
+  }
 
-getInstallmentEndIndex(): number {
-  return Math.min(this.installmentPage * this.installmentTransactionsPerPage, this.installmenttransactions.length);
-}
-
+  getInstallmentEndIndex(): number {
+    return Math.min(this.installmentPage * this.installmentTransactionsPerPage, this.installmenttransactions.length);
+  }
 }

@@ -133,7 +133,8 @@ ngOnChanges(changes: SimpleChanges): void {
 
 calculateTotalAmount(transactions: TransactionReportDto[]): number {
 
-  return transactions.reduce((sum, transaction) => sum + (transaction.subTotal || 0), 0);
+  const total = transactions.reduce((sum, transaction) => sum + (transaction.subTotal || 0), 0);
+  return Math.ceil(total)
 }
 
   formatDate(dateString: string): string {
