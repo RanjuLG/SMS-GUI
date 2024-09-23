@@ -1,7 +1,7 @@
 <div class="container-fluid">
-    <div class="row">
+    <div class="row mb-4">
       <!-- Second Card: Installment Transactions -->
-      <div class="col-lg-6 mb-4">
+      <div class="col-lg-12">
         <div class="card shadow-sm">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">All Installment Transactions</h5>
@@ -30,10 +30,13 @@
                   </tr>
                 </tbody>
               </table>
+              <div *ngIf="installmenttransactions.length === 0" class="alert alert-warning">
+                No installment transactions found for the selected month.
+              </div>
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
               <select class="form-select" [(ngModel)]="installmentTransactionsPerPage">
-                <option *ngFor="let option of loanTransactionsPerPageOptions" [value]="option">{{ option }}</option>
+                <option *ngFor="let option of installmentTransactionsPerPageOptions" [value]="option">{{ option }}</option>
               </select>
               <span class="entries-info">
               Showing {{ getInstallmentStartIndex() }} to {{ getInstallmentEndIndex() }} of {{ installmenttransactions.length }} entries

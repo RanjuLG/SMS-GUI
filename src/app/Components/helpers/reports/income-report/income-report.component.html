@@ -7,38 +7,55 @@
         </div>
         <div class="card-body">
           <div class="row mb-3 align-items-center">
-            <!-- Year Selector (Wider Column) -->
-            <div class="col-md-4 mb-3">
+            <!-- Year Selector -->
+            <div class="col-md-3 mb-3">
               <label for="yearSelect" class="form-label">Select Year</label>
               <select id="yearSelect" class="form-select form-select-lg" [(ngModel)]="selectedYear">
+                <option value="" disabled>Please select a year</option>
                 <option *ngFor="let year of years" [value]="year">{{ year }}</option>
               </select>
             </div>
 
-            <!-- Month Selector (Wider Column) -->
-            <div class="col-md-4 mb-3">
+            <!-- Month Selector -->
+            <div class="col-md-3 mb-3">
               <label for="monthSelect" class="form-label">Select Month</label>
               <select id="monthSelect" class="form-select form-select-lg" [(ngModel)]="selectedMonth">
+                <option value="" disabled>Please select a month</option>
                 <option *ngFor="let month of months" [value]="month.value">{{ month.name }}</option>
               </select>
             </div>
 
-            <!-- Generate Report Button (Wider Column) -->
-            <div class="col-md-4 d-flex align-items-end">
+            <!-- Report Type Selector -->
+            <div class="col-md-3 mb-3">
+              <label for="reportTypeSelect" class="form-label">Select Report Type</label>
+              <select id="reportTypeSelect" class="form-select form-select-lg" [(ngModel)]="selectedReportType">
+                <option value="" disabled>Please select a report type</option>
+                <option *ngFor="let reportType of reportTypes" [value]="reportType.value">{{ reportType.name }}</option>
+              </select>
+            </div>
+
+            <!-- Generate Report Button -->
+            <div class="col-md-3 d-flex align-items-end">
               <button class="btn btn-primary btn-lg" (click)="generateReport()">
                 <i class="ri-file-list-line align-bottom me-1"></i> Generate Report
               </button>
             </div>
           </div>
-          
-          <!-- Transaction History Component (conditionally displayed) -->
-          <div class="row" *ngIf="showTransactionHistory">
+
+          <!-- Conditional Transaction History Display (only after generating report) -->
+          <div class="row" *ngIf="showTransactionHistory && selectedReportType === 'disbursement'">
             <div class="col-md-12">
               <app-initial-transaction-history [from]="from" [to]="to"></app-initial-transaction-history>
             </div>
           </div>
-        </div><!-- end card body -->
-      </div><!-- end card -->
-    </div><!-- end col -->
-  </div><!-- end row -->
-</div><!-- end container-fluid -->
+
+          <div class="row" *ngIf="showTransactionHistory && selectedReportType === 'Installment'">
+            <div class="col-md-12">
+              <app-installment-transaction-history [from]="from" [to]="to"></app-installment-transaction-history>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

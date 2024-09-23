@@ -6,6 +6,8 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { InitialTransactionHistoryComponent } from '../initial-transaction-history/initial-transaction-history.component';
 import { ChangeDetectorRef } from '@angular/core';
+import { InstallmentTransactionHistoryComponent } from '../installment-transaction-history/installment-transaction-history.component';
+
 @Component({
   selector: 'app-income-report',
   standalone: true,
@@ -16,20 +18,22 @@ import { ChangeDetectorRef } from '@angular/core';
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
-    InitialTransactionHistoryComponent
+    InitialTransactionHistoryComponent,
+    InstallmentTransactionHistoryComponent
   ],
   templateUrl: './income-report.component.html',
   styleUrls: ['./income-report.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IncomeReportComponent {
-  selectedYear!: number;
-  selectedMonth!: number;
+  selectedYear: string = ''; // Default as empty string
+  selectedMonth: string = ''; // Default as empty string
+  selectedReportType: string = ''; // Default as empty string
 
   from!: Date;
   to!: Date;
 
-  showTransactionHistory = false;
+  showTransactionHistory = false; // Only becomes true when Generate Report is clicked
 
   years: number[] = [];
   months = [
@@ -47,6 +51,12 @@ export class IncomeReportComponent {
     { value: 11, name: 'December' },
   ];
 
+  reportTypes = [
+    { value: 'disbursement', name: 'Loan Disbursement Transactions' },
+    { value: 'Installment', name: 'Loan Installment Transactions' },
+  ];
+   
+  
   constructor(private cdr: ChangeDetectorRef) {
     const currentYear = new Date().getFullYear();
     for (let year = currentYear - 10; year <= currentYear; year++) {
@@ -56,23 +66,28 @@ export class IncomeReportComponent {
 
   // Method to generate report
   generateReport(): void {
-    if (this.selectedYear !== undefined && this.selectedMonth !== undefined) {
-      // Start of the selected month (e.g., June 1, 2024)
-      this.from = new Date(this.selectedYear, this.selectedMonth, 1);
-      
-      console.log(this.selectedYear)
-      console.log(this.selectedMonth)
-      // Last day of the selected month (e.g., June 30, 2024)
-      this.to = new Date(this.selectedYear, this.from.getMonth() + 1, 0); 
-      
+    if (this.selectedYear !== '' && this.selectedMonth !== '' && this.selectedReportType !== '') {
+      // Set the date range based on selected month and year
+      this.from = new Date(+this.selectedYear, +this.selectedMonth, 1);
+      this.to = new Date(+this.selectedYear, this.from.getMonth() + 1, 0); // Last day of the selected month
+  
+      // Hide the transaction history first to reset components
+      this.showTransactionHistory = false;
+  
+      // Trigger Angular change detection to hide the component
+      this.cdr.detectChanges();
+  
+      // Show transaction history again after a short timeout (or next cycle)
+      setTimeout(() => {
+        this.showTransactionHistory = true;
+        // Trigger change detection again after showing the new data
+        this.cdr.detectChanges();
+      }, 0);
+  
       console.log('From:', this.from);
       console.log('To:', this.to);
-  
-      this.showTransactionHistory = true;
-
-      this.cdr.detectChanges();
     } else {
-      console.warn('Please select both year and month to generate the report.');
+      console.warn('Please select both year, month, and report type to generate the report.');
       this.showTransactionHistory = false;
       this.cdr.detectChanges();
     }

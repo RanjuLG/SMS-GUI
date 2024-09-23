@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -30,14 +30,15 @@ import {TransactionReportDto,TransactionType } from '../../../reports/reports.mo
   styleUrl: './installment-transaction-history.component.scss'
 })
 export class InstallmentTransactionHistoryComponent {
-
+  @Input() from: Date = new Date(); // Take `from` as input from parent
+  @Input() to: Date = new Date();   // Take `to` as input from parent
   transactions: TransactionReportDto[] = [];
   installmenttransactions: TransactionReportDto[] = [];
 
 /// Separate items per page for each table
 transactionsPerPage: number = 5;
 installmentTransactionsPerPage: number = 5;
-transactionsPerPageOptions: number[] = [1,2,5,10]; // Modify as per your requirements
+installmentTransactionsPerPageOptions: number[] = [1,2,5,10]; // Modify as per your requirements
 loanPage:number = 1;
 installmentPage: number = 1;
 principlePage: number = 1;
@@ -48,8 +49,6 @@ interestPage: number = 1;
   transactionIds_delete?: number[];
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
-  from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
   
 
   constructor(
@@ -62,32 +61,6 @@ interestPage: number = 1;
     this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadTransactions();
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((nic: string) => {
-        if (!nic) {
-          return this.apiService.getTransactions(this.from,this.to); // Return all transactions if NIC is empty
-        }
-        console.log(nic)
-        return this.apiService.getTransactionsByCustomerNIC(nic).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
-        );
-      })
-    ).subscribe({
-      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
-        this.transactions = result.map(transaction => ({
-          ...transaction,
-          createdAt: this.dateService.formatDateTime(transaction.createdAt),
-          selected: false,
-          customerNIC: transaction.customerNIC // Ensure this property is available in the response
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
-      },
-      error: (error: any) => {
-        console.error('Failed to fetch transactions', error);
-      }
-    });
     this.cdr.detectChanges()
   }
   
@@ -104,7 +77,6 @@ interestPage: number = 1;
             customerNIC: transaction.customer.customerNIC
           }));
           this.addToInstallmentTransactions(filteredTransactions);
-          this.addToLoanIssueTransactions(filteredTransactions);
         this.transactions = filteredTransactions;
         this.cdr.markForCheck(); // Trigger change detection
       },
@@ -114,18 +86,6 @@ interestPage: number = 1;
     });
     this.cdr.markForCheck();
   }
-
-  addToLoanIssueTransactions(transactions: TransactionReportDto[]): void {
-    // Filter based on a condition after loading
-    const filteredTransactions = transactions.filter(transaction => {
-      // Return the condition to filter only installment payments
-      return transaction.transactionType === TransactionType.LoanIssuance;
-    });
-
-    // Add filtered transactions to the installment transactions list
-    this.loanIssuetransactions = [...this.loanIssuetransactions, ...filteredTransactions];
-    this.cdr.detectChanges()
-}
 
   addToInstallmentTransactions(transactions: TransactionReportDto[]): void {
     // Filter based on a condition after loading
@@ -179,8 +139,5 @@ getInstallmentStartIndex(): number {
 getInstallmentEndIndex(): number {
   return Math.min(this.installmentPage * this.installmentTransactionsPerPage, this.installmenttransactions.length);
 }
-
-
-
 
 }
