@@ -45,7 +45,7 @@
               <li><a class="dropdown-item" routerLink="/create-invoice" routerLinkActive="active-link">Create Invoice</a></li>
             </ul>
           </li>
-
+<!--
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-muted" href="#" id="financialDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
               <i class="ri-cash-line nav-icon"></i> Finance
@@ -55,9 +55,19 @@
               <li><a class="dropdown-item" routerLink="/cash-balance" routerLinkActive="active-link">Cash Balance</a></li>
             </ul>
           </li>
+          -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-muted" href="#" id="reportDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="ri-file-chart-line nav-icon"></i> Reports
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="financialDropdown">
+              <li><a class="dropdown-item" routerLink="/reports/by-customer" routerLinkActive="active-link">Customer History</a></li>
+              <li><a class="dropdown-item" routerLink="/reports/transactions" routerLinkActive="active-link">Transaction History</a></li>
+            </ul>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle text-muted" href="#" id="financialDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ri-tools-line nav-icon"></i> Configuration
+              <i class="ri-settings-2-line"></i> Configuration
             </a>
             <ul class="dropdown-menu" aria-labelledby="financialDropdown">
               <li><a class="dropdown-item" routerLink="/config/pricings" routerLinkActive="active-link">Pricings</a></li>
