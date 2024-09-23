@@ -13,4 +13,11 @@ export interface User {
     roles?: string[];
     //selected?: boolean;
   }
+
+  export interface CreateUserDTO {
+    userName: string;
+    email?: string;
+    roles: string[];
+    password: string[];
+  }
   

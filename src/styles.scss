@@ -2,8 +2,52 @@
 
 td, th{
 
-    font-size: smaller;
+    font-size: 0.7rem;
 
+}
+h4{
+
+  font-size: 1.1rem !important;
+
+}
+h5{
+
+  font-size: 1rem !important;
+
+}
+.form-select {
+  font-size: 0.7rem !important;
+}
+.entries-info {
+  font-size: 0.7rem !important;
+}
+pagination-controls {
+  font-size: 0.7rem !important;
+}
+.nav-link, .dropdown-item{
+  font-size: 0.8rem !important;
+}
+input::placeholder {
+  font-size: 0.8rem !important;
+  
+}
+mat-label{
+  font-size: 0.9rem !important;
+}
+button{
+  font-size: 0.8rem !important;
+}
+.form-label{
+  font-size: 0.8rem !important;
+}
+.modal-title{
+font-weight: bold !important;
+  font-size: 0.9rem !important;
+}
+
+.btn-close ,.btn {
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 html, body { height: 100%; }

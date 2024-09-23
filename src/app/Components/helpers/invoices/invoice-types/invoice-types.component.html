@@ -1,0 +1,43 @@
+<div class="container-fluid my-4">
+    <div class="row justify-content-center g-3">
+      
+      <!-- Initial Invoice -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100  p-3 card-hover" (click)="showInvoiceType = 'initial'">
+          <h5 class="card-title">Initial Invoice</h5>
+          <p class="card-text">Generate the first invoice for newly pawning items.</p>
+        </div>
+      </div>
+  
+      <!-- Installment Invoice  -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100  p-3 card-hover" (click)="showInvoiceType = 'installment'">
+          <h5 class="card-title">Installment Invoice</h5>
+          <p class="card-text">Generate an invoice for installment or interest payments.</p>
+        </div>
+      </div>
+  
+      <!-- Settlement Invoice  -->
+      <div class="col-lg-3 col-md-4 col-sm-6">
+        <div class="card h-100  p-3 card-hover" (click)="showInvoiceType = 'settlement'">
+          <h5 class="card-title">Settlement Invoice</h5>
+          <p class="card-text">Generate the final invoice to settle loans.</p>
+        </div>
+      </div>
+  
+    </div>
+  </div>
+  
+
+<!-- Conditionally load invoice component in the same container -->
+<div class="container-fluid my-4">
+    <div *ngIf="showInvoiceType === 'initial'">
+        <app-create-invoice></app-create-invoice>
+    </div>
+    <div *ngIf="showInvoiceType === 'installment'">
+        <app-create-installment-payment-invoice></app-create-installment-payment-invoice>
+    </div>
+    <div *ngIf="showInvoiceType === 'settlement'">
+        <app-create-settlement-invoice></app-create-settlement-invoice>
+    </div>
+</div>

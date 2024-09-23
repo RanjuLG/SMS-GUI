@@ -1,13 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit,ViewEncapsulation  } from '@angular/core';
 import { ApiService } from '../../../../Services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { InvoiceDto } from '../../../invoice-form/invoice.model';
 import { GetCustomerDTO, GetItemDTO, TransactionDto } from '../../../transaction-history/transaction.model';
 import html2pdf from 'html2pdf.js';
-import { NgModule } from '@angular/core';
+import { ConfigService } from '../../../../Services/config-service.service';
 import { CommonModule } from '@angular/common';
 import { DateService } from '../../../../Services/date-service.service';
-
 
 @Component({
   selector: 'app-invoice-template',
@@ -15,91 +14,101 @@ import { DateService } from '../../../../Services/date-service.service';
   templateUrl: './invoice-template.component.html',
   styleUrls: ['./invoice-template.component.scss'],
   imports: [CommonModule],
+  encapsulation: ViewEncapsulation.Emulated
 })
 export class InvoiceTemplateComponent implements OnInit {
-  invoiceId: number = 0; // Holds the invoice ID from the route parameter
-  invoice: InvoiceDto | null = null; // Holds the invoice data
-  transaction: TransactionDto | null = null; // Holds the transaction data
-  customer: GetCustomerDTO | null = null; // Holds the customer data
-  items: GetItemDTO[] | null = null; // Holds the item data
-  errorMessage: string | null = null; // Holds any error messages
-  dateGenerated:string | null = null;
+  invoiceId: number = 0;
+  invoice: InvoiceDto | null = null;
+  transaction: TransactionDto | null = null;
+  customer: GetCustomerDTO | null = null;
+  items: GetItemDTO[] | null = null;
+  dateGenerated: string | null = null;
+  errorMessage: string | null = null;
 
-  constructor(private apiService: ApiService, private route: ActivatedRoute,private dateService: DateService,) { }
+  customWidth = 229; // Custom width in mm
+  customHeight = 180; // Custom height in mm
+
+  constructor(
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private dateService: DateService,
+    private configService: ConfigService,
+  ) {}
 
   ngOnInit(): void {
-    // Get the invoice ID from the route parameters
     this.invoiceId = +this.route.snapshot.paramMap.get('invoiceId')!;
-    console.log("invoiceId: ", this.invoiceId)
-    // Fetch the invoice details using the obtained invoice ID
     this.getInvoiceDetails();
+    this.getInvoiceSettings()
   }
 
   getInvoiceDetails(): void {
-    // Make a call to the ApiService to fetch invoice details
     this.apiService.getInvoiceDetails(this.invoiceId).subscribe({
       next: (data) => {
-        console.log("data: ", data)
-        // Assign the fetched data to the respective properties
         this.invoice = data.invoice;
         this.transaction = data.transactions[0];
-        console.log("this.transaction",this.transaction)
         this.customer = data.customer;
         this.items = this.transaction.items;
-        this.dateGenerated = this.formatDate(this.invoice.dateGenerated)
-        console.log("this.transaction ", this.transaction)
-        console.log("this.items: ", this.items)
-        console.log("customer ",this.customer)
+        this.dateGenerated = this.formatDate(this.invoice.dateGenerated);
       },
       error: (err) => {
-        // Handle any errors that occur during the API call
         this.errorMessage = err;
       }
     });
-  }
-
-  downloadTemplate(): void {
-    const element = document.getElementById('printable-template');
-    if (element) {
-      const options = {
-        margin: 2,
-        filename: `${this.invoice?.invoiceNo}.pdf`,
-        image: { type: 'jpeg', quality: 1 },
-        html2canvas: { scale: 1 },
-        jsPDF: { format: 'a4', orientation: 'landscape' } // Half A4 size in landscape orientation
-      };
-      html2pdf().from(element).set(options).save();
-    }
   }
 
   formatDate(dateString: string): string {
     return this.dateService.formatDateTime(dateString);
   }
 
+  // Function to print the invoice
+  printTemplate(): void {
+    const element = document.getElementById('printable-template');
+    if (element) {
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write('<html><head><title>Print Invoice</title>');
+        printWindow.document.write('</head><body>');
+        printWindow.document.write(element.outerHTML);
+        printWindow.document.write('</body></html>');
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }
+    }
+  }
 
-  /*
+ getInvoiceSettings(): void {
+
+  var settings = this.configService.invoiceSettings;
+
+  console.log("this.settings: ",settings)
+  this.customWidth = settings.width;
+  this.customHeight = settings.height;
+ }
+  // Function to download the invoice as a PDF using html2pdf.js
   downloadTemplate(): void {
     const element = document.getElementById('printable-template');
     if (element) {
       const options = {
-        margin: 1,
-        filename: this.invoice?.invoiceNo,
+        margin: 0,
+        filename: `${this.invoice?.invoiceNo}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 1 },
-        jsPDF: { format: 'a4', orientation: 'landscape' }
+        html2canvas: {
+          scale: 4,
+          useCORS: true
+        },
+        jsPDF: { 
+          unit: 'mm', // Specify the unit as millimeters
+          format: [this.customWidth, this.customHeight], // Custom dimensions in mm
+          orientation: 'portrait' // Orientation: 'portrait' or 'landscape'
+        }
       };
+  
       html2pdf().from(element).set(options).save();
     }
   }
-    */
-  printTemplate(): void {
-    const printContents = document.getElementById('printable-template')?.innerHTML;
-    if (printContents) {
-      const originalContents = document.body.innerHTML;
-      document.body.innerHTML = printContents;
-      window.print();
-      document.body.innerHTML = originalContents;
-     // window.location.reload(); // Reload the page to restore the original content
-    }
-  }
+  
 }
+  
+

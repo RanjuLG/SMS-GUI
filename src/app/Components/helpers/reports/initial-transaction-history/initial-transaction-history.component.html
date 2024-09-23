@@ -1,0 +1,75 @@
+<div class="container-fluid">
+  <!-- Row 1: Cards displaying totals -->
+  <div class="row mb-4">
+    <!-- Card for Total Loan Issuance Amount -->
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+      <div class="card h-100  p-3 card-hover">
+        <h5 class="card-title">Total Loan Issuance Amount</h5>
+        <p class="card-text display-6">Rs. {{ totalLoanIssuanceAmount }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2: Loan Transactions Table -->
+  <div class="row mb-4">
+    <div class="col-lg-12">
+      <div class="card shadow-sm">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">Loan Disbursement Transactions</h5>
+          <div class="d-flex justify-content-end mb-3">
+            <button type="button" class="btn btn-success" (click)="exportToExcel()"> <i
+                class="ri-file-download-line"></i>Export</button>
+          </div>
+
+        </div>
+        <div class="card-body">
+          <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table table-hover">
+              <thead>
+                <tr class="bg-light text-muted">
+                  <th scope="col">Date</th>
+                  <th scope="col">Invoice No</th>
+                  <th scope="col">Customer NIC</th>
+                  <th scope="col">Principle Amount</th>
+                  <th scope="col">Interest Amount</th>
+                  <th scope="col">Total Amount (Rs.)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let transaction of loanIssuetransactions | paginate: { itemsPerPage: transactionsPerPage, currentPage: loanPage }">
+                  <td>{{ transaction.createdAt | date }}</td>
+                  <td>{{ transaction.invoice.invoiceNo }}</td>
+                  <td>{{ transaction.customer.customerNIC }}</td>
+                  <td>{{ transaction.subTotal }}</td>
+                  <td>{{ transaction.interestAmount }}</td>
+                  <td>{{ transaction.totalAmount }}</td>
+                </tr>
+              </tbody>
+            </table>
+            <!-- Display "No Data Available" if the array is empty -->
+            <div *ngIf="loanIssuetransactions.length === 0" class="alert alert-warning">
+              No disbursement transactions found for the selected month.
+            </div>
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <select class="form-select" [(ngModel)]="transactionsPerPage">
+              <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
+            </select>
+            <span class="entries-info">
+              Showing {{ getLoanStartIndex() }} to {{ getLoanEndIndex() }} of {{ loanIssuetransactions.length }} entries
+            </span>
+            <pagination-controls (pageChange)="loanPage = $event"></pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Future Row: Additional Statistics or Data -->
+  <div class="row">
+    <!-- You can place more cards or tables for additional data here -->
+  </div>
+</div>

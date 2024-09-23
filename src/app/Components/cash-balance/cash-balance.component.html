@@ -93,9 +93,9 @@
                         </table>
                     </div>
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
+                        <span class="entries-info">
                             Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ balances.length }} entries
-                        </div>
+                        </span>
                         <pagination-controls (pageChange)="page = $event"></pagination-controls>
                     </div>
                 </div><!-- end card body -->

@@ -1,0 +1,111 @@
+.card {
+    border-radius: 0.5rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  }
+  
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  
+  .table thead th {
+    background-color: #f8f9fa;
+    color: #6c757d;
+  }
+  
+  .table tbody tr:hover {
+    background-color: #f1f3f5;
+  }
+  
+  .table .badge {
+    font-size: 0.875rem;
+  }
+  
+  .btn {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  
+  .btn-outline-warning,
+  .btn-outline-danger {
+    color: #6c757d;
+  }
+  
+  #searchResultList {
+    max-width: 100%;
+  }
+  
+  .form-select {
+    max-width: 100px;
+  }
+  
+  .pagination-controls {
+    .pagination {
+      margin: 0;
+    }
+  }
+  .search-nic {
+    width: 225px; /* Set width independently */
+  }
+  
+  .d-flex > div {
+    display: flex;
+    align-items: center;
+  }
+  
+  .me-2 {
+    margin-right: 0.5rem; /* Space between the date range picker and search box */
+  }
+  
+  .w-100 {
+    width: 100%; /* Ensure date range picker takes full width of its container */
+  }
+  
+  
+    .gridjs-pagination {
+      .gridjs-pages button {
+          margin-left: 0.3rem;
+          border-radius: 0.25rem !important; /* Adjusted border-radius */
+          border: 1px solid #dee2e6; /* Light grey border */
+          background-color: #f8f9fa; /* Light background color */
+          color: #343a40; /* Dark grey text color */
+  
+          &:last-child {
+              border-right: 1px solid #dee2e6;
+          }
+  
+          &:disabled,
+          &:hover:disabled,
+          &[disabled] {
+              color: #6c757d; /* Grey color for disabled state */
+              background-color: #f8f9fa;
+          }
+  
+          &:hover {
+              background-color: #e2e6ea; /* Slightly darker background on hover */
+              color: #343a40; /* Same text color on hover */
+          }
+  
+          &:focus {
+              box-shadow: none;
+          }
+  
+          &:last-child,
+          &:first-child {
+              &:hover {
+                  background-color: transparent;
+              }
+          }
+  
+          &.gridjs-currentPage {
+              background-color: #007bff; /* Primary blue background for active page */
+              color: #fff; /* White text color for active page */
+              border-color: #007bff; /* Primary blue border color for active page */
+              font-weight: 500; /* Medium font weight */
+          }
+      }
+  
+      
+  }
+  
+  

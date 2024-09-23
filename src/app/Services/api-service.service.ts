@@ -10,9 +10,9 @@ import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
-import { User, UserDTO } from '../Components/user-management/user.model';
+import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
-import { ReportByCustomer } from '../Components/reports/reports.model';
+import { ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
 
 @Injectable({
   providedIn: 'root'
@@ -199,11 +199,11 @@ export class ApiService {
 }
 
 
-getTransactions(from: Date, to: Date): Observable<TransactionDto[]> {
+getTransactions(from: Date, to: Date): Observable<TransactionReportDto[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   const fromStr = from.toISOString();
     const toStr = to.toISOString();
-  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
+  return this.http.get<TransactionReportDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
     .pipe(catchError(this.handleError));
 }
 
@@ -259,12 +259,11 @@ getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transac
   .pipe(catchError(this.handleError));
 }
 
+//users
 getUsers(){
-
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<User[]>(`${this.configService.apiUrl}/api/account/users`)
   .pipe(catchError(this.handleError));
-
 }
 
 updateUser(userId: string,UserDto:UserDTO){

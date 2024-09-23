@@ -37,11 +37,8 @@ export class AuthService {
 
   register(username: string, email: string, password: string, role: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.post(`${this.authUrl}/register`, 
+    return this.http.post(`${this.authUrl}/register?token=${token}`,
       { username, email, password, roles: [role] }, 
-      {
-        headers: { Authorization: `Bearer ${token}` }
-      }
     );
   }
     
@@ -54,9 +51,9 @@ export class AuthService {
     const token = localStorage.getItem('token');
     if (token) {
       const decodedToken = this.jwtHelper.decodeToken(token);
-      console.log("Decoded Token: ", decodedToken);
       return decodedToken?.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
     }
     return null;
   }
+  
 }
