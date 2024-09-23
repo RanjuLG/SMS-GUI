@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } fr
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ApiService } from '../../../../Services/api-service.service';
-import { CreateInvoiceDto, InvoiceDto, Item } from '../../../invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, Item } from '../../../invoice-form/invoice.model';
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -26,8 +26,8 @@ export class CreateSettlementInvoiceComponent implements OnInit {
   isCustomerAutofilled = false;
   initialInvoiceNumber = '0';
   //installmentNumber = 0;
-  initialInvoices: InvoiceDto[] = []; // Add this line
-  selectedInvoice: InvoiceDto | null = null; // Add this line
+  initialInvoices: InvoiceDto2[] = []; // Add this line
+  selectedInvoice: InvoiceDto2 | null = null; // Add this line
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -65,22 +65,23 @@ export class CreateSettlementInvoiceComponent implements OnInit {
   }
 // New method to fetch invoices by NIC
 fetchInvoicesByNIC(nic: string): void {
-  this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
-    next: (invoices: InvoiceDto[]) => {
-      // Filter the invoices where invoiceTypeId equals 2
-      this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
-      
-      // Optionally check if no valid invoices are found and show a warning
-      if (this.initialInvoices.length === 0) {
-        Swal.fire('Warning', 'No valid installment payment invoices found for this customer', 'warning');
+    this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
+      next: (invoices: InvoiceDto2[]) => {
+        this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
+        console.log("this.initialInvoices: ",this.initialInvoices)
+        if (this.initialInvoices.length <= 0) {
+          Swal.fire('Warning', 'No valid installment payment invoices found for this customer', 'warning');
+        }
+      },
+      error: (error) => {
+        console.error('Error fetching invoices:', error);
+        Swal.fire('Error', 'Failed to fetch invoices for this customer', 'error');
+        //this.clearInvoiceFields();
+
+        
       }
-    },
-    error: (error) => {
-      console.error('Error fetching invoices:', error);
-      Swal.fire('Error', 'Failed to fetch invoices for this customer', 'error');
-    }
-  });
-}
+    });
+  }
 
 
 // New method to handle selection of an initial invoice
@@ -98,36 +99,11 @@ onInitialInvoiceSelected(event: Event): void {
       const loanPeriod = this.selectedInvoice.loanPeriod;
       console.log("this.selectedInvoice", this.selectedInvoice);
 
-      if (loanPeriod > 0) {
-        // Call the API to get transaction details using transaction IDs
-        const transactionIds = [this.selectedInvoice.invoiceId];  // Pass an array of transaction IDs
-        
-        this.apiService.getTransactionsByIds(transactionIds).subscribe({
-          next: (transactions: TransactionDto[]) => {
-            // Handle the first transaction in the response
-            const transaction = transactions[0];
-            console.log("transaction", transaction);
-            if (transaction) {
-              // Patch the form with the transaction details
-              this.invoiceForm.patchValue({
-                subTotal: transaction.subTotal,
-                interest: transaction.interestRate,
-                totalAmount: transaction.totalAmount
-              });
-            } else {
-              Swal.fire('Warning', 'No transactions found for the selected invoice', 'warning');
-            }
-          },
-          error: (error: any) => {
-            Swal.fire('Error', 'Failed to load transaction details', 'error');
-          },
-          complete: () => {
-            console.log('Transaction data fetch complete');
-          }
-        });        
-      } else {
-        Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
-      }
+      this.invoiceForm.patchValue({
+        subTotal: this.selectedInvoice.principleAmount,
+        interest: this.selectedInvoice.interestRate,
+        totalAmount: this.selectedInvoice.totalAmount
+      });
     }
   }
 }
@@ -236,9 +212,6 @@ onInitialInvoiceSelected(event: Event): void {
                           Swal.fire('Error', 'Failed to create invoice', 'error');
                         }
                       });
-
-                    
-            
           }
         }
       });

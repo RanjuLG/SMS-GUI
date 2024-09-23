@@ -46,7 +46,8 @@ export class CreateInvoiceComponent implements OnInit {
       loanPeriod: [null, Validators.required], // Updated to hold loanPeriodId
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
-      interest: [0, Validators.required],
+      interestRate: [0, Validators.required],
+      interestAmount: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [1, Validators.required]
     });
@@ -54,7 +55,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   ngOnInit(): void {
     const newItem = this.createItem();
-    this.items().push(newItem);
+    //this.items().push(newItem);
     if (this.invoice) {
       this.invoiceForm.patchValue(this.invoice);
       this.isEditMode = true;
@@ -97,6 +98,7 @@ export class CreateInvoiceComponent implements OnInit {
     this.apiService.getAllKarats().subscribe({
       next: (karats) => {
         this.karats = karats;
+        console.log(" this.karats: ", this.karats)
       },
       error: (error) => {
         console.error('Error fetching karat values:', error);
@@ -182,6 +184,8 @@ export class CreateInvoiceComponent implements OnInit {
   addItem(): void {
     const newItem = this.createItem();
     this.items().push(newItem);
+    // Subscribe to changes in the newly added item's fields
+  this.subscribeToItemChanges(newItem);
     // Enable form controls for new items
     newItem.get('itemDescription')?.enable();
     newItem.get('itemCaratage')?.enable();
@@ -261,9 +265,16 @@ export class CreateInvoiceComponent implements OnInit {
   onSubTotalOrInterestChange() {
     if (!this.manualTotalAmountEdit) {
       const subTotal = this.invoiceForm.get('subTotal')?.value;
-      const interest = this.invoiceForm.get('interest')?.value;
-      const totalAmount = subTotal + (subTotal * interest / 100);
-      this.invoiceForm.patchValue({ totalAmount });
+      const interestRate = this.invoiceForm.get('interestRate')?.value;
+      if (subTotal && interestRate) {
+        const interestAmount = (subTotal * interestRate) / 100;
+        this.invoiceForm.patchValue({ interestAmount });
+
+        if (interestAmount) {
+          const totalAmount = subTotal + interestAmount;
+          this.invoiceForm.patchValue({ totalAmount });
+        }
+      }
     }
   }
 
@@ -273,6 +284,7 @@ export class CreateInvoiceComponent implements OnInit {
 
   onSubmit() {
     if (this.invoiceForm.valid) {
+      console.log("interestAmount: ",this.invoiceForm.value.interestAmount),
       Swal.fire({
         title: 'Confirm Invoice Submission',
         text: 'Are you sure you want to submit this invoice?',
@@ -284,13 +296,14 @@ export class CreateInvoiceComponent implements OnInit {
         if (result.isConfirmed) {
           const invoiceDto: CreateInvoiceDto = {
             ...this.invoiceForm.value,
-            loanPeriodId: this.invoiceForm.value.loanPeriod, // Attach the selected loanPeriodId
+            loanPeriodId: this.invoiceForm.value.loanPeriod,
+            interestAmount: this.invoiceForm.value.interestAmount,
             items: this.invoiceForm.value.items.map((item: Item) => ({
               ...item,
               itemId: item.itemId || 0 // Set itemId to 0 if it's null
             }))
           };
-
+  
           if (this.isEditMode && this.invoice) {
             this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
               next: () => {
@@ -304,7 +317,7 @@ export class CreateInvoiceComponent implements OnInit {
               }
             });
           } else {
-            this.apiService.createInvoice(invoiceDto,'0',0).subscribe({
+            this.apiService.createInvoice(invoiceDto, '0', 0).subscribe({
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);
@@ -318,6 +331,7 @@ export class CreateInvoiceComponent implements OnInit {
           }
         }
       });
+
     } else {
       Swal.fire({
         icon: 'warning',
@@ -327,7 +341,8 @@ export class CreateInvoiceComponent implements OnInit {
       });
     }
   }
-
+  
+  
   onCancel() {
     Swal.fire({
       title: 'Cancel Changes',
@@ -356,6 +371,7 @@ export class CreateInvoiceComponent implements OnInit {
     const goldWeight = itemFormGroup.get('itemGoldWeight')?.value;
 
     if (!karatValue || !loanPeriodId || !goldWeight) {
+      console.warn("Missing or invalid values:", { karatValue, goldWeight, loanPeriodId });
         return; // Exit if any of the values are missing
     }
 
@@ -393,4 +409,3 @@ private subscribeToItemChanges(item: FormGroup): void {
 
 
 }
-

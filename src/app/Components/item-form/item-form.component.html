@@ -108,9 +108,9 @@
                                     </option>
                                 </select>
                             
-                            <div>
+                                <span class="entries-info">
                                 Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ items.length }} entries
-                            </div>
+                                </span>
                             <pagination-controls (pageChange)="page = $event"></pagination-controls>
                         </div>
                     </div>

@@ -1,3 +1,5 @@
+import { GetCustomerDTO } from "../transaction-history/transaction.model";
+
 export interface ReportByCustomer {
     customerId: number;
     customerName: string;
@@ -7,6 +9,7 @@ export interface ReportByCustomer {
   
   export interface Loan {
     loanId: number;
+    invoiceNo: string;
     transactionId: number;
     startDate: string; // ISO date string
     endDate: string; // ISO date string
@@ -22,9 +25,32 @@ export interface ReportByCustomer {
     createdAt: string; // ISO date string
     subTotal: number;
     interestRate: number;
+    interestAmount:number;
     totalAmount: number;
     customer: TransactionCustomer;
-    items: TransactionItem[];
+    transaction: Transaction;
+    installments: Installment[];
+  }
+
+  export interface TransactionReportDto {
+    transactionId: number;
+    transactionType: TransactionType;
+    createdAt: string;
+    subTotal: number;
+    interestRate: number;
+    interestAmount: number;
+    totalAmount: number;
+    customer: GetCustomerDTO;
+    invoice: InvoiceReportDto;
+    installments: Installment[];
+  }
+  export interface InvoiceReportDto {
+    invoiceId: number;
+    invoiceTypeId: number;
+    invoiceNo: string;
+    totalAmount: number;
+    dateGenerated: string;
+    status:number;
   }
   
   export interface TransactionCustomer {
@@ -49,8 +75,17 @@ export interface ReportByCustomer {
   
   export interface Installment {
     installmentId: number;
-    loanId: number;
-    amountPaid: number;
-    datePaid: string; // ISO date string
+    installmentNo: number;
+    AmountPaid: number;
+    dueDate: string; // ISO date string
+    paymentDate: string;
   }
-  
+
+  export enum TransactionType
+{
+    LoanIssuance = 1,
+    InstallmentPayment = 2,
+    InterestPayment = 3,
+    LateFeePayment = 4,
+    LoanClosure = 5
+}

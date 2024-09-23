@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-sign-up',
@@ -38,6 +39,7 @@ export class SignUpComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+
     if (this.signUpForm.invalid) {
       return;
     }
@@ -49,11 +51,27 @@ export class SignUpComponent implements OnInit {
 
     this.authService.register(username, email, password, role).subscribe({
       next: () => {
-        this.router.navigate(['/auth/sign-in']);
+        // Display success SweetAlert2 popup
+        Swal.fire({
+          icon: 'success',
+          title: 'Registration Successful!',
+          text: 'User has been registered successfully!',
+          confirmButtonText: 'OK',
+          timer: 3000
+        }).then(() => {
+          // Navigate after the success message
+          this.router.navigate(['/config/users']);
+        });
       },
       error: (err) => {
-        console.error('Registration failed', err);
-        // Handle registration error, e.g., display an error message
+        // Display error SweetAlert2 popup
+        Swal.fire({
+          icon: 'error',
+          title: 'Registration Failed',
+          text: 'An error occurred during registration. Please try again later.',
+          confirmButtonText: 'OK',
+        });
+        console.error('Registration failed', err.errors);  // Optional logging
       }
     });
   }

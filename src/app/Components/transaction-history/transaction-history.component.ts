@@ -4,7 +4,6 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { TransactionDto } from './transaction.model';
 import { ApiService } from '../../Services/api-service.service'; 
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -14,9 +13,10 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { TransactionReportDto } from '../reports/reports.model';
 
 
-export interface ExtendedTrasactionDto extends TransactionDto {
+export interface ExtendedTrasactionDto extends TransactionReportDto {
   selected?: boolean;
 }
 

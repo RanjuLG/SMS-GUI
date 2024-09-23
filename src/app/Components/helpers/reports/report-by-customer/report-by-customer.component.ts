@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import { catchError, debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { ReportByCustomer, Loan } from '../../../reports/reports.model';
 import { ApiService } from '../../../../Services/api-service.service';
 import Swal from 'sweetalert2';
@@ -29,13 +29,14 @@ export class ReportByCustomerComponent implements OnInit {
   error: string | null = null;
   showInstallments: boolean[] = []; // Array to track which loan's installments are visible
   selectedLoan: Loan | null = null;  // Stores the currently selected loan for modal
-
+  isReportsLoaded: boolean = false;
   // Pagination properties
   page: number = 1;
   itemsPerPage: number = 10;
   itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   paginatedLoans: Loan[] = [];
-
+  searchInvoiceNo: string = ''; 
+  customerNIC: string = '';
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
@@ -48,54 +49,61 @@ export class ReportByCustomerComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Any initialization logic here
+    // Automatically trigger report fetching when NIC is entered
+    this.form.get('customerNIC')?.valueChanges
+      .pipe(
+        debounceTime(500), // Add debounce to avoid triggering the API on every keystroke
+        distinctUntilChanged() // Only trigger when the value actually changes
+      )
+      .subscribe((nic) => {
+        if (nic) {
+          this.getReportByCustomer(nic).subscribe({
+            next: (data) => {
+              this.report = data;
+              this.error = null;
+              this.isReportsLoaded = true;
+              this.showInstallments = new Array(data.loans.length).fill(false);
+              this.updatePaginatedLoans();
+              this.customerNIC = nic;
+            },
+            error: (err) => {
+              this.clearTable();
+              //this.showError('Failed to fetch the report. Please check the NIC and try again.');
+            },
+          });
+        } else {
+          // Clear the table if NIC is empty
+          this.clearTable();
+        }
+      });
   }
 
   // Fetch report by customer NIC
   getReportByCustomer(customerNIC: string): Observable<ReportByCustomer> {
     return this.apiService.getReportByCustomer(customerNIC).pipe(
       catchError((error) => {
-        this.showError('Failed to fetch report. Please check the NIC or try again later.');
+        //this.showError('Failed to fetch report. Please check the NIC or try again later.');
         return throwError(() => error);
       })
     );
-  }
-
-  // On form submission
-  onSubmit(): void {
-    const customerNIC = this.form.get('customerNIC')?.value;
-    if (customerNIC) {
-      // Removed showConfirmation logic
-      this.getReportByCustomer(customerNIC).subscribe({
-        next: (data) => {
-          this.report = data;
-          this.error = null;
-          this.showInstallments = new Array(data.loans.length).fill(false); // Initialize the array for toggling
-          this.updatePaginatedLoans();
-          Swal.fire('Success', 'Report fetched successfully!', 'success');
-        },
-        error: (err) => {
-          console.error(err);
-          this.clearTable();
-          this.showError('Failed to fetch the report. Please check the NIC and try again.');
-        },
-      });
-    }
   }
 // Clears the table when the search fails or no data is found
 clearTable(): void {
   this.report = null;
   this.paginatedLoans = [];
   this.showInstallments = [];
-  this.page = 1; // Reset to the first page
+  this.page = 1;
+  this.isReportsLoaded = false;
 }
   // Update the loans to display based on pagination
   updatePaginatedLoans(): void {
     if (this.report?.loans) {
-      const startIndex = (this.page - 1) * this.itemsPerPage;
-      const endIndex = startIndex + this.itemsPerPage;
-      // Ensure you're slicing the array correctly based on the current page and items per page
-      this.paginatedLoans = this.report.loans.slice(startIndex, endIndex);
+      this.paginatedLoans = this.report.loans.slice(
+        (this.page - 1) * this.itemsPerPage,
+        this.page * this.itemsPerPage
+      );
+      // Apply filter
+      this.filterLoansByInvoiceNo();
     }
   }
   
@@ -146,6 +154,7 @@ onPageChange(pageNumber: number): void {
 
   openLoanModal(loan: Loan): void {
     this.selectedLoan = loan;
+    
 
     // Open the modal using NgbModal, referencing the component
     const modalRef = this.modalService.open(LoanInfoComponent, {
@@ -155,5 +164,24 @@ onPageChange(pageNumber: number): void {
 
     // Pass the loan data to the modal component
     modalRef.componentInstance.loan = loan;
+    if(this.customerNIC != ''){
+      modalRef.componentInstance.customerNIC = this.customerNIC;
+    }
+    
   }
+
+  // Filter loans by invoice number
+  filterLoansByInvoiceNo(): void {
+    if (this.report?.loans) {
+      const filteredLoans = this.report.loans.filter((loan) =>
+        loan.invoiceNo.toLowerCase().includes(this.searchInvoiceNo.toLowerCase())
+      );
+      this.paginatedLoans = filteredLoans.slice(
+        (this.page - 1) * this.itemsPerPage,
+        this.page * this.itemsPerPage
+      );
+    }
+  }
+
+  
 }

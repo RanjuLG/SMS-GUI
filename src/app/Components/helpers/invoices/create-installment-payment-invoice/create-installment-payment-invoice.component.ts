@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angula
 import { Router } from '@angular/router';
 import { ApiService } from '../../../../Services/api-service.service';
 import Swal from 'sweetalert2';
-import { CreateInvoiceDto, InvoiceDto, LoanInfoDto } from '../../../invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, LoanInfoDto } from '../../../invoice-form/invoice.model';
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -22,8 +22,8 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
   isEditMode = false;
   isCustomerAutofilled = false;
   initialInvoiceNumber = '0';
-  initialInvoices: InvoiceDto[] = [];
-  selectedInvoice: InvoiceDto | null = null;
+  initialInvoices: InvoiceDto2[] = [];
+  selectedInvoice: InvoiceDto2 | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -42,10 +42,10 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       date: [new Date().toISOString().substring(0, 10), Validators.required],
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
-      interest: [0, Validators.required],
+      interestAmount: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [2, Validators.required], // Different invoice type ID for installment payments
-      installmentNumber: [{ value: 0, disabled: true }, Validators.required]
+      installmentNumber: [{ value: 0, disabled: true }]
     });
   }
 
@@ -60,11 +60,15 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
         this.resetCustomerFields();
       }
     });
+
+    this.invoiceForm.get('subTotal')?.valueChanges.subscribe(() => this.updateTotalAmount());
+    this.invoiceForm.get('interestAmount')?.valueChanges.subscribe(() => this.updateTotalAmount());
+    
   }
 
   fetchInvoicesByNIC(nic: string): void {
     this.apiService.getInvoicesByCustomerNIC(nic).subscribe({
-      next: (invoices: InvoiceDto[]) => {
+      next: (invoices: InvoiceDto2[]) => {
         this.initialInvoices = invoices.filter(invoice => invoice.invoiceTypeId === 1);
         if (this.initialInvoices.length === 0) {
           Swal.fire('Warning', 'No valid installment payment invoices found for this customer', 'warning');
@@ -90,15 +94,11 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
         this.showInvalidInvoiceWarning();
       } else {
         this.initialInvoiceNumber = this.selectedInvoice.invoiceNo;
-        console.log("this.initialInvoiceNumber", this.initialInvoiceNumber);
 
         // Call API to get loan info based on the selected invoice number
         this.apiService.getLoanInfoByInitialInvoiceNo(this.selectedInvoice.invoiceNo).subscribe({
           next: (loanInfo: LoanInfoDto) => {
-            console.log("API Response: loanInfo", loanInfo);
             if (loanInfo) {
-              console.log("Loan Info:", loanInfo);
-
               if (loanInfo.isLoanSettled) {
                 Swal.fire('Warning', 'The loan is already settled. Please select a valid invoice', 'warning');
                 this.clearInvoiceFields();
@@ -106,9 +106,15 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
               }
 
               if (loanInfo.loanPeriod > 0) {
-                const installmentAmount = loanInfo.totalAmount / loanInfo.loanPeriod;
-                const installmentNo = loanInfo.numberOfInstallmentsPaid + 1;
-                this.invoiceForm.patchValue({ totalAmount: installmentAmount, installmentNumber: installmentNo });
+                console.log("this.loanInfo: ", loanInfo)
+                const principleAmount = (loanInfo.principleAmount / loanInfo.loanPeriod).toFixed(0);
+                const interestAmount = (loanInfo.interestAmount / loanInfo.loanPeriod).toFixed(0);
+                const dailyInterstAmount = loanInfo.dailyInterestAmount.toFixed(0);
+                const totalAmount = Number(principleAmount) + Number(interestAmount); 
+               // const installmentNo = loanInfo.numberOfInstallmentsPaid + 1;
+                this.invoiceForm.patchValue({ subTotal: principleAmount});
+                this.invoiceForm.patchValue({ interestAmount: dailyInterstAmount});
+                this.invoiceForm.patchValue({ totalAmount: totalAmount});
               } else {
                 Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
                 this.clearInvoiceFields();
@@ -184,12 +190,19 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       dropdown.value = ''; // Set the dropdown to its default option
     }
   }
-  
+  updateTotalAmount(): void {
+    const subTotal = this.invoiceForm.get('subTotal')?.value || 0;
+    const interestAmount = this.invoiceForm.get('interestAmount')?.value || 0;
+    const totalAmount = subTotal + interestAmount;
+    
+    // Update the totalAmount field in the form
+    this.invoiceForm.patchValue({ totalAmount });
+  }
 
   onSubTotalOrInterestChange() {
     const subTotal = this.invoiceForm.get('subTotal')?.value;
-    const interest = this.invoiceForm.get('interest')?.value;
-    const totalAmount = subTotal + (subTotal * interest / 100);
+    const interestAmount = this.invoiceForm.get('interestAmount')?.value;
+    const totalAmount = subTotal + interestAmount;
     this.invoiceForm.patchValue({ totalAmount });
   }
 
@@ -236,7 +249,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
               }
             });
           } else {
-            if (installmentNumber == 0) {
+            if (installmentNumber < 0) {
               Swal.fire('Error', 'Please enter a valid installment number', 'error');
             } else {
               this.apiService.createInvoice(invoiceDto, this.initialInvoiceNumber, installmentNumber).subscribe({

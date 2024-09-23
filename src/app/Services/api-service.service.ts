@@ -5,14 +5,14 @@ import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/cust
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
-import { CreateInvoiceDto, InvoiceDto, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
+import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
 import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
-import { User, UserDTO } from '../Components/user-management/user.model';
+import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
-import { ReportByCustomer } from '../Components/reports/reports.model';
+import { ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
 
 @Injectable({
   providedIn: 'root'
@@ -175,9 +175,9 @@ export class ApiService {
     return this.http.delete(`${this.configService.apiUrl}/api/invoices/delete-multiple`, { body: invoiceIds });
   }
 
-  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto[]> {
+  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto2[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
+    return this.http.get<InvoiceDto2[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
   }
 
   getInvoiceByInvoiceNo(invoiceNo: string): Observable<InvoiceDto[]> {
@@ -199,11 +199,11 @@ export class ApiService {
 }
 
 
-getTransactions(from: Date, to: Date): Observable<TransactionDto[]> {
+getTransactions(from: Date, to: Date): Observable<TransactionReportDto[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   const fromStr = from.toISOString();
     const toStr = to.toISOString();
-  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
+  return this.http.get<TransactionReportDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
     .pipe(catchError(this.handleError));
 }
 
@@ -259,12 +259,11 @@ getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transac
   .pipe(catchError(this.handleError));
 }
 
+//users
 getUsers(){
-
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<User[]>(`${this.configService.apiUrl}/api/account/users`)
   .pipe(catchError(this.handleError));
-
 }
 
 updateUser(userId: string,UserDto:UserDTO){

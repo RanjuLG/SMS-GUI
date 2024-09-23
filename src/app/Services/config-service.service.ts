@@ -14,10 +14,20 @@ export class ConfigService {
     return firstValueFrom(this.http.get('/configs/appConfig.json'))
       .then(data => {
         this.config = data;
+      })
+      .catch(error => {
+        console.error('Failed to load config:', error);
+        throw error; // Re-throw to ensure failure is handled
       });
   }
 
   get apiUrl(): string {
     return this.config?.api_host ?? '';
   }
+
+  get invoiceSettings(): any {
+    // Return the invoice settings if available, otherwise return an empty object or provide a fallback value
+    return this.config?.invoice_settings ?? {};
+  }
+  
 }
