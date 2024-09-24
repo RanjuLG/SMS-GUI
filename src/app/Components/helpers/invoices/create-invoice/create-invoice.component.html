@@ -44,7 +44,7 @@
               <div class="col-md-2">
                 <div class="form-group">
                   <label for="loanPeriod">Loan Period (months)</label>
-                  <select id="loanPeriod" class="form-control form-control-sm" formControlName="loanPeriod" required>
+                  <select id="loanPeriod" class="form-control form-control-sm form-select" formControlName="loanPeriod" required>
                     <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">
                       {{ period.period }}
                     </option>
@@ -59,7 +59,7 @@
                   <div class="col-md-3">
                     <div class="form-group">
                       <label for="itemSelection">Select Item</label>
-                      <select id="itemSelection" class="form-control form-control-sm" (change)="onItemSelected($event, i)">
+                      <select id="itemSelection" class="form-control form-control-sm form-select" (change)="onItemSelected($event, i)">
                         <option value="">-- Create New Item --</option>
                         <option *ngFor="let existingItem of customerItems" [value]="existingItem.itemId">
                           {{ existingItem.itemDescription }}
@@ -76,7 +76,7 @@
                   <div class="col-md-1">
                     <div class="form-group">
                       <label for="itemCaratage">Karat (K)</label>
-                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage"  min="0" required>
+                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm form-select" formControlName="itemCaratage"  min="0" required>
                         <option *ngFor="let karat of karats" [value]="karat.karatValue">
                           {{ karat.karatValue }}
                         </option>

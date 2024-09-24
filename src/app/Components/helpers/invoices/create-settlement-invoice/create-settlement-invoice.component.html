@@ -78,7 +78,7 @@
                 <div class="col-md-3" *ngIf="initialInvoices.length > 0">
                   <div class="form-group">
                     <label for="initialInvoiceNumber">Select Initial Invoice</label>
-                    <select id="initialInvoiceNumber" class="form-control" (change)="onInitialInvoiceSelected($event)">
+                    <select id="initialInvoiceNumber" class="form-control form-select" (change)="onInitialInvoiceSelected($event)">
                       <option value="">-- Select Invoice --</option>
                       <option *ngFor="let invoice of initialInvoices" [value]="invoice.invoiceId">
                         {{ invoice.invoiceNo }} - {{ invoice.totalAmount }}
