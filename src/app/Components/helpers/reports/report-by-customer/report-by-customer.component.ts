@@ -9,6 +9,7 @@ import { CommonModule } from '@angular/common';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { LoanInfoComponent } from '../loan-info/loan-info.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-report-by-customer',
@@ -19,6 +20,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
     NgxPaginationModule,
     ReactiveFormsModule,
     LoanInfoComponent,
+    RouterLink
   ],
   templateUrl: './report-by-customer.component.html',
   styleUrls: ['./report-by-customer.component.scss'],

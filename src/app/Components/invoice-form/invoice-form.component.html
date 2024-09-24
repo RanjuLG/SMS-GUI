@@ -1,99 +1,114 @@
 <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card shadow-sm">
-          <div class="card-header d-flex justify-content-between align-items-center">
-            <h4 class="card-title mb-0">Manage Invoices</h4>
-            <div>
-              <button type="button" class="btn btn-primary btn-sm add-btn" routerLink="/create-invoice">
-                <i class="ri-add-line align-bottom me-1"></i> Create Invoice
-              </button>
-              <button type="button" class="btn btn-danger btn-sm ms-2" (click)="deleteSelectedInvoices()">
-                <i class="ri-delete-bin-2-line"></i> Delete Selected
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="breadcrumb-container mb-3">
+        <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+            <li class="breadcrumb-item">
+              <a routerLink="/overview">Home</a>
+            </li>
+            <li class="breadcrumb-item active" aria-current="page">Invoices</li>
+          </ol>
+        </nav>
+      </div>
+      <div class="card shadow-sm">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h4 class="card-title mb-0">Manage Invoices</h4>
+          <div>
+            <button type="button" class="btn btn-primary btn-sm add-btn" routerLink="/create-invoice">
+              <i class="ri-add-line align-bottom me-1"></i> Create Invoice
+            </button>
+            <button type="button" class="btn btn-danger btn-sm ms-2" (click)="deleteSelectedInvoices()">
+              <i class="ri-delete-bin-2-line"></i> Delete Selected
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="row mb-3 align-items-center">
+            <div class="col-md-8 d-flex align-items-center">
+              <mat-form-field class="small-date-range me-2">
+                <mat-label>Select a date range</mat-label>
+                <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
+                  <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
+                  <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
+                </mat-date-range-input>
+                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                <mat-date-range-picker #picker></mat-date-range-picker>
+              </mat-form-field>
+              <input type="text" class="form-control search-nic" placeholder="Search by Customer NIC..."
+                [formControl]="searchNICControl" style="margin-right: 0.5rem;">
+              <input type="text" class="form-control search-nic" placeholder="Search by Invoice No..."
+                [formControl]="searchInvoiceNoControl">
+            </div>
+            <div class="col-md-2 ms-auto">
+              <button type="button" class="btn add-btn" (click)="viewInvoiceTemplate()">
+                <i class="ri-eye-line align-bottom me-1"></i> View Invoice Template
               </button>
             </div>
           </div>
-          <div class="card-body">
-            <div class="row mb-3 align-items-center">
-              <div class="col-md-8 d-flex align-items-center">
-                <mat-form-field class="small-date-range me-2">
-                  <mat-label>Select a date range</mat-label>
-                  <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
-                    <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
-                    <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #picker></mat-date-range-picker>
-                </mat-form-field>
-                <input type="text" class="form-control search-nic" placeholder="Search by Customer NIC..." [formControl]="searchNICControl" style="margin-right: 0.5rem;">
-                <input type="text" class="form-control search-nic" placeholder="Search by Invoice No..." [formControl]="searchInvoiceNoControl">
-              </div>
-              <div class="col-md-2 ms-auto">
-                <button type="button" class="btn add-btn" (click)="viewInvoiceTemplate()">
-                  <i class="ri-eye-line align-bottom me-1"></i> View Invoice Template
-                </button>
-              </div>
-            </div>
-            <div class="table-responsive table-card mt-3 mb-1">
-              <table class="table table-hover">
-                <thead>
-                  <tr class="bg-light text-muted">
-                    <th scope="col">
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="checkAll" (change)="toggleAllSelections($event)">
-                      </div>
-                    </th>
-                    <th scope="col">Invoice No.</th>
-                    <th scope="col">Invoice Type</th>
-                    <th scope="col">Customer NIC</th>
-                    <th scope="col">Loan Period (months)</th>
+          <div class="table-responsive table-card mt-3 mb-1">
+            <table class="table table-hover">
+              <thead>
+                <tr class="bg-light text-muted">
+                  <th scope="col">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" id="checkAll"
+                        (change)="toggleAllSelections($event)">
+                    </div>
+                  </th>
+                  <th scope="col">Invoice No.</th>
+                  <th scope="col">Invoice Type</th>
+                  <th scope="col">Customer NIC</th>
+                  <th scope="col">Loan Period (months)</th>
                   <th scope="col">Payment Status</th>
-                    <th scope="col">Date</th>
-                    <th scope="col"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let invoice of invoices | paginate: { itemsPerPage: invoicesPerPage, currentPage: page }; let i = index">
-                    <td>
-                      <div class="form-check">
-                        <input class="form-check-input" type="checkbox" [(ngModel)]="invoice.selected">
-                      </div>
-                    </td>
-                    <td>{{ invoice.invoiceNo }}</td>
-                    <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
-                    <td>{{ invoice.customerNIC }}</td>
-                    <td>{{ invoice.loanPeriod? invoice.loanPeriod:'N/A' }}</td>
-                   <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td>
-                    <td>{{ invoice.dateGenerated }}</td>
-                    <td>
-                      <div class="d-flex gap-2">
-                        <button class="btn btn-sm btn-success" (click)="viewInvoice(invoice.invoiceId,invoice.invoiceTypeId)">
-                          <i class="ri-eye-line align-bottom me-1"></i>
-                        </button>
-                        <button class="btn btn-sm btn-warning" (click)="editInvoice(invoice.invoiceId)">
-                          <i class="ri-edit-box-line align-bottom me-1"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger" (click)="deleteInvoice(invoice.invoiceId)">
-                          <i class="ri-delete-bin-line align-bottom me-1"></i>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <select id="itemsPerPage" class="form-select" [(ngModel)]="invoicesPerPage">
-                <option *ngFor="let option of invoicesPerPageOptions" [value]="option">{{ option }}</option>
-              </select>
-              <span class="entries-info">
-                Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ invoices.length }} entries
-              </span>
-              <pagination-controls (pageChange)="page = $event"></pagination-controls>
-            </div>
+                  <th scope="col">Date</th>
+                  <th scope="col"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  *ngFor="let invoice of invoices | paginate: { itemsPerPage: invoicesPerPage, currentPage: page }; let i = index">
+                  <td>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" [(ngModel)]="invoice.selected">
+                    </div>
+                  </td>
+                  <td>{{ invoice.invoiceNo }}</td>
+                  <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
+                  <td>{{ invoice.customerNIC }}</td>
+                  <td>{{ invoice.loanPeriod? invoice.loanPeriod:'N/A' }}</td>
+                  <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td>
+                  <td>{{ invoice.dateGenerated }}</td>
+                  <td>
+                    <div class="d-flex gap-2">
+                      <button class="btn btn-sm btn-success"
+                        (click)="viewInvoice(invoice.invoiceId,invoice.invoiceTypeId)">
+                        <i class="ri-eye-line align-bottom me-1"></i>
+                      </button>
+                      <button class="btn btn-sm btn-warning" (click)="editInvoice(invoice.invoiceId)">
+                        <i class="ri-edit-box-line align-bottom me-1"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger" (click)="deleteInvoice(invoice.invoiceId)">
+                        <i class="ri-delete-bin-line align-bottom me-1"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <select id="itemsPerPage" class="form-select" [(ngModel)]="invoicesPerPage">
+              <option *ngFor="let option of invoicesPerPageOptions" [value]="option">{{ option }}</option>
+            </select>
+            <span class="entries-info">
+              Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ invoices.length }} entries
+            </span>
+            <pagination-controls (pageChange)="page = $event"></pagination-controls>
           </div>
         </div>
       </div>
     </div>
   </div>
-  
+</div>

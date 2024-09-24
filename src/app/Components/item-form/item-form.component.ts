@@ -15,6 +15,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { RouterLink } from '@angular/router';
 
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
@@ -33,7 +34,8 @@ export interface ExtendedItemDto extends ItemDto {
     MatDatepickerModule,
     MatHint,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    RouterLink
 
   ],
   templateUrl: './item-form.component.html',

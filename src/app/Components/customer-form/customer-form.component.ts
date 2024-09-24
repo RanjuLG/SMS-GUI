@@ -16,6 +16,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { RouterLink } from '@angular/router';
 
 export interface ExtendedCustomerDto extends CustomerDto {
   selected?: boolean;
@@ -34,6 +35,7 @@ export interface ExtendedCustomerDto extends CustomerDto {
     MatHint,
     MatFormFieldModule, // Import Material Form Field Module
     MatInputModule, 
+    RouterLink
   ],
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.scss'],

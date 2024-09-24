@@ -110,3 +110,15 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
   color: #000000 !important;
   
 }
+
+.breadcrumb {
+  font-size: 0.875rem !important;/* Smaller text */
+}
+
+.breadcrumb a {
+  text-decoration: none !important; /* Remove underline */
+}
+
+.breadcrumb a:hover {
+  text-decoration: underline !important; /* Optional: underline on hover */
+}

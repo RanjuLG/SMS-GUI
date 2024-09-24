@@ -1,3 +1,19 @@
+<div class="container-fluid">
+    <div class="breadcrumb-container mb-3">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item">
+                    <a routerLink="/overview">Home</a>
+                </li>
+                <li class="breadcrumb-item">
+                    <a routerLink="/config/users">Users</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">Add User</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
 <div class="auth-page-wrapper pt-5">
     <div class="auth-page-content">
         <div class="container">
@@ -13,7 +29,8 @@
                                 <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
                                     <div class="mb-3">
                                         <label for="username" class="form-label">Username</label>
-                                        <input type="text" class="form-control" id="username" placeholder="Enter username" formControlName="username" 
+                                        <input type="text" class="form-control" id="username"
+                                            placeholder="Enter username" formControlName="username"
                                             [ngClass]="{ 'is-invalid': submitted && f['username'].errors }">
                                         <div *ngIf="submitted && f['username'].errors" class="invalid-feedback">
                                             <div *ngIf="f['username'].errors['required']">Username is required</div>
@@ -22,7 +39,8 @@
 
                                     <div class="mb-3">
                                         <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control" id="email" placeholder="Enter email" formControlName="email" 
+                                        <input type="email" class="form-control" id="email" placeholder="Enter email"
+                                            formControlName="email"
                                             [ngClass]="{ 'is-invalid': submitted && f['email'].errors }">
                                         <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
                                             <div *ngIf="f['email'].errors['required']">Email is required</div>
@@ -33,11 +51,15 @@
                                     <div class="mb-3">
                                         <label class="form-label" for="password-input">Password</label>
                                         <div class="position-relative auth-pass-inputgroup mb-3">
-                                            <input [type]="fieldTextType ? 'text' : 'password'" class="form-control pe-5" placeholder="Enter password" id="password-input" 
-                                                formControlName="password" [ngClass]="{ 'is-invalid': submitted && f['password'].errors }">
-                                            <button type="button" class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted" 
+                                            <input [type]="fieldTextType ? 'text' : 'password'"
+                                                class="form-control pe-5" placeholder="Enter password"
+                                                id="password-input" formControlName="password"
+                                                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }">
+                                            <button type="button"
+                                                class="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted"
                                                 (click)="toggleFieldTextType()">
-                                                <i class="mdi align-middle" [ngClass]="{ 'mdi-eye-off-outline': !fieldTextType, 'mdi-eye-outline': fieldTextType }"></i>
+                                                <i class="mdi align-middle"
+                                                    [ngClass]="{ 'mdi-eye-off-outline': !fieldTextType, 'mdi-eye-outline': fieldTextType }"></i>
                                             </button>
                                             <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
                                                 <div *ngIf="f['password'].errors['required']">Password is required</div>
@@ -47,17 +69,20 @@
 
                                     <div class="mb-3">
                                         <label class="form-label" for="confirm-password-input">Confirm Password</label>
-                                        <input type="password" class="form-control" id="confirm-password-input" placeholder="Confirm password" formControlName="confirmPassword"
+                                        <input type="password" class="form-control" id="confirm-password-input"
+                                            placeholder="Confirm password" formControlName="confirmPassword"
                                             [ngClass]="{ 'is-invalid': submitted && f['confirmPassword'].errors }">
                                         <div *ngIf="submitted && f['confirmPassword'].errors" class="invalid-feedback">
-                                            <div *ngIf="f['confirmPassword'].errors['required']">Confirmation is required</div>
-                                            <div *ngIf="f['confirmPassword'].errors['mustMatch']">Passwords must match</div>
+                                            <div *ngIf="f['confirmPassword'].errors['required']">Confirmation is
+                                                required</div>
+                                            <div *ngIf="f['confirmPassword'].errors['mustMatch']">Passwords must match
+                                            </div>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
                                         <label class="form-label" for="role-input">Role</label>
-                                        <select class="form-select" id="role-input" formControlName="role" 
+                                        <select class="form-select" id="role-input" formControlName="role"
                                             [ngClass]="{ 'is-invalid': submitted && f['role'].errors }">
                                             <option value="">Select Role</option>
                                             <option value="Cashier">Cashier</option>
