@@ -28,8 +28,8 @@ import { IncomeReportComponent } from './Components/helpers/reports/income-repor
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
     { path: 'overview', component: OverviewComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
-    { path: 'customer-form', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    {path: 'item-form',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'customers', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    {path: 'items',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'invoices',component: InvoiceFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
    // { path: 'create-initial-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },

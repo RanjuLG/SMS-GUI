@@ -10,6 +10,7 @@ import Swal from 'sweetalert2';
 import { AddPricingComponent } from '../helpers/pricing/add-pricing/add-pricing.component';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
+import { RouterLink } from '@angular/router';
 
 export interface ExtendedPricingDto extends Pricing {
   selected?: boolean;
@@ -23,6 +24,7 @@ export interface ExtendedPricingDto extends Pricing {
     CommonModule,
     NgxPaginationModule,
     ReactiveFormsModule,
+    RouterLink
   ],
   templateUrl: './karat-value.component.html',
   styleUrls: ['./karat-value.component.scss'],
