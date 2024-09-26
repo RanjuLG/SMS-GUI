@@ -142,13 +142,9 @@ export interface LoanInfoDto {
   principleAmount: number;
   interestRate: number;
   interestAmount: number;
-  dailyInterestAmount: number;
+  dailyInterest: number;
   totalAmount: number;
   loanPeriod: number;
-  numberOfInstallments: number;
-  installmentValue: number;
-  numberOfInstallmentsPaid: number;
-  numberOfInstallmentsToBePaid: number;
   isLoanSettled: boolean;
-  daysSinceLastInstallment: number;
+  lastInstallmentDate: Date;
 }
