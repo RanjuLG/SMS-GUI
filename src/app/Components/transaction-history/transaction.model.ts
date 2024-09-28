@@ -13,6 +13,7 @@ export interface Transaction {
     createdAt: string;
     subTotal: number;
     interestRate: number;
+    interestAmount:number;
     totalAmount: number;
     customer: GetCustomerDTO;
     items: GetItemDTO[];

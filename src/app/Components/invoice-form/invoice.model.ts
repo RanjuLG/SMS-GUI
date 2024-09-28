@@ -94,7 +94,7 @@ export interface Item {
     dateGenerated: string; // Should be in ISO 8601 format, e.g., "2024-07-31T19:33:04.057Z"
     paymentStatus: boolean; // Changed to boolean for better clarity
     subTotal: number;
-    interest: number;
+    interestRate: number;
     interestAmount: number;
     totalAmount: number;
     loanPeriod: number;

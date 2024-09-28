@@ -61,7 +61,7 @@
                   <th scope="col">Invoice Type</th>
                   <th scope="col">Customer NIC</th>
                   <th scope="col">Loan Period (months)</th>
-                  <th scope="col">Payment Status</th>
+                 <!-- <th scope="col">Payment Status</th> -->
                   <th scope="col">Date</th>
                   <th scope="col"></th>
                 </tr>
@@ -78,7 +78,7 @@
                   <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
                   <td>{{ invoice.customerNIC }}</td>
                   <td>{{ invoice.loanPeriod? invoice.loanPeriod:'N/A' }}</td>
-                  <td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td>
+                 <!--<td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td> --> 
                   <td>{{ invoice.dateGenerated }}</td>
                   <td>
                     <div class="d-flex gap-2">
@@ -86,9 +86,11 @@
                         (click)="viewInvoice(invoice.invoiceId,invoice.invoiceTypeId)">
                         <i class="ri-eye-line align-bottom me-1"></i>
                       </button>
+                      <!--
                       <button class="btn btn-sm btn-warning" (click)="editInvoice(invoice.invoiceId)">
                         <i class="ri-edit-box-line align-bottom me-1"></i>
                       </button>
+                      -->
                       <button class="btn btn-sm btn-danger" (click)="deleteInvoice(invoice.invoiceId)">
                         <i class="ri-delete-bin-line align-bottom me-1"></i>
                       </button>

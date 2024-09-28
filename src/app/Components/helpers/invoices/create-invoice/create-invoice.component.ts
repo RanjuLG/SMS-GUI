@@ -321,7 +321,8 @@ export class CreateInvoiceComponent implements OnInit {
               next: (createdInvoiceId) => {
                 Swal.fire('Success', 'Invoice created successfully', 'success');
                 this.saveInvoice.emit(invoiceDto);
-                this.router.navigate(['/view-invoice-template', createdInvoiceId]);
+                console.log("createdInvoiceId: ",createdInvoiceId.value)
+                this.router.navigate([`/view-invoice-template/${createdInvoiceId.value}`]);
               },
               error: (error) => {
                 console.error('Error creating invoice:', error);

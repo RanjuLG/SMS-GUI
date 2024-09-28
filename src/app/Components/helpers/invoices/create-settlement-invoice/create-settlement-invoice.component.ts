@@ -44,7 +44,7 @@ export class CreateSettlementInvoiceComponent implements OnInit {
       date: [new Date().toISOString().substring(0, 10), Validators.required],
       paymentStatus: [true, Validators.required],
       subTotal: [0, Validators.required],
-      interest: [0, Validators.required],
+      interestRate: [0, Validators.required],
       totalAmount: [0, Validators.required],
       invoiceTypeId: [3, Validators.required], // Different invoice type ID for SETTLEMENT payments
       installmentNumber: [0]
@@ -101,7 +101,7 @@ onInitialInvoiceSelected(event: Event): void {
 
       this.invoiceForm.patchValue({
         subTotal: this.selectedInvoice.principleAmount,
-        interest: this.selectedInvoice.interestRate,
+        interestRate: this.selectedInvoice.interestRate,
         totalAmount: this.selectedInvoice.totalAmount
       });
     }
@@ -149,12 +149,19 @@ onInitialInvoiceSelected(event: Event): void {
   }
 
   onSubTotalOrInterestChange() {
-    const subTotal = this.invoiceForm.get('subTotal')?.value;
-    const interest = this.invoiceForm.get('interest')?.value;
-    const totalAmount = subTotal + (subTotal * interest / 100);
+    const subTotal = this.invoiceForm.get('subTotal')?.value || 0;
+    const interestRate = this.invoiceForm.get('interestRate')?.value || 0;
+    
+    console.log('SubTotal:', subTotal);
+    console.log('Interest:', interestRate);
+    
+    // Calculate total with interest
+    const totalAmount = subTotal + (subTotal * interestRate / 100);
+  
+    // Update the total amount in the form
     this.invoiceForm.patchValue({ totalAmount });
   }
-
+  
   showInvalidInvoiceWarning() {
     Swal.fire({
       icon: 'warning',
@@ -170,7 +177,13 @@ onInitialInvoiceSelected(event: Event): void {
 
   onSubmit() {
     if (this.invoiceForm.valid) {
+      // Calculate total amount before submitting
+      this.onSubTotalOrInterestChange();
+  
       const installmentNumber = 0;
+  
+      console.log("this.invoiceForm.value before submission: ", this.invoiceForm.value);
+  
       Swal.fire({
         title: 'Confirm Invoice Submission',
         text: 'Are you sure you want to submit this invoice?',
@@ -185,7 +198,9 @@ onInitialInvoiceSelected(event: Event): void {
             initialInvoiceNumber: this.initialInvoiceNumber,
             items: [] // No items for settlement payments
           };
-
+  
+          console.log("invoiceDto before sending: ", invoiceDto); // Log before sending
+  
           if (this.isEditMode && this.invoice) {
             this.apiService.updateInvoice(this.invoice.invoiceId, invoiceDto).subscribe({
               next: () => {
@@ -199,19 +214,18 @@ onInitialInvoiceSelected(event: Event): void {
               }
             });
           } else {
-                   
-
-                      this.apiService.createInvoice(invoiceDto,this.initialInvoiceNumber,installmentNumber).subscribe({
-                        next: (createdInvoiceId) => {
-                          Swal.fire('Success', 'Invoice created successfully', 'success');
-                          this.saveInvoice.emit(invoiceDto);
-                          this.router.navigate(['/view-settlement-invoice-template', createdInvoiceId]);
-                        },
-                        error: (error) => {
-                          console.error('Error creating invoice:', error);
-                          Swal.fire('Error', 'Failed to create invoice', 'error');
-                        }
-                      });
+            console.log("invoiceDto before sending to create API: ", invoiceDto); // Double check data here
+            this.apiService.createInvoice(invoiceDto, this.initialInvoiceNumber, installmentNumber).subscribe({
+              next: (createdInvoiceId) => {
+                Swal.fire('Success', 'Invoice created successfully', 'success');
+                this.saveInvoice.emit(invoiceDto);
+                this.router.navigate([`/view-settlement-invoice-template/${createdInvoiceId.value}`]);
+              },
+              error: (error) => {
+                console.error('Error creating invoice:', error);
+                Swal.fire('Error', 'Failed to create invoice', 'error');
+              }
+            });
           }
         }
       });
@@ -224,6 +238,8 @@ onInitialInvoiceSelected(event: Event): void {
       });
     }
   }
+  
+  
 
   onCancel() {
     Swal.fire({
