@@ -3,6 +3,7 @@ export interface Item {
     itemId:number;
     itemDescription: string;
     itemCaratage: number;
+    itemWeight: number;
     itemGoldWeight: number;
     //amountPerCaratage: number;
     //quantity: number;
@@ -20,6 +21,7 @@ export interface ItemDto {
     itemId:number;
     itemDescription: string;
     itemCaratage: number;
+    itemWeight: number;
     itemGoldWeight: number;
     //amountPerCaratage: number;
     //quantity: number;
@@ -38,6 +40,7 @@ export interface CreateItemDto {
     itemId:number;
     itemDescription: string;
     itemCaratage: number;
+    itemWeight: number;
     itemGoldWeight: number;
     itemValue: number;
     createdAt: string;

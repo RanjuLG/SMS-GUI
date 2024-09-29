@@ -44,8 +44,9 @@
                         <th class="fw-semibold text-muted">#</th>
                         <th class="fw-semibold text-muted">Item No.</th>
                         <th class="fw-semibold text-muted">Description</th>
+                        <th class="fw-semibold text-muted">Total Weight (g)</th>
                         <th class="fw-semibold text-muted">Gold Weight (g)</th>
-                        <th class="fw-semibold text-muted">Karat</th>
+                        <th class="fw-semibold text-muted">Karat (K)</th>
                         <th class="text-end fw-semibold text-muted">Value (Rs)</th>
                     </tr>
                 </thead>
@@ -54,8 +55,9 @@
                         <td>{{ i + 1 }}</td>
                         <td>{{ item?.itemId }}</td>
                         <td>{{ item?.itemDescription }}</td>
+                        <td>{{ item?.itemWeight }}</td>
                         <td>{{ item?.itemGoldWeight }}</td>
-                        <td>{{ item?.itemCaratage }}</td>
+                        <td>{{ getCaratRange(item?.itemCaratage ?? 0) }}</td>
                         <td class="text-end">{{ item?.itemValue }}</td>
                     </tr>
                 </tbody>
@@ -93,15 +95,17 @@
             Cash (Pvt) Ltd. the gold articles listed above, which are owned by me. I declare that the details provided are accurate 
             and agree that the terms and conditions outlined shall form part of this pawn contract.</p>
         <div class="row text-center">
+            <!--
             <div class="col-md-4">
                 <hr>
                 <p class="text-muted">Cashier's Signature</p>
             </div>
-            <div class="col-md-4">
+            -->
+            <div class="col-md-6">
                 <hr>
                 <p class="text-muted">Manager's Signature</p>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <hr>
                 <p class="text-muted">Customer's Signature</p>
             </div>

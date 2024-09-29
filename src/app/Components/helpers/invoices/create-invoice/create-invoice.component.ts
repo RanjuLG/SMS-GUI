@@ -1,6 +1,5 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { ApiService } from '../../../../Services/api-service.service';
 import { CreateInvoiceDto, Item } from '../../../invoice-form/invoice.model';
@@ -124,6 +123,7 @@ export class CreateInvoiceComponent implements OnInit {
       itemId: [null], // Include itemId field
       itemDescription: ['', Validators.required],
       itemCaratage: [0, Validators.required],
+      itemWeight: [0, Validators.required],
       itemGoldWeight: [0, Validators.required],
       itemValue: [0, Validators.required]
     });
@@ -156,6 +156,7 @@ export class CreateInvoiceComponent implements OnInit {
           itemId: selectedItem.itemId,
           itemDescription: selectedItem.itemDescription,
           itemCaratage: selectedItem.itemCaratage,
+          itemWeight:selectedItem.itemWeight,
           itemGoldWeight: selectedItem.itemGoldWeight,
           itemValue: selectedItem.itemValue
         });
@@ -163,6 +164,7 @@ export class CreateInvoiceComponent implements OnInit {
         // Disable form controls for existing items
         itemFormGroup.get('itemDescription')?.disable();
         itemFormGroup.get('itemCaratage')?.disable();
+        itemFormGroup.get('itemWeight')?.disable();
         itemFormGroup.get('itemGoldWeight')?.disable();
         itemFormGroup.get('itemValue')?.disable();
       }

@@ -75,6 +75,7 @@ export interface Item {
     itemDescription: string;
     itemId:number;
     itemCaratage: number;
+    itemWeight: number;
     itemGoldWeight: number;
     itemValue: number;
   }

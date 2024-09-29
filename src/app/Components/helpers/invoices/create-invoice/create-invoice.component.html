@@ -86,9 +86,15 @@
                       <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage"  min="0" readonly />
                     </div>
                   </div>
-                  <div class="col-md-2">
+                  <div class="col-md-1">
                     <div class="form-group">
-                      <label for="itemGoldWeight">Total Gold Weight (g)</label>
+                      <label for="itemWeight">Total Weight</label>
+                      <input type="number" step="0.001" id="itemWeight" class="form-control form-control-sm" formControlName="itemWeight"  min="0" required />
+                    </div>
+                  </div>
+                  <div class="col-md-1">
+                    <div class="form-group">
+                      <label for="itemGoldWeight">Gold Weight</label>
                       <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm" formControlName="itemGoldWeight"  min="0" required />
                     </div>
                   </div>
