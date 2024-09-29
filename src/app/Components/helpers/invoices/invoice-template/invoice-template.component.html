@@ -2,10 +2,10 @@
     <div class="invoice-header d-flex justify-content-between align-items-center pb-3">
         <!-- Left Section (Date, Invoice No) -->
         <div>
-            <p class="text-muted mb-1 fw-bold">Date</p>
-            <p>{{ dateGenerated }}</p>
-            <p class="text-muted mb-1 fw-bold">Invoice No</p>
-            <p>{{ invoice?.invoiceNo }}</p>
+            <p class="mb-1 text-muted">Date</p>
+            <p class="mb-1 text-muted">{{ dateGenerated }}</p>
+            <p class="mb-1 text-muted">Invoice No</p>
+            <p class="mb-1 text-muted">{{ invoice?.invoiceNo }}</p>
         </div>
 
         <!-- Center Section (Logo, Company Info) -->
@@ -16,7 +16,7 @@
 
         <!-- Right Section (Company Details) -->
         <div class="text-end">
-            <p class="mb-1 text-muted">Reg No: <strong>987654</strong></p>
+            <p class="mb-1 text-muted">Reg No: 987654</p>
             <p class="mb-1 text-muted">Email: goldcash&#64;gmail.com</p>
             <p class="mb-1 text-muted">Phone: +(94) 81 222 1234</p>
             <p class="text-muted">Muruthalawa, Sri Lanka</p>
@@ -30,7 +30,7 @@
         <!-- Left: Customer Information -->
         <div class="col-md-4">
             <p class="fw-semibold text-muted">Customer Information</p>
-            <p class="fw-bold">{{ customer?.customerName }}</p>
+            <p class="text-muted">{{ customer?.customerName }}</p>
             <p class="text-muted">{{ customer?.customerAddress }}</p>
             <p class="text-muted">NIC: {{ customer?.customerNIC }}</p>
             <p class="text-muted">Phone: {{ customer?.customerContactNo }}</p>
@@ -41,12 +41,13 @@
             <table class="table table-bordered">
                 <thead class="table">
                     <tr>
-                        <th>#</th>
-                        <th>Item No.</th>
-                        <th>Description</th>
-                        <th>Gold Weight (g)</th>
-                        <th>Karat</th>
-                        <th class="text-end">Value (Rs)</th>
+                        <th class="fw-semibold text-muted">#</th>
+                        <th class="fw-semibold text-muted">Item No.</th>
+                        <th class="fw-semibold text-muted">Description</th>
+                        <th class="fw-semibold text-muted">Total Weight (g)</th>
+                        <th class="fw-semibold text-muted">Gold Weight (g)</th>
+                        <th class="fw-semibold text-muted">Karat (K)</th>
+                        <th class="text-end fw-semibold text-muted">Value (Rs)</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -54,8 +55,9 @@
                         <td>{{ i + 1 }}</td>
                         <td>{{ item?.itemId }}</td>
                         <td>{{ item?.itemDescription }}</td>
+                        <td>{{ item?.itemWeight }}</td>
                         <td>{{ item?.itemGoldWeight }}</td>
-                        <td>{{ item?.itemCaratage }}</td>
+                        <td>{{ getCaratRange(item?.itemCaratage ?? 0) }}</td>
                         <td class="text-end">{{ item?.itemValue }}</td>
                     </tr>
                 </tbody>
@@ -71,15 +73,15 @@
             <tbody>
                 <tr>
                     <td class="text-muted">Sub Total (Rs)</td>
-                    <td class="text-end fw-bold">{{ transaction?.subTotal }}</td>
+                    <td class="text-end text-muted">{{ transaction?.subTotal }}</td>
                 </tr>
                 <tr>
                     <td class="text-muted">Interest (%)</td>
-                    <td class="text-end fw-bold">{{ transaction?.interestRate }}</td>
+                    <td class="text-end text-muted">{{ transaction?.interestRate }}</td>
                 </tr>
                 <tr class="border-top border-top-dashed fs-5">
-                    <td class="text-dark fw-bold">Total Amount (Rs)</td>
-                    <td class="text-end fw-bold">{{ transaction?.totalAmount }}</td>
+                    <td class="text-dark text-muted fw-semibold">Total Amount (Rs)</td>
+                    <td class="text-end text-muted fw-semibold">{{ transaction?.totalAmount }}</td>
                 </tr>
             </tbody>
         </table>
@@ -93,17 +95,19 @@
             Cash (Pvt) Ltd. the gold articles listed above, which are owned by me. I declare that the details provided are accurate 
             and agree that the terms and conditions outlined shall form part of this pawn contract.</p>
         <div class="row text-center">
+            <!--
             <div class="col-md-4">
                 <hr>
-                <p>Cashier's Signature</p>
+                <p class="text-muted">Cashier's Signature</p>
             </div>
-            <div class="col-md-4">
+            -->
+            <div class="col-md-6">
                 <hr>
-                <p>Manager's Signature</p>
+                <p class="text-muted">Manager's Signature</p>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-6">
                 <hr>
-                <p>Customer's Signature</p>
+                <p class="text-muted">Customer's Signature</p>
             </div>
         </div>
     </div>

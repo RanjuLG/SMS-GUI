@@ -44,6 +44,7 @@ export class SettlementInvoiceTemplateComponent implements OnInit {
           this.settlementInvoice = data.invoice;
           this.customer = data.customer;
           this.transaction = data.transactions[0];
+          console.log(" this.transaction: ", this.transaction)
           this.dateGenerated = this.formatDate(this.settlementInvoice?.dateGenerated || new Date().toString());
         },
         error: (error) => {
