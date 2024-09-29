@@ -16,6 +16,12 @@
         <label for="customerNIC" class="form-label">NIC</label>
         <input type="text" id="customerNIC" formControlName="customerNIC" class="form-control" />
       </div>
+      
+      <div class="mb-3">
+        <label for="nicPhoto" class="form-label">NIC Photo</label>
+        <input type="file" id="nicPhoto" (change)="onFileChange($event)" class="form-control" />
+      </div>
+      
       <div class="mb-3">
         <label for="contactNo" class="form-label">Contact No.</label>
         <input type="text" id="customerContactNo" formControlName="customerContactNo" class="form-control" />

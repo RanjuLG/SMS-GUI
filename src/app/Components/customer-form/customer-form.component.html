@@ -59,7 +59,7 @@
                     <th class="sort" data-sort="address">Address</th>
                     <th class="sort" data-sort="nic">NIC</th>
                     <th class="sort" data-sort="phone">Phone</th>
-                    <th class="sort"></th>
+                    <th class="sort">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -76,21 +76,34 @@
                     <td>{{ customer.customerContactNo }}</td>
                     <td>
                       <div class="d-flex gap-2">
-                        <div class="edit">
-                          <button class="btn btn-sm btn-warning edit-item-btn" (click)="editCustomer(customer)">
-                            <i class="ri-edit-box-line align-bottom me-1"></i>
-                          </button>
-                        </div>
-                        <div class="remove">
-                          <button class="btn btn-sm btn-danger remove-item-btn" (click)="removeCustomer(customer)">
-                            <i class="ri-delete-bin-line align-bottom me-1"></i>
-                          </button>
-                        </div>
+                        <button class="btn btn-sm btn-warning" (click)="editCustomer(customer)">
+                          <i class="ri-edit-box-line align-bottom me-1"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" (click)="removeCustomer(customer)">
+                          <i class="ri-delete-bin-line align-bottom me-1"></i>
+                        </button>
+                        <button class="btn btn-sm btn-info" (click)="viewNICPhoto(customer)">
+                          <i class="ri-eye-line align-bottom me-1"></i> View NIC
+                        </button>
                       </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
+              
+              <!-- Modal for Viewing NIC -->
+           <!-- Modal for Viewing NIC -->
+              <ng-template #nicModal let-modal>
+                <div class="modal-header">
+                  <h5 class="modal-title">Customer NIC Photo</h5>
+                  <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+                </div>
+                <div class="modal-body text-center">
+                  <img *ngIf="selectedCustomer?.nicPhotoPath" [src]="selectedCustomer?.nicPhotoPath" alt="NIC Photo" class="img-fluid">
+                  <p *ngIf="!selectedCustomer?.nicPhotoPath">No NIC photo available.</p>
+                </div>
+              </ng-template>
+
             </div>
             <div class="d-flex justify-content-between align-items-center mb-3">
               <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
