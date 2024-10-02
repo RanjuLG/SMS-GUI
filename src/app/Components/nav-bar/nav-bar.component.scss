@@ -64,15 +64,37 @@
     width: 35px;
     height: 35px;
   }
+
+  .nav-item {
+    font-size: 0.9rem;
+    margin: 5px 0;
+  }
+
+  .nav-link {
+    font-size: 0.85rem;
+  }
 }
 
 @media (max-width: 576px) {
+  .navbar {
+    height: auto;
+    padding: 10px 0;
+  }
+
   .navbar-brand {
     font-size: 1rem;
   }
 
+  .navbar-logo {
+    height: 30px;
+  }
+
   .nav-item {
     margin: 5px 0;
+  }
+
+  .nav-link {
+    font-size: 0.75rem;
   }
 
   .user-logo {
@@ -82,5 +104,9 @@
 
   .navbar-nav .nav-link {
     font-size: 0.8rem;
+  }
+
+  .nav-icon {
+    margin-right: 3px;
   }
 }
