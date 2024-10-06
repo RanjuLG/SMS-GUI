@@ -5,11 +5,30 @@ aside.sidebar {
     transition: width 0.3s ease;
 
     &.collapsed {
-        width: 60px;
+        width: 60px; /* Sidebar width when collapsed */
+
+        /* Reduce hover area when collapsed */
+        .nav-link {
+            padding: 10px; /* Reduced padding to ensure it only covers the icon */
+            justify-content: center; /* Align icon to the center */
+            width: 60px; /* Constrain the hover width to the icon's area */
+        }
+
+        /* Only highlight the icon area on hover */
+        .nav-link:hover {
+            background-color: #ffffff33; /* Hover effect around the icon */
+          
+            width: auto; /* Let width adjust to icon */
+        }
+
+        /* Remove space for icons when collapsed */
+        .nav-link i {
+            margin-right: 0;
+        }
     }
 
     .sidebar-logo {
-        height: 40px;
+        height: 80px;
         transition: opacity 0.3s ease;
         opacity: 1;
     }
@@ -18,12 +37,32 @@ aside.sidebar {
         opacity: 0;
     }
 
+    .icon-large {
+        font-size: 1.5rem;
+    }
+
+    .toggle-btn-wrapper {
+        flex-grow: 1;
+        display: flex;
+        align-items: start;
+        height: 40px;
+    }
+
+    .collapsed .toggle-btn-wrapper {
+        align-items: start;
+    }
+
+    .toggle-btn-wrapper {
+        justify-content: flex-end;
+    }
+
     .toggle-btn {
         padding: 10px;
-        background-color: #ffffff33;
+        background-color: transparent;
         border-radius: 5px;
         color: white;
         transition: background-color 0.3s;
+        box-shadow: none;
 
         &:hover {
             background-color: #ffffff66;
@@ -32,9 +71,25 @@ aside.sidebar {
 
     .nav-link {
         color: white;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        transition: background-color 0.3s, padding 0.3s, box-shadow 0.3s;
+        border-radius: 5px;
+
         &:hover {
-            color: #e0e0e0;
+            background-color: #ffffff33;
+            color: white;
+           // box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Modernized shadow effect */
         }
+
+        i {
+            margin-right: 10px;
+        }
+    }
+
+    .collapsed .nav-link i {
+        margin-right: 0;
     }
 
     .nested-items {
@@ -48,18 +103,17 @@ aside.sidebar {
     }
 
     .user-section {
-        position: relative !important;
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        padding: 10px;
+        display: flex;
+        justify-content: flex-start;
     }
 
     .user-section img {
-        position: absolute !important;
-        top: 0 !important;
-        right: 10px !important;
-    }
-
-    .toggle-section {
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding-top: 15px;
+        position: static;
     }
 
     .btn:hover {
@@ -69,4 +123,61 @@ aside.sidebar {
     body.dark-mode {
         background-color: #333;
     }
+
+    .nav-link.active-link {
+        background-color: #ffffff33;
+        color: white;
+       // box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Modernized shadow for active */
+    }
+}
+
+/* Customize the tooltip container */
+.tooltip {
+    background-color: transparent; /* Set transparent to customize inner separately */
+    opacity: 0.9; /* Slight transparency for a modern look */
+}
+
+/* Customize the inner content of the tooltip */
+.tooltip .tooltip-inner {
+    background-color: #4360ac; /* Modern dark blue background */
+    color: #ffffff; /* White text */
+    padding: 10px 14px; /* Padding for readability */
+    font-size: 0.9rem; /* Modern font size */
+    font-family: 'Poppins', sans-serif; /* Use modern font */
+    border-radius: 8px; /* Rounded corners */
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+/* Customize the arrow of the tooltip */
+.tooltip .tooltip-arrow {
+    border-top-color: #4360ac; /* Match arrow color with tooltip background */
+    width: 1rem; /* Customize the size of the arrow */
+    height: 1rem;
+}
+
+/* Optional: Adjust the opacity and smooth transition of showing/hiding the tooltip */
+.tooltip.show {
+    opacity: 1; /* Make tooltip fully visible */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth show animation */
+    transform: translateY(0); /* Remove any slide effect */
+}
+
+
+.sign-out-btn {
+    color: white;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+
+.collapsed .sign-out-btn span {
+    display: none;
+}
+
+.collapsed .sign-out-btn:hover span {
+    display: inline-block;
+    background-color: #ffffff33; /* Add a hover effect */
+    border-radius: 5px;
+    padding: 0 10px;
 }

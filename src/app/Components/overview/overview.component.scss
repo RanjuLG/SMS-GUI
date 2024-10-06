@@ -2,20 +2,37 @@
 .container-fluid {
   padding: 0.5rem;
 }
+.card-main-title {
+  font-size: 1.25rem;  /* Increase font size */
+  font-weight: 600;    /* Bolder font for emphasis */
+  color: #000000;      /* Primary blue theme color for "Management System" */
+  text-align: left;    /* Align left for better readability */
+  margin-bottom: 0.75rem; /* Add margin to separate title from content */
+  padding-left: 0.5rem;   /* Add padding for spacing from the edge */
+}
 
-/* Grid and card layout */
+.golden-title {
+  color: #efc75e;
+        /* Golden color for "Gold Cash" */
+}
+
+.card-title {
+  font-size: 1rem !important;
+  font-weight: 500;
+}
+/* Card layout and hover effects */
 .card-hover {
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   cursor: pointer;
-  border-radius: 0.5rem;
+  border-radius: 0.25rem;
   overflow: hidden;
   background-color: #fff;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
 }
 
 .card-hover:hover {
-  transform: translateY(-5px); /* Slight lift-up effect */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }
 
 /* Card image styling */
@@ -25,62 +42,98 @@
   height: auto;
   max-width: 100%;
   border-bottom: 1px solid #e9ecef;
-  
 }
 
 /* Card body and title */
 .card-body {
-  padding: 0.5rem;
-  
+  padding: 0.25rem;
 }
 
 .card-title {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: #333;
 }
 
 /* Responsive typography */
 h6 {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #495057;
   text-align: center;
 }
 
 @media (min-width: 768px) {
   h6 {
-    font-size: 0.9rem;
+    font-size: 0.85rem;
   }
 }
 
 @media (min-width: 1024px) {
   h6 {
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 }
 
-/* Utility classes */
-.my-4 {
-  margin-top: 0.5rem !important;
-  margin-bottom: 0.5rem !important;
-}
-.center-title {
-  text-align: center;
-}
-
-.container-fluid{
-
-
+/* Shortcut Panel at the top */
+.shortcut-panel {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e0e0e0;
 }
 
-.highlight {
-  border: 2px solid #007bff; /* Blue border */
-  background-color: #e9f5ff; /* Light blue background */
+/* Shortcut Items */
+.shortcut-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  color: #4360ac !important;
 }
 
-/* Optional: Add hover effect to further highlight the card */
-.highlight:hover {
-  background-color: #d0ebff;
-  box-shadow: 0 4px 8px rgba(0, 123, 255, 0.2);
+.shortcut-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.25rem;
 }
 
+.shortcut-item h6 {
+  font-size: 0.7rem;
+  color: #495057;
+  margin: 0;
+}
+
+/* Statistics Cards */
+.widget-card {
+  background-color: #fff;
+  border-radius: 0.25rem;
+  padding: 0.75rem;
+  border: 1px solid #e0e0e0; /* Subtle border for depth */
+  transition: transform 0.2s ease-in-out;
+}
+
+.widget-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #4360ac;
+}
+
+/* Initial button styles */
+.range-btn {
+  background-color: white;
+  color: orange;
+  border: 1px solid #000000;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.range-btn.active {
+  background-color: orange;
+  color: white;
+  border-color: orange;
+}
+
+.range-btn:hover {
+  transform: scale(1.05);
+  cursor: pointer;
+}

@@ -14,11 +14,12 @@ import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { JwtInterceptor } from './Services/jwt.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LOCALE_ID } from '@angular/core';
-
+import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 // Function to load configuration during application initialization
 export function initializeApp(configService: ConfigService): () => Promise<void> {
   return () => configService.loadConfig();
 }
+
 
 // Custom date formats
 const CUSTOM_DATE_FORMATS = {
@@ -63,6 +64,6 @@ export const appConfig: ApplicationConfig = {
       useFactory: initializeApp,
       deps: [ConfigService],
       multi: true
-    },
+    }, provideCharts(withDefaultRegisterables()),
   ]
 };

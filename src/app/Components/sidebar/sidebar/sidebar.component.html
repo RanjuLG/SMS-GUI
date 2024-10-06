@@ -1,79 +1,88 @@
 <aside [ngClass]="{'collapsed': !expanded}" class="sidebar d-flex flex-column vh-100">
-    <div class="p-4 mb-4 d-flex justify-content-between align-items-center">
+    <div class="p-4 mb-4 d-flex align-items-center">
         <!-- Logo is shown only when expanded -->
         <img src="GoldCashLogo.png" alt="Gold Cash" class="sidebar-logo" *ngIf="expanded">
 
-        <!-- Expand/Collapse Button is centered and always visible -->
-        <button class="btn toggle-btn mx-auto" (click)="toggleSidebar()">
-            <i *ngIf="expanded" class="ri-close-line"></i>
-            <i *ngIf="!expanded" class="ri-menu-line"></i>
-        </button>
+        <!-- Toggle Button (Center Aligned) -->
+        <div class="toggle-btn-wrapper ">
+            <button class="btn toggle-btn" (click)="toggleSidebar()">
+                <i *ngIf="!expanded" class="ri-menu-line" ></i> <!-- Menu icon -->
+                <i *ngIf="expanded" class="ri-close-line"></i> <!-- Close icon -->
+            </button>
+        </div>
     </div>
 
     <ul class="nav flex-column flex-1 pl-4">
         <li class="nav-item">
-            <a class="nav-link" routerLink="/overview" routerLinkActive="active-link">
-                <i class="ri-home-2-line"></i>
+            <a class="nav-link" routerLink="/overview" routerLinkActive="active-link" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Home">
+                <i class="ri-home-2-line icon-large"></i>
                 <span *ngIf="expanded">Home</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" routerLink="/invoices">
-                <i class="ri-article-line"></i>
+            <a class="nav-link" routerLink="/invoices" routerLinkActive="active-link" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Invoice">
+                <i class="ri-article-line icon-large"></i>
                 <span *ngIf="expanded">Invoice</span>
             </a>
             <ul *ngIf="expanded" class="nested-items">
-                <li><a class="nav-link" routerLink="/create-invoice">Create Invoice</a></li>
+                <li><a class="nav-link" routerLink="/create-invoice" routerLinkActive="active-link"><i
+                            class="ri-sticky-note-add-line icon-large"></i>Create Invoice</a></li>
             </ul>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" routerLink="/customers">
-                <i class="ri-user-3-line"></i>
+            <a class="nav-link" routerLink="/customers" routerLinkActive="active-link" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Customers">
+                <i class="ri-user-3-line icon-large"></i>
                 <span *ngIf="expanded">Customers</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" routerLink="/items">
-                <i class="ri-archive-line"></i>
+            <a class="nav-link" routerLink="/items" routerLinkActive="active-link" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Inventory">
+                <i class="ri-archive-line icon-large"></i>
                 <span *ngIf="expanded">Inventory</span>
             </a>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" routerLink="/reports">
-                <i class="ri-file-chart-line"></i>
+            <a class="nav-link" routerLink="/reports" routerLinkActive="active-link" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Reports">
+                <i class="ri-file-chart-line icon-large"></i>
                 <span *ngIf="expanded">Reports</span>
             </a>
-            <ul *ngIf="expanded" class="nested-items">
-                <li><a class="nav-link" routerLink="/reports/by-customer">Customer History</a></li>
-                <li><a class="nav-link" routerLink="/reports/transactions">Transaction History</a></li>
-            </ul>
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" routerLink="/configurations">
-                <i class="ri-tools-line"></i>
+            <a class="nav-link" (click)="toggleSidebar()" routerLinkActive="active-link" data-bs-toggle="tooltip"
+                data-bs-placement="right" data-bs-original-title="Configuration">
+                <i class="ri-tools-line icon-large"></i>
                 <span *ngIf="expanded">Configuration</span>
             </a>
             <ul *ngIf="expanded" class="nested-items">
-                <li><a class="nav-link" routerLink="/config/pricings">Pricings</a></li>
-                <li><a class="nav-link" routerLink="/config/users">Users</a></li>
+                <li><a class="nav-link" routerLink="/config/pricings" routerLinkActive="active-link" ><i
+                            class="ri-price-tag-3-line icon-large"></i>Pricings</a></li>
+                <li><a class="nav-link" routerLink="/config/users" routerLinkActive="active-link"><i
+                            class="ri-shield-user-line icon-large"></i>Users</a></li>
             </ul>
         </li>
     </ul>
 
-
     <!-- User Sign-Out Section -->
     <div class="d-flex ms-auto align-items-center p-3 user-section">
-        <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo"
-            id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-            <li>
-                <a class="dropdown-item" routerLink="/auth/sign-in" (click)="signOut()">Sign Out</a>
-            </li>
-        </ul>
-    </div>
+        <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" (click)="toggleSidebar()">
+        <button class="btn sign-out-btn" (click)="signOut()">
+          <i class="ri-logout-box-line"></i>
+          <!-- Add Bootstrap spacing utility here for padding between icon and text -->
+          <span class="ms-2" *ngIf="expanded">Sign Out</span>
+        </button>
+      </div>
+      
+    
 </aside>
+
+<!---->
