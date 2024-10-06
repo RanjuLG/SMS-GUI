@@ -1,62 +1,87 @@
 <div class="container-fluid my-4">
-  <div class="row justify-content-center g-1">
-     <!-- Create Invoice -->
-     <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover highlight" routerLink="/create-invoice">
-        <img src="overview/createInvoice.png" class="card-img-top" alt="Create Settlement Invoice">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Create Invoice</h6>
-        </div>
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h4 class="card-main-title mb-0">
+      Gold Cash Management System
+    </h4>
+  </div>
+  
+  <!-- Shortcut Panel at the top -->
+  <div class="row mb-3 justify-content-center shortcut-panel">
+    <div class="col-auto">
+      <div class="shortcut-item text-center" routerLink="/create-invoice">
+        <img src="overview/createInvoice2.png" alt="Create Invoice" class="shortcut-icon"  data-bs-toggle="tooltip"
+        data-bs-placement="right" data-bs-original-title="Create Invoice">
       </div>
     </div>
-     <!-- Invoice Management -->
-     <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="/invoices">
-        <img src="overview/invoiceForm.png" class="card-img-top" alt="Invoice Management">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Invoices</h6>
+  </div>
+    <!-- Summary Statistics -->
+    <div class="row mb-4 g-3 justify-content-center">
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+        <div class="card widget-card shadow-sm">
+          <div class="card-body text-center">
+            <h6>Total Active Loans</h6>
+            <span class="widget-value" id="total-loans">245</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+        <div class="card widget-card shadow-sm">
+          <div class="card-body text-center">
+            <h6>Total Invoices</h6>
+            <span class="widget-value" id="total-invoices">158</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+        <div class="card widget-card shadow-sm">
+          <div class="card-body text-center">
+            <h6>Revenue Generated</h6>
+            <span class="widget-value" id="total-revenue">Rs.50,000</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+        <div class="card widget-card shadow-sm">
+          <div class="card-body text-center">
+            <h6>Inventory Count</h6>
+            <span class="widget-value" id="inventory-count">342</span>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+        <div class="card widget-card shadow-sm">
+          <div class="card-body text-center">
+            <h6>Customer Count</h6>
+            <span class="widget-value" id="customer-count">89</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Customer Management -->
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="/customers">
-        <img src="overview/customerForm.png" class="card-img-top" alt="Customer Management">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Customers</h6>
+
+    <!-- Dashboard Charts Section -->
+    <div class="row justify-content-center">
+      <div class="col-lg-4 col-md-6 mb-3">
+        <div class="card h-100 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <h5 class="card-title" style="padding-left: 2%;">Revenue Summary</h5>
+
+              <!-- Date Range Selector Icons -->
+              <div class="date-range-selector d-flex gap-2">
+                <button class="btn btn-sm range-btn" id="btn-7D" (click)="updateChartData('7D', 'btn-7D')">7D</button>
+                <button class="btn btn-sm range-btn" id="btn-31D"
+                  (click)="updateChartData('31D', 'btn-31D')">31D</button>
+                <button class="btn btn-sm range-btn" id="btn-12M"
+                  (click)="updateChartData('12M', 'btn-12M')">12M</button>
+                <button class="btn btn-sm range-btn" id="btn-5Y" (click)="updateChartData('5Y', 'btn-5Y')">5Y</button>
+              </div>
+            </div>
+
+            <!-- Chart -->
+            <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" chartType="line"></canvas>
+          </div>
         </div>
       </div>
     </div>
-    
-    <!-- Inventory Management -->
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="/items">
-        <img src="overview/itemForm.png" class="card-img-top" alt="Inventory Management">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Inventory</h6>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Reports -->
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="/reports">
-        <img src="overview/reports.png" class="card-img-top" alt="Reports">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Reports</h6>
-        </div>
-      </div>
-    </div>
-    <!-- Transaction History -->
-      <!--
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="/transaction-history">
-        <img src="overview/transactionHistoryForm.png" class="card-img-top" alt="Transaction History">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Transactions</h6>
-        </div>
-      </div>
-    </div>
-  -->
 </div>

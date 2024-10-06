@@ -4,7 +4,6 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../Services/auth.service';
-import { LucideAngularModule } from 'lucide-angular';
 declare var bootstrap: any;
 import { ExtendedItemDto } from '../../item-form/item-form.component';
 import { AddItemComponent } from '../../helpers/items/add-item/add-item.component';
@@ -13,7 +12,7 @@ import { ExtendedCustomerDto } from '../../customer-form/customer-form.component
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive, LucideAngularModule],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })

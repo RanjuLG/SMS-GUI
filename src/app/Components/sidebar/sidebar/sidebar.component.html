@@ -4,9 +4,9 @@
         <img src="GoldCashLogo.png" alt="Gold Cash" class="sidebar-logo" *ngIf="expanded">
 
         <!-- Toggle Button (Center Aligned) -->
-        <div class="toggle-btn-wrapper">
+        <div class="toggle-btn-wrapper ">
             <button class="btn toggle-btn" (click)="toggleSidebar()">
-                <i *ngIf="!expanded" class="ri-menu-line"></i> <!-- Menu icon -->
+                <i *ngIf="!expanded" class="ri-menu-line" ></i> <!-- Menu icon -->
                 <i *ngIf="expanded" class="ri-close-line"></i> <!-- Close icon -->
             </button>
         </div>
@@ -58,7 +58,7 @@
         </li>
 
         <li class="nav-item">
-            <a class="nav-link" routerLink="/configurations" routerLinkActive="active-link" data-bs-toggle="tooltip"
+            <a class="nav-link" (click)="toggleSidebar()" routerLinkActive="active-link" data-bs-toggle="tooltip"
                 data-bs-placement="right" data-bs-original-title="Configuration">
                 <i class="ri-tools-line icon-large"></i>
                 <span *ngIf="expanded">Configuration</span>
@@ -76,9 +76,13 @@
     <div class="d-flex ms-auto align-items-center p-3 user-section">
         <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" (click)="toggleSidebar()">
         <button class="btn sign-out-btn" (click)="signOut()">
-            <a class="nav-link"><i class="ri-logout-box-line"></i></a>
-            <span *ngIf="expanded">Sign Out</span>
+          <i class="ri-logout-box-line"></i>
+          <!-- Add Bootstrap spacing utility here for padding between icon and text -->
+          <span class="ms-2" *ngIf="expanded">Sign Out</span>
         </button>
-    </div>
+      </div>
+      
     
 </aside>
+
+<!---->
