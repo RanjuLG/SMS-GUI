@@ -4,63 +4,62 @@
       <div class="col-12">
         <div class="card">
           <div class="card-body">
-            <div class="text-center">
-              <h4 class="text">{{ isEditMode ? 'Edit Initial Payment Invoice' : 'Create Initial Payment Invoice' }}</h4>
+            <div class="text-center mb-3">
+              <h4 class="text">{{ isEditMode ? 'Edit Payment Invoice' : 'Create Payment Invoice' }}</h4>
             </div>
 
-            <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()" class="pt-4">
-
+            <form [formGroup]="invoiceForm" (ngSubmit)="onSubmit()">
               <!-- Customer Information -->
-              <h5 class="section-title">Customer Information</h5>
+              <h5 class="section-title">Customer Info</h5>
               <div class="row">
                 <div class="col-md-3">
                   <div class="form-group" formGroupName="customer">
                     <label for="customerNIC">NIC</label>
                     <div class="input-group">
-                      <input type="text" id="customerNIC" class="form-control" formControlName="customerNIC" required [disabled]="isCustomerAutofilled" />
+                      <input type="text" id="customerNIC" class="form-control form-control-sm" formControlName="customerNIC" required [disabled]="isCustomerAutofilled" />
                       <button type="button" class="btn btn-info btn-sm" (click)="autofillCustomerDetails()">Autofill</button>
                     </div>
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group" formGroupName="customer">
-                    <label for="customerName">Customer Name</label>
-                    <input type="text" id="customerName" class="form-control" formControlName="customerName" required [disabled]="isCustomerAutofilled" />
+                    <label for="customerName">Name</label>
+                    <input type="text" id="customerName" class="form-control form-control-sm" formControlName="customerName" required [disabled]="isCustomerAutofilled" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group" formGroupName="customer">
                     <label for="customerContactNo">Contact No.</label>
-                    <input type="text" id="customerContactNo" class="form-control" formControlName="customerContactNo" required [disabled]="isCustomerAutofilled" />
+                    <input type="text" id="customerContactNo" class="form-control form-control-sm" formControlName="customerContactNo" required [disabled]="isCustomerAutofilled" />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group" formGroupName="customer">
                     <label for="customerAddress">Address</label>
-                    <textarea id="customerAddress" class="form-control" rows="2" formControlName="customerAddress" required [disabled]="isCustomerAutofilled"></textarea>
+                    <textarea id="customerAddress" class="form-control form-control-sm" rows="2" formControlName="customerAddress" required [disabled]="isCustomerAutofilled"></textarea>
                   </div>
                 </div>
               </div>
-              <div class="col-md-2">
-                <div class="form-group">
-                  <label for="loanPeriod">Loan Period (months)</label>
-                  <select id="loanPeriod" class="form-control form-control-sm form-select" formControlName="loanPeriod" required>
-                    <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">
-                      {{ period.period }}
-                    </option>
-                  </select>
+              <div class="row mt-2">
+                <div class="col-md-2">
+                  <div class="form-group">
+                    <label for="loanPeriod">Loan Period (months)</label>
+                    <select id="loanPeriod" class="form-control form-control-sm" formControlName="loanPeriod" required>
+                      <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">{{ period.period }}</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
               <!-- Item Details -->
-              <h5 class="section-title">Item Details</h5>
+              <h5 class="section-title mt-3">Item Details</h5>
               <div formArrayName="items">
                 <div *ngFor="let item of items().controls; let i = index" [formGroupName]="i" class="row mb-2">
                   <div class="col-md-3">
                     <div class="form-group">
                       <label for="itemSelection">Select Item</label>
-                      <select id="itemSelection" class="form-control form-control-sm form-select" (change)="onItemSelected($event, i)">
-                        <option value="">-- Create New Item --</option>
+                      <select id="itemSelection" class="form-control form-control-sm" (change)="onItemSelected($event, i)">
+                        <option value="">-- New Item --</option>
                         <option *ngFor="let existingItem of customerItems" [value]="existingItem.itemId">
                           {{ existingItem.itemDescription }}
                         </option>
@@ -69,64 +68,50 @@
                   </div>
                   <div class="col-md-2">
                     <div class="form-group">
-                      <label for="itemDescription">Item Description</label>
+                      <label for="itemDescription">Description</label>
                       <input id="itemDescription" class="form-control form-control-sm" formControlName="itemDescription" required />
                     </div>
                   </div>
                   <div class="col-md-1">
                     <div class="form-group">
                       <label for="itemCaratage">Karat (K)</label>
-                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm form-select" formControlName="itemCaratage" min="0" required>
-                        <option *ngFor="let karat of karats" [value]="karat.karatValue">
-                          {{ karat.karatValue }}
-                        </option>
+                      <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required>
+                        <option *ngFor="let karat of karats" [value]="karat.karatValue">{{ karat.karatValue }}</option>
                       </select>
-
-                      <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" min="0" readonly />
+                      <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" readonly />
                     </div>
                   </div>
                   <div class="col-md-1">
                     <div class="form-group">
-                      <label for="itemWeight">Total Weight</label>
+                      <label for="itemWeight">Weight (g)</label>
                       <input type="number" step="0.001" id="itemWeight" class="form-control form-control-sm" formControlName="itemWeight" min="0" required />
                     </div>
                   </div>
                   <div class="col-md-1">
                     <div class="form-group">
-                      <label for="itemGoldWeight">Gold Weight</label>
+                      <label for="itemGoldWeight">Gold Weight (g)</label>
                       <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm" formControlName="itemGoldWeight" min="0" required />
                     </div>
                   </div>
                   <div class="col-md-2">
                     <div class="form-group">
-                      <label for="itemValue">Item Value</label>
-                      <input type="number" step="100" id="itemValue" class="form-control form-control-sm" formControlName="itemValue" min="0" />
+                      <label for="itemValue">Value (Rs)</label>
+                      <input type="number" step="100" id="itemValue" class="form-control form-control-sm" formControlName="itemValue" />
                     </div>
                   </div>
-                  <div class="col-md-2 d-flex justify-content-between">
-                    <!-- Calculate button -->
-                    <button type="button" class="btn btn-primary btn-sm" (click)="onCalculateItemValue(i)">
-                      Reset Item Value
-                    </button>
-
-                    <!-- Remove button -->
-                    <button type="button" class="btn btn-danger btn-sm" (click)="removeItem(i)">
-                      <i class="ri-close-line"></i> Remove Item
-                    </button>
+                  <div class="col-md-2 d-flex justify-content-end">
+                    <button type="button" class="btn btn-outline-primary btn-sm" (click)="onCalculateItemValue(i)">Reset</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm ms-2" (click)="removeItem(i)"><i class="ri-close-line"></i></button>
                   </div>
                 </div>
               </div>
 
-              <!-- Add New Item button -->
               <div class="d-flex justify-content-end mt-2">
-                <button type="button" class="btn btn-primary btn-sm" (click)="addItem()">
-                  <i class="ri-add-line"></i> Add New Item
-                </button>
+                <button type="button" class="btn btn-outline-success btn-sm" (click)="addItem()"><i class="ri-add-line"></i> Add Item</button>
               </div>
 
               <!-- Payment Information -->
-              <h5 class="section-title">Payment Information</h5>
-              <h5 class="section-title">Payment Information</h5>
+              <h5 class="section-title mt-3">Payment Info</h5>
               <div class="row">
                 <div class="col-md-3">
                   <div class="form-group">
@@ -136,33 +121,33 @@
                 </div>
                 <div class="col-md-2">
                   <div class="form-group">
-                    <label for="subTotal">Subtotal</label>
-                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal" required (input)="onSubTotalOrInterestChange()"  min="0" />
+                    <label for="subTotal">Subtotal (Rs)</label>
+                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal" required (input)="onSubTotalOrInterestChange()" />
                   </div>
                 </div>
                 <div class="col-md-2">
                   <div class="form-group">
                     <label for="interestRate">Interest (%)</label>
-                    <input type="number" step="0.1" id="interestRate" class="form-control form-control-sm" formControlName="interestRate" required (input)="onSubTotalOrInterestChange()"  min="0" />
+                    <input type="number" step="0.1" id="interestRate" class="form-control form-control-sm" formControlName="interestRate" required (input)="onSubTotalOrInterestChange()" />
                   </div>
                 </div>
                 <div class="col-md-2">
                   <div class="form-group">
-                    <label for="interestAmount">Interest Amount</label>
-                    <input type="number" step="1" id="interestAmount" class="form-control form-control-sm" formControlName="interestAmount" required (input)="onSubTotalOrInterestChange()"  min="0" />
+                    <label for="interestAmount">Interest (Rs)</label>
+                    <input type="number" step="1" id="interestAmount" class="form-control form-control-sm" formControlName="interestAmount" required />
                   </div>
                 </div>
                 <div class="col-md-3">
                   <div class="form-group">
-                    <label for="totalAmount">Total Amount</label>
-                    <input type="number" step="100" id="totalAmount" class="form-control form-control-sm" formControlName="totalAmount" required (input)="onTotalAmountChange()"  min="0" />
+                    <label for="totalAmount">Total (Rs)</label>
+                    <input type="number" step="100" id="totalAmount" class="form-control form-control-sm" formControlName="totalAmount" required />
                   </div>
                 </div>
               </div>
 
               <!-- Action Buttons -->
-              <div class="d-flex justify-content-end mt-4">
-                <button type="button" class="btn btn-secondary me-2 btn-sm" (click)="onCancel()">Cancel</button>
+              <div class="d-flex justify-content-end mt-3">
+                <button type="button" class="btn btn-secondary btn-sm me-2" (click)="onCancel()">Cancel</button>
                 <button type="submit" class="btn btn-primary btn-sm">{{ isEditMode ? 'Update' : 'Create' }}</button>
               </div>
             </form>
