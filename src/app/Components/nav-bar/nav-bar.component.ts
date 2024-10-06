@@ -1,37 +1,44 @@
 import { ChangeDetectorRef, Component } from '@angular/core';
-import { RouterLink,RouterLinkActive } from '@angular/router';
-import { BreadcrumbComponent } from '../helpers/breadcrumb/breadcrumb.component';
+import { Router, RouterLink, RouterLinkActive,RouterOutlet } from '@angular/router';
 import { Location } from '@angular/common';
-import { Router } from '@angular/router';
 import { AuthService } from '../../Services/auth.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { ExtendedCustomerDto } from '../customer-form/customer-form.component';
-import { of } from 'rxjs';
-import Swal from 'sweetalert2';
-import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
 import { ExtendedItemDto } from '../item-form/item-form.component';
+import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
+import Swal from 'sweetalert2';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [RouterLink,BreadcrumbComponent,RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, CommonModule,RouterOutlet],
   templateUrl: './nav-bar.component.html',
-  styleUrl: './nav-bar.component.scss'
+  styleUrls: ['./nav-bar.component.scss']
 })
 export class NavBarComponent {
+  // Add state to track if the sidebar is expanded
+  isSidebarExpanded: boolean = false;
 
-  constructor(private location: Location,private router: Router,private authService: AuthService,private modalService: NgbModal,private cdr: ChangeDetectorRef) { }
+  constructor(
+    private location: Location,
+    private router: Router,
+    private authService: AuthService,
+    private modalService: NgbModal,
+    private cdr: ChangeDetectorRef
+  ) {}
 
+  // Methods to navigate
   goBack() {
-    this.location.back(); 
-      
-  }
-  goForward() {
-    this.location.forward(); 
-      
+    this.location.back();
   }
 
+  goForward() {
+    this.location.forward();
+  }
+
+  // Method to handle logout
   signOut() {
     try {
       this.authService.logout();
@@ -42,18 +49,17 @@ export class NavBarComponent {
       Swal.fire('Logout Error', 'An issue occurred while logging out. Please try again.', 'error');
     }
   }
-  
-  
 
+  // Open add customer modal
   openAddCustomerModal(): void {
     const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
     modalRef.componentInstance.saveCustomer.subscribe((customer: ExtendedCustomerDto) => {
-      // Reload customers after adding a new customer
-      this.cdr.markForCheck(); // Trigger change detection
+      this.cdr.markForCheck();
       Swal.fire('Added!', 'Customer has been added.', 'success');
     });
   }
 
+  // Open add item modal
   openAddItemModal(): void {
     const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
     modalRef.componentInstance.saveItem.subscribe((item: ExtendedItemDto) => {
@@ -62,4 +68,18 @@ export class NavBarComponent {
     });
   }
 
+  // Toggle sidebar expansion
+  toggleSidebar() {
+    this.isSidebarExpanded = !this.isSidebarExpanded;
+  }
+
+  // Collapse the sidebar when the mouse leaves
+  collapseSidebar() {
+    this.isSidebarExpanded = false;
+  }
+
+  // Placeholder method for theme toggle
+  toggleTheme() {
+    console.log('Theme toggled');
+  }
 }

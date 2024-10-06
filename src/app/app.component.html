@@ -1,7 +1,12 @@
-<div *ngIf="isLoggedIn">
-  <app-nav-bar></app-nav-bar>
+<div class="main-layout d-flex">
+  <div *ngIf="isLoggedIn" class="sidebar-container">
+    <app-sidebar></app-sidebar>
+  </div>
+
+  <div class="content-container flex-fill d-flex flex-column">
+    <div class="content flex-grow-1 p-4">
+      <router-outlet></router-outlet>
+    </div>
+    <app-footer></app-footer>
+  </div>
 </div>
-<div class="content">
-  <router-outlet></router-outlet>
-</div>
-<app-footer></app-footer>

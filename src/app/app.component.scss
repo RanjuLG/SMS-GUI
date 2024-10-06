@@ -1,12 +1,27 @@
 :host {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-  }
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-layout {
+  display: flex;
+  width: 100%;
+}
+
+.sidebar-container {
+  flex-shrink: 0; // Ensures sidebar does not shrink when the layout is resized
+}
+
+.content-container {
+  flex-grow: 1; // Content container expands to take up remaining space
+  display: flex;
+  flex-direction: column;
   
   .content {
-    flex: 1;
+    flex-grow: 1; // Ensures the content grows and takes up all available space
+    padding: 1rem;
+    background-color: #f8f9fa; // Light background to distinguish from sidebar
   }
+}
 
 
-  
