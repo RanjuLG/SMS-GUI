@@ -75,6 +75,7 @@ export interface Item {
     itemDescription: string;
     itemId:number;
     itemCaratage: number;
+    itemWeight: number;
     itemGoldWeight: number;
     itemValue: number;
   }
@@ -94,7 +95,7 @@ export interface Item {
     dateGenerated: string; // Should be in ISO 8601 format, e.g., "2024-07-31T19:33:04.057Z"
     paymentStatus: boolean; // Changed to boolean for better clarity
     subTotal: number;
-    interest: number;
+    interestRate: number;
     interestAmount: number;
     totalAmount: number;
     loanPeriod: number;
@@ -142,13 +143,9 @@ export interface LoanInfoDto {
   principleAmount: number;
   interestRate: number;
   interestAmount: number;
-  dailyInterestAmount: number;
+  dailyInterest: number;
   totalAmount: number;
   loanPeriod: number;
-  numberOfInstallments: number;
-  installmentValue: number;
-  numberOfInstallmentsPaid: number;
-  numberOfInstallmentsToBePaid: number;
   isLoanSettled: boolean;
-  daysSinceLastInstallment: number;
+  lastInstallmentDate: Date;
 }

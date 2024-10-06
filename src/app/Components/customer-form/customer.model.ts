@@ -8,6 +8,7 @@ export interface Customer {
     createdAt?: Date;
     updatedAt?: Date;
     //selected?: boolean;
+    nicPhotoPath?: string;  // Add NIC photo property
   }
   
   
@@ -19,6 +20,7 @@ export interface Customer {
       customerAddress: string;
       customerContactNo: string;
       createdAt: string;
+      nicPhotoPath?: string;  // Add NIC photo property
     }
   
   
@@ -29,6 +31,7 @@ export interface Customer {
       customerAddress: string;
       customerContactNo: string;
       //createdAt: string;
+      nicPhotoPath?: string;  // Add NIC photo property
     }
     
   

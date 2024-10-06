@@ -78,7 +78,7 @@
                 <div class="col-md-3" *ngIf="initialInvoices.length > 0">
                   <div class="form-group">
                     <label for="initialInvoiceNumber">Select Initial Invoice</label>
-                    <select id="initialInvoiceNumber" class="form-control" (change)="onInitialInvoiceSelected($event)">
+                    <select id="initialInvoiceNumber" class="form-control form-select" (change)="onInitialInvoiceSelected($event)">
                       <option value="">-- Select Invoice --</option>
                       <option *ngFor="let invoice of initialInvoices" [value]="invoice.invoiceId">
                         {{ invoice.invoiceNo }} - {{ invoice.totalAmount }}
@@ -164,19 +164,19 @@
                 -->
                  <!-- Installment Number -->
                 
-
                  <div class="col-md-2">
                   <div class="form-group">
                     <label for="subTotal">Subtotal</label>
-                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal"/>
+                    <input type="number" step="100" id="subTotal" class="form-control form-control-sm" formControlName="subTotal" (input)="onSubTotalOrInterestChange()"/>
                   </div>
                 </div>
                 <div class="col-md-2">
                   <div class="form-group">
-                    <label for="interest">Interest (%)</label>
-                    <input type="number" step="0.1" id="interest" class="form-control form-control-sm" formControlName="interest" />
+                    <label for="interestRate">Interest (%)</label>
+                    <input type="number" step="0.1" id="interest" class="form-control form-control-sm" formControlName="interestRate" (input)="onSubTotalOrInterestChange()"/>
                   </div>
                 </div>
+                
                 <div class="col-md-3">
                   <div class="form-group">
                     <label for="totalAmount">Total Amount</label>

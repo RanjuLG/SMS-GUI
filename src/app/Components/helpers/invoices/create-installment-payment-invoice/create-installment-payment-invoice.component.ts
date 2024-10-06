@@ -7,6 +7,8 @@ import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, LoanInfoDto } from '../../..
 import { CustomerDto } from '../../../customer-form/customer.model';
 import { CommonModule } from '@angular/common';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { sum } from 'mathjs';
+import { DateService } from '../../../../Services/date-service.service';
 
 @Component({
   selector: 'app-create-installment-payment-invoice',
@@ -24,13 +26,16 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
   initialInvoiceNumber = '0';
   initialInvoices: InvoiceDto2[] = [];
   selectedInvoice: InvoiceDto2 | null = null;
+  lastInstallmentDate = new Date();
+  baseInterest = 0;
 
   constructor(
     private fb: FormBuilder,
     private apiService: ApiService,
     private router: Router,
     private modalService: NgbModal,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private dateService: DateService,
   ) {
     this.invoiceForm = this.fb.group({
       customer: this.fb.group({
@@ -60,7 +65,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
         this.resetCustomerFields();
       }
     });
-
+    this.invoiceForm.get('date')?.valueChanges.subscribe(() => this.calculateInterest());
     this.invoiceForm.get('subTotal')?.valueChanges.subscribe(() => this.updateTotalAmount());
     this.invoiceForm.get('interestAmount')?.valueChanges.subscribe(() => this.updateTotalAmount());
     
@@ -107,13 +112,34 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
 
               if (loanInfo.loanPeriod > 0) {
                 console.log("this.loanInfo: ", loanInfo)
-                const principleAmount = (loanInfo.principleAmount / loanInfo.loanPeriod).toFixed(0);
-                const interestAmount = (loanInfo.interestAmount / loanInfo.loanPeriod).toFixed(0);
-                const dailyInterstAmount = loanInfo.dailyInterestAmount.toFixed(0);
-                const totalAmount = Number(principleAmount) + Number(interestAmount); 
-               // const installmentNo = loanInfo.numberOfInstallmentsPaid + 1;
+                // Convert the date string to a Date object, but adjust for local time
+                // Assuming loanInfo.lastInstallmentDate is a string like "2024-04-01T00:00:00"
+                
+                const lastInstallmentDateString = loanInfo.lastInstallmentDate; // Assume this is the ISO 8601 string from backend
+                const lastInstallmentDate = new Date(lastInstallmentDateString); // Automatically parses the timezone correctly
+                
+                if (!isNaN(lastInstallmentDate.getTime())) {
+                    this.lastInstallmentDate = lastInstallmentDate;
+                    console.log('Last Installment Date:', this.lastInstallmentDate); // Should print with the correct local time
+                } else {
+                    console.error('Invalid Date:', lastInstallmentDateString);
+                }
+            
+                
+                this.baseInterest = loanInfo.dailyInterest;
+                console.log("Base Interest (Daily Interest):", this.baseInterest);
+                
+                const principleAmount = Math.round(Number(loanInfo.principleAmount) / Number(loanInfo.loanPeriod));
+                console.log("Principle Amount (Per Period):", principleAmount);
+                
+                const accumulatedInterest = this.calculateInterest();
+                console.log("Accumulated Interest:", accumulatedInterest);
+                
+                const totalAmount = sum((principleAmount), Number(accumulatedInterest));
+                console.log("Total Amount:", totalAmount);
+                
                 this.invoiceForm.patchValue({ subTotal: principleAmount});
-                this.invoiceForm.patchValue({ interestAmount: dailyInterstAmount});
+                this.invoiceForm.patchValue({ interestAmount: accumulatedInterest});
                 this.invoiceForm.patchValue({ totalAmount: totalAmount});
               } else {
                 Swal.fire('Warning', 'Invalid loan period for this invoice', 'warning');
@@ -256,7 +282,7 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
                 next: (createdInvoiceId) => {
                   Swal.fire('Success', 'Invoice created successfully', 'success');
                   this.saveInvoice.emit(invoiceDto);
-                  this.router.navigate(['/view-installment-invoice-template', createdInvoiceId]);
+                  this.router.navigate([`/view-installment-invoice-template/${createdInvoiceId.value}`]);
                 },
                 error: (error) => {
                   console.error('Error creating invoice:', error);
@@ -298,4 +324,46 @@ export class CreateInstallmentPaymentInvoiceComponent implements OnInit {
       }
     });
   }
+
+  calculateInterest(): number {
+    const newDate = this.invoiceForm.get('date')?.value;
+    console.log("Selected Date:", newDate);
+  
+    // Logic to recalculate interest based on the new date.
+    const recalculatedInterest = this.calculateInterestBasedOnDate(newDate);
+    console.log("Recalculated Interest:", recalculatedInterest);
+  
+    // Update the interestAmount in the form
+    this.invoiceForm.patchValue({ interestAmount: recalculatedInterest });
+    return recalculatedInterest;
+  }
+  
+  calculateInterestBasedOnDate(date: string): number {
+    const daysElapsed = this.getDaysDifferenceFromLastInstallmentDate(date);
+    console.log("Days Elapsed since Last Installment:", daysElapsed);
+  
+    const baseInterestRate = this.baseInterest; // Example base interest rate
+    console.log("Base Interest Rate:", baseInterestRate);
+  
+    const calculatedInterest = daysElapsed * baseInterestRate; // Simple interest calculation based on elapsed days
+    console.log("Calculated Interest:", calculatedInterest);
+  
+    return Math.round(calculatedInterest); // Return rounded interest
+  }
+  
+  getDaysDifferenceFromLastInstallmentDate(date: string): number {
+    const selectedDate = new Date(date);
+    console.log("Selected Date for Days Calculation:", selectedDate);
+  
+    const lastDay = this.lastInstallmentDate;
+    console.log("Last Installment Date:", lastDay);
+  
+    const timeDifference = Math.abs(lastDay.getTime() - selectedDate.getTime());
+    const dayDifference = Math.ceil(timeDifference / (1000 * 3600 * 24));
+    console.log("Difference in Days:", dayDifference);
+  
+    return dayDifference;
+  }
+  
+
 }

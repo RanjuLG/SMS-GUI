@@ -7,6 +7,7 @@ import { MatInputModule } from '@angular/material/input';
 import { InitialTransactionHistoryComponent } from '../initial-transaction-history/initial-transaction-history.component';
 import { ChangeDetectorRef } from '@angular/core';
 import { InstallmentTransactionHistoryComponent } from '../installment-transaction-history/installment-transaction-history.component';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-income-report',
@@ -19,7 +20,8 @@ import { InstallmentTransactionHistoryComponent } from '../installment-transacti
     MatFormFieldModule,
     MatInputModule,
     InitialTransactionHistoryComponent,
-    InstallmentTransactionHistoryComponent
+    InstallmentTransactionHistoryComponent,
+    RouterLink
   ],
   templateUrl: './income-report.component.html',
   styleUrls: ['./income-report.component.scss'],

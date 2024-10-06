@@ -4,11 +4,11 @@ import { NavBarComponent } from "./Components/nav-bar/nav-bar.component";
 import { FooterComponent } from './Components/footer/footer.component';
 import { AuthService } from './Services/auth.service';
 import { CommonModule } from '@angular/common';
-
+import { SidebarComponent } from './Components/sidebar/sidebar/sidebar.component';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, NavBarComponent,FooterComponent,CommonModule],
+  imports: [RouterOutlet, NavBarComponent,FooterComponent,CommonModule,SidebarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

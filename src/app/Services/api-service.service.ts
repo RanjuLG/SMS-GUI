@@ -37,15 +37,46 @@ export class ApiService {
   }
 
 //Customers
-  createCustomer(customerDto: CreateCustomerDto): Observable<any> {
-    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.post(`${this.configService.apiUrl}/api/customers`, customerDto);
+createCustomer(customerDto: CreateCustomerDto, nicPhotoFile: File | null): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+
+  const formData = new FormData();
+
+  // Append the customer details to the FormData
+  formData.append('customerNIC', customerDto.customerNIC);
+  formData.append('customerName', customerDto.customerName);
+  formData.append('customerAddress', customerDto.customerAddress);
+  formData.append('customerContactNo', customerDto.customerContactNo);
+
+  // Append the NIC photo file if it exists
+  if (nicPhotoFile) {
+    formData.append('nicPhoto', nicPhotoFile);
   }
 
-  updateCustomer(customerId: number, customerDto: CreateCustomerDto): Observable<any> {
-    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, customerDto);
+  // Make a POST request with the FormData
+  return this.http.post(`${this.configService.apiUrl}/api/customers`, formData);
+}
+
+updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile: File | null): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+
+  const formData = new FormData();
+
+  // Append the customer details to the FormData
+  formData.append('customerNIC', customerDto.customerNIC);
+  formData.append('customerName', customerDto.customerName);
+  formData.append('customerAddress', customerDto.customerAddress);
+  formData.append('customerContactNo', customerDto.customerContactNo);
+
+  // Append the NIC photo file if it exists
+  if (nicPhotoFile) {
+    formData.append('nicPhoto', nicPhotoFile);
   }
+
+  // Make a PUT request with the FormData
+  return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, formData);
+}
+
 
   getCustomers(from: Date, to: Date): Observable<CustomerDto[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));

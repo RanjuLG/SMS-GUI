@@ -108,6 +108,14 @@ export class InvoiceTemplateComponent implements OnInit {
       html2pdf().from(element).set(options).save();
     }
   }
+
+  getCaratRange(caratage: number | undefined): string {
+    if (caratage === undefined) return ''; // Return empty string or other fallback value if undefined
+    const minCaratage = caratage - 1;
+    const maxCaratage = caratage + 1;
+    return `${minCaratage} - ${maxCaratage}`;
+  }  
+  
   
 }
   

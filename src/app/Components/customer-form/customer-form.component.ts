@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild,TemplateRef  } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
@@ -16,6 +16,7 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { RouterLink } from '@angular/router';
 
 export interface ExtendedCustomerDto extends CustomerDto {
   selected?: boolean;
@@ -34,6 +35,7 @@ export interface ExtendedCustomerDto extends CustomerDto {
     MatHint,
     MatFormFieldModule, // Import Material Form Field Module
     MatInputModule, 
+    RouterLink
   ],
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.scss'],
@@ -49,9 +51,10 @@ export class CustomerFormComponent implements OnInit {
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
   to = new Date(this._currentDate)
-  
+  // Declare selectedCustomer property
+  selectedCustomer: ExtendedCustomerDto | null = null;
   @ViewChild('datePicker') datePicker!: ElementRef;
-
+  @ViewChild('nicModal') nicModal!: TemplateRef<any>; // Reference to NIC modal
   constructor(
     private modalService: NgbModal, 
     private apiService: ApiService, 
@@ -63,6 +66,7 @@ export class CustomerFormComponent implements OnInit {
     this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadCustomers();
+    
    
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
@@ -108,6 +112,7 @@ export class CustomerFormComponent implements OnInit {
           selected: false
         }));
         this.cdr.markForCheck(); // Trigger change detection
+        //console.log("this.customers: ",this.customers)
       },
       error: (error: any) => {
         console.error('Failed to load customers', error);
@@ -267,5 +272,9 @@ export class CustomerFormComponent implements OnInit {
     }
     this.cdr.markForCheck();
   }
-  
+  viewNICPhoto(customer: ExtendedCustomerDto): void {
+    this.selectedCustomer = customer; // Set the selected customer
+    console.log("NIC Photo Path:", this.selectedCustomer?.nicPhotoPath);
+    this.modalService.open(this.nicModal, { size: 'lg' }); // Open modal
+  }
 }

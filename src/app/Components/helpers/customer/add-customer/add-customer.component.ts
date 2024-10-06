@@ -16,6 +16,7 @@ export class AddCustomerComponent {
   @Input() customer: CreateCustomerDto | null = null;
   @Output() saveCustomer = new EventEmitter<CreateCustomerDto>();
   customerForm: FormGroup;
+  nicPhotoFile: File | null = null;  // To store the uploaded NIC file
 
   constructor(
     public activeModal: NgbActiveModal,
@@ -29,6 +30,7 @@ export class AddCustomerComponent {
       customerAddress: ['', Validators.required],
       customerContactNo: ['', Validators.required],
       status: [1, Validators.required],
+      // Additional Form Controls for file upload if needed
     });
   }
 
@@ -38,10 +40,29 @@ export class AddCustomerComponent {
     }
   }
 
+  // Handle file change for NIC photo upload
+  onFileChange(event: any) {
+    if (event.target.files && event.target.files.length > 0) {
+      this.nicPhotoFile = event.target.files[0];  // Store the selected file
+    }
+  }
+
   onSubmit() {
     if (this.customerForm.valid) {
-      console.log('Customer Data to be submitted:', this.customerForm.value);
+      const customerDto: CreateCustomerDto = this.customerForm.value;
 
+      // Create FormData object to send along with file
+      const formData = new FormData();
+      formData.append('customerNIC', customerDto.customerNIC);
+      formData.append('customerName', customerDto.customerName);
+      formData.append('customerAddress', customerDto.customerAddress);
+      formData.append('customerContactNo', customerDto.customerContactNo);
+
+      if (this.nicPhotoFile) {
+        formData.append('nicPhoto', this.nicPhotoFile);  // Append NIC photo file
+      }
+
+      // Show confirmation and process the form data
       Swal.fire({
         title: 'Save Changes',
         text: 'Are you sure you want to save these changes?',
@@ -51,10 +72,9 @@ export class AddCustomerComponent {
         cancelButtonText: 'Cancel'
       }).then((result) => {
         if (result.isConfirmed) {
-          const customerDto: CreateCustomerDto = this.customerForm.value;
           if (this.customer) {
             // Edit existing customer
-            this.apiService.updateCustomer(this.customer.customerId, customerDto).subscribe({
+            this.apiService.updateCustomer(this.customer.customerId, customerDto,this.nicPhotoFile).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
                 this.activeModal.close();
@@ -67,12 +87,11 @@ export class AddCustomerComponent {
             });
           } else {
             // Create new customer
-            this.apiService.createCustomer(customerDto).subscribe({
+            this.apiService.createCustomer(customerDto, this.nicPhotoFile).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
-                this.cdr.detectChanges();
                 this.activeModal.close();
-                Swal.fire('Saved!', 'Changes have been saved.', 'success');
+                Swal.fire('Saved!', 'Customer has been added.', 'success');
               },
               error: (error) => {
                 console.error('Error creating customer:', error);
@@ -82,8 +101,6 @@ export class AddCustomerComponent {
           }
         }
       });
-    } else {
-      console.log('Form is invalid. Cannot submit.');
     }
   }
 
@@ -98,11 +115,7 @@ export class AddCustomerComponent {
     }).then((result) => {
       if (result.isConfirmed) {
         this.activeModal.dismiss();
-        Swal.fire(
-          'Cancelled',
-          'Changes have been cancelled.',
-          'info'
-        );
+        Swal.fire('Cancelled', 'Changes have been cancelled.', 'info');
       }
     });
   }
