@@ -86,4 +86,5 @@ export class SidebarComponent implements AfterViewInit {
       Swal.fire('Logout Error', 'An issue occurred while logging out. Please try again.', 'error');
     }
   }
+  
 }

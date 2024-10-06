@@ -74,12 +74,11 @@
 
     <!-- User Sign-Out Section -->
     <div class="d-flex ms-auto align-items-center p-3 user-section">
-        <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" id="dropdownMenuButton"
-            data-bs-toggle="dropdown" aria-expanded="false">
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-            <li>
-                <a class="dropdown-item" routerLink="/auth/sign-in" (click)="signOut()">Sign Out</a>
-            </li>
-        </ul>
+        <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" (click)="toggleSidebar()">
+        <button class="btn sign-out-btn" (click)="signOut()">
+            <a class="nav-link"><i class="ri-logout-box-line"></i></a>
+            <span *ngIf="expanded">Sign Out</span>
+        </button>
     </div>
+    
 </aside>

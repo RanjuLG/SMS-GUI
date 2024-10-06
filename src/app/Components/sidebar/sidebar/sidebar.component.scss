@@ -28,7 +28,7 @@ aside.sidebar {
     }
 
     .sidebar-logo {
-        height: 60px;
+        height: 80px;
         transition: opacity 0.3s ease;
         opacity: 1;
     }
@@ -49,7 +49,7 @@ aside.sidebar {
     }
 
     .collapsed .toggle-btn-wrapper {
-        justify-content: flex-start;
+        align-items: start;
     }
 
     .toggle-btn-wrapper {
@@ -160,4 +160,24 @@ aside.sidebar {
     opacity: 1; /* Make tooltip fully visible */
     transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth show animation */
     transform: translateY(0); /* Remove any slide effect */
+}
+
+
+.sign-out-btn {
+    color: white;
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+}
+
+.collapsed .sign-out-btn span {
+    display: none;
+}
+
+.collapsed .sign-out-btn:hover span {
+    display: inline-block;
+    background-color: #ffffff33; /* Add a hover effect */
+    border-radius: 5px;
+    padding: 0 10px;
 }
