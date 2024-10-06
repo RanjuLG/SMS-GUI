@@ -1,13 +1,16 @@
 .footer {
-    background-color: #f8f9fa;
-    padding: 1rem 0;
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-    font-size: small;
-  }
+  background-color: #f8f9fa;
+  padding: 1rem 0;
+  position: fixed; /* Changed to fixed for better compatibility */
+  bottom: 0;
+  width: 100%;
+  font-size: small;
+  color: #4360ac;
+}
+
   
 a{
 
+  color: #0843d8;
     text-decoration:none !important;
 }
