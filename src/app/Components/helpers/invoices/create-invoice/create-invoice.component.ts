@@ -410,5 +410,12 @@ private subscribeToItemChanges(item: FormGroup): void {
   });
 }
 
+onCalculateItemValue(index: number): void {
+  this.loadPricingForNewItem(index);
+}
+
+
+
 
 }
+
