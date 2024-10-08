@@ -141,3 +141,18 @@ h6 {
   max-width: 200px;
   max-height: 200px;
 }
+
+
+.loading-container {
+  flex-grow: 1; /* Ensure the container takes up the remaining space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 200px); /* Adjust the height to fill space below header */
+}
+
+.loading-image {
+  max-width: 100px; /* Adjust the size of the loading image */
+  width: 100%; 
+  height: auto;
+}
