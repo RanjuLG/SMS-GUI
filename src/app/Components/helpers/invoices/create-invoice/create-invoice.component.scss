@@ -49,6 +49,15 @@ h4 {
   .btn {
     font-size: 0.75rem;
   }
+
+  .row {
+    margin-right: 0;
+    margin-left: 0;
+  }
+
+  .row > div {
+    margin-bottom: 1rem;
+  }
 }
 
 .row {
@@ -66,4 +75,3 @@ h4 {
 .container-fluid {
   padding: 0;
 }
-
