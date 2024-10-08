@@ -60,9 +60,11 @@
   .invoice-container .invoice-footer {
     page-break-before: always;
   }
-  .invoice-container .d-print-none {
+  
+  .invoice-container {
     display: none !important;
   }
+    
 }
 
 @media screen {
@@ -76,3 +78,24 @@
   font-size: 0.85rem;
 }
 
+.invoice-container {
+  overflow: visible;
+}
+.hstack {
+  margin-top: 20px;
+}
+
+.d-print-none {
+  display: block !important; /* Visible on screen */
+}
+
+@media print {
+  .d-print-none {
+    display: none !important; /* Hidden during print */
+  }
+}
+
+.hstack {
+  position: relative;
+  z-index: 10; /* Higher value ensures it is in front */
+}

@@ -16,11 +16,26 @@
         <label for="customerNIC" class="form-label">NIC</label>
         <input type="text" id="customerNIC" formControlName="customerNIC" class="form-control" />
       </div>
+        
+        <!-- Display the selected file name and a Remove button if a file is selected -->
+        <div class="mb-3">
+          <label for="nicPhoto" class="form-label">NIC Photo</label>
+          <input type="file" id="nicPhoto" #fileInput (change)="onFileChange($event)" class="form-control" />
+          
+          <!-- Show Remove button if a file is selected -->
+          <div *ngIf="nicPhotoFile">
+            <button type="button" class="btn btn-danger" (click)="removeNicPhoto()">Remove NIC Photo</button>
+          </div>
+        
+          <!-- Show "No file selected" message when no file is selected -->
+          <div *ngIf="!nicPhotoFile">
+            <p>No file selected.</p>
+          </div>
+        </div>
+        
+        
+
       
-      <div class="mb-3">
-        <label for="nicPhoto" class="form-label">NIC Photo</label>
-        <input type="file" id="nicPhoto" (change)="onFileChange($event)" class="form-control" />
-      </div>
       
       <div class="mb-3">
         <label for="contactNo" class="form-label">Contact No.</label>
