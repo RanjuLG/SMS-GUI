@@ -1,6 +1,6 @@
 :host {
   display: flex;
-  height: 100vh; /* Ensure the layout stretches to the full viewport height */
+  height: 100vh; /* Ensures layout stretches to the full viewport height */
 }
 
 .main-layout {
@@ -14,14 +14,29 @@
 }
 
 .content-container {
-  flex-grow: 1; /* Content container expands to take up remaining space */
+  flex-grow: 1; /* Ensures content container expands to take up remaining space */
   display: flex;
   flex-direction: column;
 }
 
 .content {
-  flex-grow: 1; /* Ensures the content grows and takes up all available space */
+  flex-grow: 1; /* Ensures the content grows to take up all available space */
   padding: 1rem;
-  background-color: #f8f9fa; /* Light background to distinguish from sidebar */
+  background-color: #f8f9fa; /* Light background to distinguish content area */
   overflow-y: auto; /* Enables scrolling for the content */
+}
+
+.footer {
+  background-color: #f8f9fa;
+  padding: 1rem 0;
+  width: 100%; /* Full width */
+  font-size: small;
+  color: #4360ac;
+  z-index: 0; /* Lowest z-index */
+  position: relative; /* Remains within the flow at the bottom */
+}
+
+a {
+  color: #0843d8;
+  text-decoration: none !important;
 }
