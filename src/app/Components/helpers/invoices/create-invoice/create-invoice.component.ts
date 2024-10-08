@@ -174,6 +174,7 @@ export class CreateInvoiceComponent implements OnInit {
       // Enable form controls for new items
       itemFormGroup.get('itemDescription')?.enable();
       itemFormGroup.get('itemCaratage')?.enable();
+      itemFormGroup.get('itemWeight')?.enable();
       itemFormGroup.get('itemGoldWeight')?.enable();
       itemFormGroup.get('itemValue')?.enable();
 

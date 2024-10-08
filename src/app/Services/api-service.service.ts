@@ -61,17 +61,17 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
   const formData = new FormData();
-
-  // Append the customer details to the FormData
   formData.append('customerNIC', customerDto.customerNIC);
   formData.append('customerName', customerDto.customerName);
   formData.append('customerAddress', customerDto.customerAddress);
   formData.append('customerContactNo', customerDto.customerContactNo);
-
-  // Append the NIC photo file if it exists
+  
   if (nicPhotoFile) {
-    formData.append('nicPhoto', nicPhotoFile);
+    formData.append('nicPhoto', nicPhotoFile);  // Append file only if present
+  } else {
+    formData.append('nicPhoto', '');  // Add an empty string or skip this
   }
+  
 
   // Make a PUT request with the FormData
   return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, formData);

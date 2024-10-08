@@ -1,14 +1,15 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectorRef } from '@angular/core';
+import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { CreateCustomerDto } from '../../../customer-form/customer.model';
 import { ApiService } from '../../../../Services/api-service.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-add-customer',
   standalone: true,
-  imports: [ReactiveFormsModule], // Remove imports from decorator as they are not supported
+  imports: [ReactiveFormsModule,CommonModule], // Remove imports from decorator as they are not supported
   templateUrl: './add-customer.component.html',
   styleUrls: ['./add-customer.component.scss']
 })
@@ -18,6 +19,9 @@ export class AddCustomerComponent {
   customerForm: FormGroup;
   nicPhotoFile: File | null = null;  // To store the uploaded NIC file
 
+  // ViewChild to reference the file input element
+  @ViewChild('fileInput') fileInput: any;
+  
   constructor(
     public activeModal: NgbActiveModal,
     private fb: FormBuilder,
@@ -30,6 +34,7 @@ export class AddCustomerComponent {
       customerAddress: ['', Validators.required],
       customerContactNo: ['', Validators.required],
       status: [1, Validators.required],
+       nicPhoto: [null],
       // Additional Form Controls for file upload if needed
     });
   }
@@ -44,7 +49,19 @@ export class AddCustomerComponent {
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       this.nicPhotoFile = event.target.files[0];  // Store the selected file
+      this.cdr.detectChanges();  // Trigger change detection to update the view
     }
+  }
+   // Remove the NIC photo
+   removeNicPhoto() {
+    this.nicPhotoFile = null;  // Clear the selected file
+
+    // Reset the file input field
+    if (this.fileInput) {
+      this.fileInput.nativeElement.value = '';  // Reset the file input value to null
+    }
+
+    this.cdr.detectChanges();  // Update the view to reflect the change
   }
 
   onSubmit() {
@@ -52,15 +69,18 @@ export class AddCustomerComponent {
       const customerDto: CreateCustomerDto = this.customerForm.value;
 
       // Create FormData object to send along with file
-      const formData = new FormData();
-      formData.append('customerNIC', customerDto.customerNIC);
-      formData.append('customerName', customerDto.customerName);
-      formData.append('customerAddress', customerDto.customerAddress);
-      formData.append('customerContactNo', customerDto.customerContactNo);
+              const formData = new FormData();
+        formData.append('customerNIC', customerDto.customerNIC);
+        formData.append('customerName', customerDto.customerName);
+        formData.append('customerAddress', customerDto.customerAddress);
+        formData.append('customerContactNo', customerDto.customerContactNo);
 
-      if (this.nicPhotoFile) {
-        formData.append('nicPhoto', this.nicPhotoFile);  // Append NIC photo file
-      }
+        if (this.nicPhotoFile) {
+          formData.append('nicPhoto', this.nicPhotoFile);  // Append file only if present
+        } else {
+          formData.append('nicPhoto', '');  // Add an empty string or skip this
+        }
+
 
       // Show confirmation and process the form data
       Swal.fire({
