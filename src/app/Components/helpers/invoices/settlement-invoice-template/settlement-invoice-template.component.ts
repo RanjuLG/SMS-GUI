@@ -55,7 +55,7 @@ export class SettlementInvoiceTemplateComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return this.dateService.formatDateTime(dateString);
+    return this.dateService.formatDate(dateString);
   }
 
   getInvoiceSettings(): void {

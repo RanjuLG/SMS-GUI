@@ -57,7 +57,7 @@ export class InvoiceTemplateComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return this.dateService.formatDateTime(dateString);
+    return this.dateService.formatDate(dateString);
   }
 
   // Function to print the invoice

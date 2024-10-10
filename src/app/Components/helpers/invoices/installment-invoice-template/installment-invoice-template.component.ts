@@ -92,6 +92,6 @@ export class InstallmentInvoiceTemplateComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return this.dateService.formatDateTime(dateString);
+    return this.dateService.formatDate(dateString);
   }
 }
