@@ -12,7 +12,7 @@ import { map, switchMap } from 'rxjs/operators'; // Make sure these models are c
 import { AuthService } from './auth.service';
 import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
-import { ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
+import { Overview, ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
 
 @Injectable({
   providedIn: 'root'
@@ -410,6 +410,11 @@ getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<
 getReportByCustomer(customerNIC: any): Observable<ReportByCustomer> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<ReportByCustomer>(`${this.configService.apiUrl}/api/reports/customer/${customerNIC}`);
+}
+
+getOverview():Observable<Overview> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Overview>(`${this.configService.apiUrl}/api/reports/overview`);
 }
 
 }

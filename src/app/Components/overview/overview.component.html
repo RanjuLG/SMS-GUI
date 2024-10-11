@@ -20,49 +20,50 @@
       </div>
     </div>
   </div>
-  <!-- Summary Statistics -->
-  <div class="row mb-4 g-3 justify-content-center">
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Total Active Loans</h6>
-          <span class="widget-value" id="total-loans">245</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Total Invoices</h6>
-          <span class="widget-value" id="total-invoices">158</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Revenue Generated</h6>
-          <span class="widget-value" id="total-revenue">Rs.50,000</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Inventory Count</h6>
-          <span class="widget-value" id="inventory-count">342</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Customer Count</h6>
-          <span class="widget-value" id="customer-count">89</span>
-        </div>
+<!-- Summary Statistics -->
+<div class="row mb-4 g-3 justify-content-center">
+  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+    <div class="card widget-card shadow-sm">
+      <div class="card-body text-center">
+        <h6>Total Active Loans</h6>
+        <!-- Use Angular binding to update the value dynamically -->
+        <span class="widget-value" id="total-loans">{{ totalLoans }}</span>
       </div>
     </div>
   </div>
+  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+    <div class="card widget-card shadow-sm">
+      <div class="card-body text-center">
+        <h6>Total Invoices</h6>
+        <span class="widget-value" id="total-invoices">{{ totalInvoices }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+    <div class="card widget-card shadow-sm">
+      <div class="card-body text-center">
+        <h6>Revenue Generated</h6>
+        <span class="widget-value" id="total-revenue">Rs.{{ totalRevenue }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+    <div class="card widget-card shadow-sm">
+      <div class="card-body text-center">
+        <h6>Inventory Count</h6>
+        <span class="widget-value" id="inventory-count">{{ inventoryCount }}</span>
+      </div>
+    </div>
+  </div>
+  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+    <div class="card widget-card shadow-sm">
+      <div class="card-body text-center">
+        <h6>Customer Count</h6>
+        <span class="widget-value" id="customer-count">{{ customerCount }}</span>
+      </div>
+    </div>
+  </div>
+</div>
 
 
   <!-- Dashboard Charts Section -->
