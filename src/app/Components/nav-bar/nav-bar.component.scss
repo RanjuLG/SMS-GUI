@@ -43,11 +43,11 @@
 }
 
 .dropdown-menu .dropdown-item {
-  color: #6c757d;
+  color: #4360ac;
 }
 
 .dropdown-menu .dropdown-item:hover {
-  color: #343a40;
+  color: #4360ac;
 }
 
 /* Responsive adjustments */
@@ -109,4 +109,36 @@
   .nav-icon {
     margin-right: 3px;
   }
+}
+
+
+
+/* Shortcut Panel at the top */
+.shortcut-panel {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Shortcut Items */
+.shortcut-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  color: #4360ac !important;
+}
+
+.shortcut-icon {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 0.25rem;
+}
+
+.shortcut-item h6 {
+  font-size: 0.7rem;
+  color: #495057;
+  margin: 0;
 }

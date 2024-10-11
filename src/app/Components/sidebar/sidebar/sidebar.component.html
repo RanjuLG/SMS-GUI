@@ -1,7 +1,7 @@
 <aside [ngClass]="{'collapsed': !expanded}" class="sidebar d-flex flex-column vh-100">
     <div class="p-4 mb-4 d-flex align-items-center">
-        <!-- Logo is shown only when expanded -->
-        <img src="GoldCashLogo.png" alt="Gold Cash" class="sidebar-logo" *ngIf="expanded">
+        <!--  
+        <img src="GoldCashLogo.png" alt="Gold Cash" class="sidebar-logo" *ngIf="expanded"> -->
 
         <!-- Toggle Button (Center Aligned) -->
         <div class="toggle-btn-wrapper ">
@@ -13,6 +13,7 @@
     </div>
 
     <ul class="nav flex-column flex-1 pl-4">
+        
         <li class="nav-item">
             <a class="nav-link" routerLink="/overview" routerLinkActive="active-link" data-bs-toggle="tooltip"
                 data-bs-placement="right" data-bs-original-title="Home">
@@ -71,7 +72,7 @@
             </ul>
         </li>
     </ul>
-
+<!--
     <div class="d-flex ms-auto align-items-center p-3 user-section">
         <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" (click)="expandSidebar()">
         <button class="btn sign-out-btn" (click)="signOut()">
@@ -79,6 +80,6 @@
             <span class="ms-2" *ngIf="expanded">Sign Out</span>
         </button>
     </div>
+    -->
 </aside>
 
-<!---->
