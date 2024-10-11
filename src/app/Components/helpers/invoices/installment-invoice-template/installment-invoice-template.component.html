@@ -38,26 +38,35 @@
 
     <!-- Right: Items List -->
     <div class="col-md-6">
-      <!-- Invoice Totals and Summary -->
-      <div class="invoice-summary d-flex justify-center">
-        <table class="table table-borderless" style="width: 300px;">
-          <tbody>
-            <tr>
-              <td class="text-muted">Sub Total (Rs)</td>
-              <td class="text-end text-muted">{{ transaction?.subTotal }}</td>
-            </tr>
-            <tr>
-              <td class="text-muted">Interest (Rs)</td>
-              <td class="text-end text-muted">{{ transaction?.interestAmount }}</td>
-            </tr>
-            <tr class="border-top border-top-dashed fs-5">
-              <td class="text-dark text-muted fw-semibold">Total Amount (Rs)</td>
-              <td class="text-end text-muted fw-semibold">{{ transaction?.totalAmount }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="invoice-summary-box p-3 border">
+        <!-- Invoice Totals and Summary -->
+        <div class="invoice-summary d-flex justify-center">
+          <table class="table table-borderless" style="width: 300px;">
+            <tbody>
+              <!-- Conditionally display Sub Total row -->
+              <tr *ngIf="transaction && transaction.subTotal != null && transaction.subTotal > 0">
+                <td class="text-muted">Sub Total (Rs)</td>
+                <td class="text-end text-muted">{{ transaction.subTotal | number:'1.2-2' }}</td>
+              </tr>
 
+              <!-- Conditionally display Interest row -->
+              <tr *ngIf="transaction && transaction.interestAmount != null && transaction.interestAmount > 0">
+                <td class="text-muted">Interest (Rs)</td>
+                <td class="text-end text-muted">{{ transaction.interestAmount | number:'1.2-2' }}</td>
+              </tr>
+
+              <tr class="border-top border-top-dashed fs-5">
+                <td class="text-dark text-muted fw-semibold">Total Amount (Rs)</td>
+                <td class="text-end text-muted fw-semibold">{{ transaction?.totalAmount | number:'1.2-2' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+
+
+
+      </div>
     </div>
   </div>
   <hr>
@@ -87,7 +96,7 @@
 <!-- Buttons -->
 <div class="col-lg-11 d-print-none mt-4">
   <div class="hstack gap-2 justify-content-end">
-            <!--
+    <!--
         <button class="btn btn-sm btn-success" (click)="printTemplate()"><i
                 class="ri-printer-line align-bottom me-1"></i>
             Print</button>
