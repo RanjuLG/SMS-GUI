@@ -50,12 +50,13 @@
                                         </th>
                                         <th scope="col">Added Date</th>
                                         <th scope="col">Item Number</th>
-                                        <th scope="col">Item Description</th>
+                                        <th scope="col">Description</th>
+                                        <th scope="col">Remarks</th>
                                         <th scope="col">Karat</th>
-                                        <th scope="col">Item Total Weight (g)</th>
-                                        <th scope="col">Item Gold Weight (g)</th>
-                                        <th scope="col">Item Value</th>
-                                        <th scope="col">Item Status</th>
+                                        <th scope="col">Net Wt (g)</th>
+                                        <th scope="col">Gold Wt (g)</th>
+                                        <th scope="col">Value</th>
+                                        <th scope="col">Status</th>
                                         <th scope="col">Customer NIC</th>
                                         <th scope="col"></th>
                                     </tr>
@@ -72,6 +73,7 @@
                                         <td>{{ item.createdAt }}</td>
                                         <td>{{ item.itemId }}</td>
                                         <td>{{ item.itemDescription }}</td>
+                                        <td>{{ item.itemRemarks }}</td>
                                         <td>{{ item.itemCaratage }}</td>
                                         <td>{{item.itemWeight}}</td>
                                         <td>{{ item.itemGoldWeight }}</td>

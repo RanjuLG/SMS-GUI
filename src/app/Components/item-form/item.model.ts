@@ -2,6 +2,7 @@ export interface Item {
     
     itemId:number;
     itemDescription: string;
+    itemRemarks: string;
     itemCaratage: number;
     itemWeight: number;
     itemGoldWeight: number;
@@ -20,6 +21,7 @@ export interface Item {
 export interface ItemDto {
     itemId:number;
     itemDescription: string;
+    itemRemarks: string;
     itemCaratage: number;
     itemWeight: number;
     itemGoldWeight: number;
@@ -39,6 +41,7 @@ export interface ItemDto {
 export interface CreateItemDto {
     itemId:number;
     itemDescription: string;
+    itemRemarks: string;
     itemCaratage: number;
     itemWeight: number;
     itemGoldWeight: number;
