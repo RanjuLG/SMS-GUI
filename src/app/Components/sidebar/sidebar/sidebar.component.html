@@ -72,17 +72,13 @@
         </li>
     </ul>
 
-    <!-- User Sign-Out Section -->
     <div class="d-flex ms-auto align-items-center p-3 user-section">
         <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" (click)="toggleSidebar()">
         <button class="btn sign-out-btn" (click)="signOut()">
-          <i class="ri-logout-box-line"></i>
-          <!-- Add Bootstrap spacing utility here for padding between icon and text -->
-          <span class="ms-2" *ngIf="expanded">Sign Out</span>
+            <i class="ri-logout-box-line"></i>
+            <span class="ms-2" *ngIf="expanded">Sign Out</span>
         </button>
-      </div>
-      
-    
+    </div>
 </aside>
 
 <!---->
