@@ -25,83 +25,74 @@
 
     <hr>
 
-    <!-- Customer Information and Items -->
-    <div class="invoice-body row g-4">
-        <!-- Left: Customer Information -->
-        <div class="col-md-4">
+    <div class="row">
+        <div class="col-md-6">
+            <!-- Customer Information (left) -->
             <p class="fw-semibold text-muted">Customer Information</p>
             <p class="text-muted">{{ customer?.customerName }}</p>
             <p class="text-muted">{{ customer?.customerAddress }}</p>
             <p class="text-muted">NIC: {{ customer?.customerNIC }}</p>
             <p class="text-muted">Phone: {{ customer?.customerContactNo }}</p>
         </div>
-
-        <!-- Right: Items List -->
-        <div class="col-md-8">
-            <table class="table table-bordered">
-                <thead class="table">
-                    <tr>
-                        <th class="fw-semibold text-muted">#</th>
-                        <th class="fw-semibold text-muted">Item No.</th>
-                        <th class="fw-semibold text-muted">Description</th>
-                        <th class="fw-semibold text-muted">Net Wt (g)</th>
-                        <th class="fw-semibold text-muted">Gold Wt (g)</th>
-                        <th class="fw-semibold text-muted">Karat (K)</th>
-                        <th class="text-end fw-semibold text-muted">Value (Rs)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let item of items; let i = index">
-                        <td>{{ i + 1 }}</td>
-                        <td>{{ item?.itemId }}</td>
-                        <td>{{ item?.itemDescription }}</td>
-                        <td>{{ item?.itemWeight }}</td>
-                        <td>{{ item?.itemGoldWeight }}</td>
-                        <td>{{ getCaratRange(item?.itemCaratage ?? 0) }}</td>
-                        <td class="text-end">{{ item?.itemValue }}</td>
-                    </tr>
-                </tbody>
-            </table>
+    
+        <div class="col-md-6">
+            <!-- Invoice Summary (right) -->
+            <div class="invoice-summary-box p-3 border">
+                <div class="d-flex justify-content-between mb-2">
+                    <p class="text-muted mb-0">Sub Total (Rs):</p>
+                    <p class="text-end text-muted mb-0">{{ transaction?.subTotal | number:'1.2-2' }}</p>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <p class="text-muted mb-0">Interest (%):</p>
+                    <p class="text-end text-muted mb-0">{{ transaction?.interestRate }}</p>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <p class="fw-semibold text-muted mb-0">Total Amount (Rs):</p>
+                    <p class="text-end fw-semibold text-muted mb-0">{{ transaction?.totalAmount | number:'1.2-2' }}</p>
+                </div>
+            </div>
+            
         </div>
     </div>
+    
 
     <hr>
 
-    <!-- Invoice Totals and Summary -->
-    <div class="invoice-summary d-flex justify-content-end">
-        <table class="table table-borderless" style="width: 300px;">
+    <!-- Items Table (Full Horizontal Space) -->
+    <div class="invoice-body">
+        <table class="table table-bordered w-100">
+            <thead class="table">
+                <tr>
+                    <th class="fw-semibold text-muted">#</th>
+                    <th class="fw-semibold text-muted">Item No.</th>
+                    <th class="fw-semibold text-muted">Description</th>
+                    <th class="fw-semibold text-muted">Remarks</th>
+                    <th class="fw-semibold text-muted">Net Wt (g)</th>
+                    <th class="fw-semibold text-muted">Gold Wt (g)</th>
+                    <th class="fw-semibold text-muted">Karat (K)</th>
+                    <th class="text-end fw-semibold text-muted">Value (Rs)</th>
+                </tr>
+            </thead>
             <tbody>
-                <tr>
-                    <td class="text-muted">Sub Total (Rs)</td>
-                    <td class="text-end text-muted">{{ transaction?.subTotal }}</td>
-                </tr>
-                <tr>
-                    <td class="text-muted">Interest (%)</td>
-                    <td class="text-end text-muted">{{ transaction?.interestRate }}</td>
-                </tr>
-                <tr class="border-top border-top-dashed fs-5">
-                    <td class="text-dark text-muted fw-semibold">Total Amount (Rs)</td>
-                    <td class="text-end text-muted fw-semibold">{{ transaction?.totalAmount }}</td>
+                <tr *ngFor="let item of items; let i = index">
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item?.itemId }}</td>
+                    <td>{{ item?.itemDescription }}</td>
+                    <td>{{ item?.itemRemarks }}</td>
+                    <td>{{ item?.itemWeight }}</td>
+                    <td>{{ item?.itemGoldWeight }}</td>
+                    <td>{{ getCaratRange(item?.itemCaratage ?? 0) }}</td>
+                    <td class="text-end">{{ item?.itemValue }}</td>
                 </tr>
             </tbody>
         </table>
     </div>
-
-    <hr>
-
     <!-- Disclaimer and Signatures -->
     <div class="invoice-footer text-center">
         <p class="text-muted">Disclaimer: I hereby pledge and transfer to Gold
             Cash (Pvt) Ltd. the gold articles listed above, which are owned by me. I declare that the details provided
-            are accurate
-            and agree that the terms and conditions outlined shall form part of this pawn contract.</p>
+            are accurate and agree that the terms and conditions outlined shall form part of this pawn contract.</p>
         <div class="row text-center">
-            <!--
-            <div class="col-md-4">
-                <hr>
-                <p class="text-muted">Cashier's Signature</p>
-            </div>
-            -->
             <div class="col-md-6">
                 <hr>
                 <p class="text-muted">Manager's Signature</p>
@@ -117,11 +108,6 @@
 <!-- Buttons -->
 <div class="col-lg-11 d-print-none mt-4">
     <div class="hstack gap-2 justify-content-end">
-        <!--
-        <button class="btn btn-sm btn-success" (click)="printTemplate()"><i
-                class="ri-printer-line align-bottom me-1"></i>
-            Print</button>
-            -->
         <button class="btn btn-sm btn-primary" (click)="downloadTemplate()"><i
                 class="ri-download-2-line align-bottom me-1"></i> Download</button>
     </div>
