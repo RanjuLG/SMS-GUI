@@ -50,6 +50,11 @@ export class SidebarComponent implements AfterViewInit {
   toggleSidebar(): void {
     this.expanded = !this.expanded;
   }
+  expandSidebar(): void {
+    if(!this.expanded){
+      this.expanded = true;
+    }
+  }
 
   toggleDropdown(dropdown: keyof typeof this.dropdowns): void {
     this.dropdowns[dropdown] = !this.dropdowns[dropdown];

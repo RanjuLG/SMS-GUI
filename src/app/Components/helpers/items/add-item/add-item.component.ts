@@ -20,7 +20,9 @@ export class AddItemComponent implements OnInit {
   constructor(public activeModal: NgbActiveModal, private fb: FormBuilder, private apiService: ApiService) {
     this.itemForm = this.fb.group({
       itemDescription: ['', Validators.required],
+      itemRemarks: [''],
       itemCaratage: ['', Validators.required],
+      itemWeight:  ['', Validators.required],
       itemGoldWeight: ['', Validators.required],
       itemValue: [{ value: ''}, Validators.required],
       customerNIC: ['', Validators.required],

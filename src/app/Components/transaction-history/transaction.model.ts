@@ -42,6 +42,7 @@ export interface Transaction {
   export interface GetItemDTO {
     itemId:number;
     itemDescription: string;
+    itemRemarks: string;
     itemCaratage: number;
     itemWeight: number;
     itemGoldWeight: number;

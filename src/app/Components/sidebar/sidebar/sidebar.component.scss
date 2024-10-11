@@ -3,25 +3,23 @@ aside.sidebar {
     background-color: #4360ac;
     color: white;
     transition: width 0.3s ease;
-
+    height: 100vh; /* Ensure the sidebar takes up the full viewport height */
+    overflow-y: auto; /* Enable scrolling when the content overflows */
+    overflow-x: hidden;
     &.collapsed {
-        width: 60px; /* Sidebar width when collapsed */
+        width: 60px;
 
-        /* Reduce hover area when collapsed */
         .nav-link {
-            padding: 10px; /* Reduced padding to ensure it only covers the icon */
-            justify-content: center; /* Align icon to the center */
-            width: 60px; /* Constrain the hover width to the icon's area */
+            padding: 10px;
+            justify-content: center;
+            width: 60px;
         }
 
-        /* Only highlight the icon area on hover */
         .nav-link:hover {
-            background-color: #ffffff33; /* Hover effect around the icon */
-          
-            width: auto; /* Let width adjust to icon */
+            background-color: #ffffff33;
+            width: auto;
         }
 
-        /* Remove space for icons when collapsed */
         .nav-link i {
             margin-right: 0;
         }
@@ -38,7 +36,7 @@ aside.sidebar {
     }
 
     .icon-large {
-        font-size: 1.5rem;
+        font-size: 1.1rem;
     }
 
     .toggle-btn-wrapper {
@@ -74,17 +72,26 @@ aside.sidebar {
         display: flex;
         align-items: center;
         padding: 10px;
+        margin-top: 7px; /* Add space above the nav-link */
+        margin-bottom: 7px; /* Add space below the nav-link */
         transition: background-color 0.3s, padding 0.3s, box-shadow 0.3s;
-        border-radius: 5px;
-
-        &:hover {
-            background-color: #ffffff33;
+        border-radius: 20px 0 0 20px; /* Rounded on the left and straight on the right */
+         margin-left: 3px; /* Adjust spacing as needed */
+        
+        i {
             color: white;
-           // box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Modernized shadow effect */
+            transition: color 0.3s;
+            margin-right: 10px;
         }
 
-        i {
-            margin-right: 10px;
+        &:hover, &.active-link {
+            background-color: white;
+            color: #4360ac;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); /* Adds depth on hover or active */
+
+            i {
+                color: #4360ac; /* Icon color turns blue on hover or active */
+            }
         }
     }
 
@@ -103,7 +110,7 @@ aside.sidebar {
     }
 
     .user-section {
-        position: absolute;
+        position: relative;
         bottom: 0;
         right: 0;
         width: 100%;
@@ -125,43 +132,39 @@ aside.sidebar {
     }
 
     .nav-link.active-link {
-        background-color: #ffffff33;
-        color: white;
-       // box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* Modernized shadow for active */
+        background-color: white;
+        color: #4360ac;
     }
 }
 
+
 /* Customize the tooltip container */
 .tooltip {
-    background-color: transparent; /* Set transparent to customize inner separately */
-    opacity: 0.9; /* Slight transparency for a modern look */
+    background-color: transparent;
+    opacity: 0.9;
 }
 
-/* Customize the inner content of the tooltip */
 .tooltip .tooltip-inner {
-    background-color: #4360ac; /* Modern dark blue background */
-    color: #ffffff; /* White text */
-    padding: 10px 14px; /* Padding for readability */
-    font-size: 0.9rem; /* Modern font size */
-    font-family: 'Poppins', sans-serif; /* Use modern font */
-    border-radius: 8px; /* Rounded corners */
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    background-color: #4360ac;
+    color: #ffffff;
+    padding: 10px 14px;
+    font-size: 0.9rem;
+    font-family: 'Poppins', sans-serif;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* Customize the arrow of the tooltip */
 .tooltip .tooltip-arrow {
-    border-top-color: #4360ac; /* Match arrow color with tooltip background */
-    width: 1rem; /* Customize the size of the arrow */
+    border-top-color: #4360ac;
+    width: 1rem;
     height: 1rem;
 }
 
-/* Optional: Adjust the opacity and smooth transition of showing/hiding the tooltip */
 .tooltip.show {
-    opacity: 1; /* Make tooltip fully visible */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth show animation */
-    transform: translateY(0); /* Remove any slide effect */
+    opacity: 1;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    transform: translateY(0);
 }
-
 
 .sign-out-btn {
     color: white;
@@ -177,7 +180,43 @@ aside.sidebar {
 
 .collapsed .sign-out-btn:hover span {
     display: inline-block;
-    background-color: #ffffff33; /* Add a hover effect */
+    background-color: #ffffff33;
     border-radius: 5px;
     padding: 0 10px;
+}
+
+
+/* WebKit browsers (Chrome, Edge, Safari) */
+aside.sidebar {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #888 #4360ac; /* Firefox */
+}
+
+/* Scrollbar track (background) */
+aside.sidebar::-webkit-scrollbar {
+    width: 8px; /* Adjust the scrollbar width */
+}
+
+/* Scrollbar track (background) */
+aside.sidebar::-webkit-scrollbar-track {
+    background-color: #4360ac; /* Same as the sidebar background */
+    border-radius: 10px; /* Rounded track corners */
+}
+
+/* Scrollbar handle (thumb) */
+aside.sidebar::-webkit-scrollbar-thumb {
+    background-color: #ffffff; /* Customize the color */
+    border-radius: 10px; /* Rounded scrollbar corners */
+    border: 2px solid #4360ac; /* Adds spacing between the thumb and track */
+}
+
+/* Scrollbar handle on hover */
+aside.sidebar::-webkit-scrollbar-thumb:hover {
+    background-color: #ffffff; /* Darker on hover */
+}
+
+/* Customizing the scrollbar in Firefox */
+aside.sidebar {
+    scrollbar-width: thin; /* Thin scrollbar */
+    scrollbar-color: #ffffff #4360ac; /* Thumb color and background */
 }

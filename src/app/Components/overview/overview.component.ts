@@ -3,6 +3,8 @@ import {RouterLink} from '@angular/router';
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BaseChartDirective } from 'ng2-charts';
+import { ApiService } from '../../Services/api-service.service';
+import { Overview } from '../reports/reports.model';
 declare var bootstrap: any;
 @Component({
   selector: 'app-overview',
@@ -20,7 +22,8 @@ export class OverviewComponent implements OnInit,AfterViewInit {
 
   constructor(
     private modalService: NgbModal,
-    private el: ElementRef
+    private el: ElementRef,
+    private apiService: ApiService
   ) {}
 
   ngAfterViewInit(): void {
@@ -114,14 +117,22 @@ export class OverviewComponent implements OnInit,AfterViewInit {
 
 
 
-  loadDashboardData(): void {
-    // Replace with actual API/service calls
-    this.totalLoans = 245;
-    this.totalInvoices = 158;
-    this.totalRevenue = 50000;
-    this.inventoryCount = 342;
-    this.customerCount = 89;
-  }
+ // Only the card widgets are updated
+ loadDashboardData(): void {
+  this.apiService.getOverview().subscribe({
+    next: (data: Overview) => {
+      // Update the widget values from the API response
+      this.totalLoans = data.totalActiveLoans ?? 0;
+      this.totalInvoices = data.totalInvoices ?? 0;
+      this.totalRevenue = data.revenueGenerated ?? 0;
+      this.inventoryCount = data.inventoryCount ?? 0;
+      this.customerCount = data.customerCount ?? 0;
+    },
+    error: (err) => {
+      console.error('Error fetching widget data:', err);
+    }
+  });
+}
 // Chart Data
 barChartData = {
   labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May'],

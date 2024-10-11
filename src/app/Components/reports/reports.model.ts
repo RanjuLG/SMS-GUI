@@ -89,3 +89,12 @@ export interface ReportByCustomer {
     LateFeePayment = 4,
     LoanClosure = 5
 }
+
+
+export interface Overview {
+  totalActiveLoans?: number;
+  totalInvoices?: number;
+  revenueGenerated?: number;
+  inventoryCount?: number;
+  customerCount?: number;
+}

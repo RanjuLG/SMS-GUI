@@ -12,7 +12,7 @@ import { map, switchMap } from 'rxjs/operators'; // Make sure these models are c
 import { AuthService } from './auth.service';
 import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
-import { ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
+import { Overview, ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
 
 @Injectable({
   providedIn: 'root'
@@ -61,17 +61,17 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
   const formData = new FormData();
-
-  // Append the customer details to the FormData
   formData.append('customerNIC', customerDto.customerNIC);
   formData.append('customerName', customerDto.customerName);
   formData.append('customerAddress', customerDto.customerAddress);
   formData.append('customerContactNo', customerDto.customerContactNo);
-
-  // Append the NIC photo file if it exists
+  
   if (nicPhotoFile) {
-    formData.append('nicPhoto', nicPhotoFile);
+    formData.append('nicPhoto', nicPhotoFile);  // Append file only if present
+  } else {
+    formData.append('nicPhoto', '');  // Add an empty string or skip this
   }
+  
 
   // Make a PUT request with the FormData
   return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, formData);
@@ -410,6 +410,11 @@ getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<
 getReportByCustomer(customerNIC: any): Observable<ReportByCustomer> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<ReportByCustomer>(`${this.configService.apiUrl}/api/reports/customer/${customerNIC}`);
+}
+
+getOverview():Observable<Overview> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get<Overview>(`${this.configService.apiUrl}/api/reports/overview`);
 }
 
 }

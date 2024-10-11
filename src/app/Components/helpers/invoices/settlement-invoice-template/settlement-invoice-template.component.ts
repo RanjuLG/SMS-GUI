@@ -6,12 +6,14 @@ import { GetCustomerDTO, TransactionDto } from '../../../transaction-history/tra
 import html2pdf from 'html2pdf.js';
 import { DateService } from '../../../../Services/date-service.service';
 import { ConfigService } from '../../../../Services/config-service.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-settlement-invoice-template',
   standalone: true,
   templateUrl: './settlement-invoice-template.component.html',
   styleUrls: ['./settlement-invoice-template.component.scss'],
+  imports: [CommonModule]
 })
 export class SettlementInvoiceTemplateComponent implements OnInit {
   settlementInvoiceId: number = 0;
@@ -55,7 +57,7 @@ export class SettlementInvoiceTemplateComponent implements OnInit {
   }
 
   formatDate(dateString: string): string {
-    return this.dateService.formatDateTime(dateString);
+    return this.dateService.formatDate(dateString);
   }
 
   getInvoiceSettings(): void {
