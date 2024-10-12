@@ -76,14 +76,14 @@
                     <td>{{ customer.customerContactNo }}</td>
                     <td>
                       <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-info" (click)="viewNICPhoto(customer)">
+                          <i class="ri-eye-line align-bottom me-1"></i>
+                        </button>
                         <button class="btn btn-sm btn-warning" (click)="editCustomer(customer)">
                           <i class="ri-edit-box-line align-bottom me-1"></i>
                         </button>
                         <button class="btn btn-sm btn-danger" (click)="removeCustomer(customer)">
                           <i class="ri-delete-bin-line align-bottom me-1"></i>
-                        </button>
-                        <button class="btn btn-sm btn-info" (click)="viewNICPhoto(customer)">
-                          <i class="ri-eye-line align-bottom me-1"></i> NIC
                         </button>
                       </div>
                     </td>
