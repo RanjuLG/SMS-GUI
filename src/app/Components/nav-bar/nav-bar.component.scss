@@ -51,66 +51,68 @@
 }
 
 /* Responsive adjustments */
+/* Flex-wrap navbar content on smaller screens */
 @media (max-width: 768px) {
-  .navbar-brand {
-    font-size: 1.25rem;
+  .navbar-nav {
+    flex-wrap: wrap;
   }
   
-  .navbar-logo {
-    height: 40px;
-  }
-
-  .user-logo {
-    width: 35px;
-    height: 35px;
-  }
-
-  .nav-item {
-    font-size: 0.9rem;
-    margin: 5px 0;
-  }
-
-  .nav-link {
-    font-size: 0.85rem;
-  }
-}
-
-@media (max-width: 576px) {
   .navbar {
-    height: auto;
-    padding: 10px 0;
+    padding: 10px; /* Reduce padding for small screens */
   }
-
+  
+  .navbar-nav .nav-item {
+    margin: 5px 0; /* Reduce margin between nav items */
+  }
+  
+  .navbar-nav .nav-link {
+    font-size: 0.8rem; /* Adjust font size for smaller screens */
+  }
+  
   .navbar-brand {
-    font-size: 1rem;
-  }
-
-  .navbar-logo {
-    height: 30px;
-  }
-
-  .nav-item {
-    margin: 5px 0;
-  }
-
-  .nav-link {
-    font-size: 0.75rem;
+    font-size: 1rem; /* Adjust logo size */
   }
 
   .user-logo {
     width: 30px;
-    height: 30px;
-  }
-
-  .navbar-nav .nav-link {
-    font-size: 0.8rem;
-  }
-
-  .nav-icon {
-    margin-right: 3px;
+    height: 30px; /* Adjust logo size for mobile */
   }
 }
 
+/* For very small screens */
+@media (max-width: 576px) {
+  .navbar-nav {
+    flex-direction: column; /* Stack items vertically */
+  }
+  
+  .navbar-brand {
+    font-size: 0.9rem; /* Make the brand text smaller */
+  }
+  
+  .navbar-logo {
+    height: 25px; /* Adjust logo size */
+  }
+
+  .nav-item {
+    margin: 2px 0; /* Reduce spacing */
+  }
+
+  .nav-link {
+    font-size: 0.75rem; /* Further reduce text size */
+  }
+  
+  .user-logo {
+    width: 25px;
+    height: 25px; /* Further reduce user logo size */
+  }
+}
+
+/* Hide the toggle button on smaller screens */
+@media (max-width: 768px) {
+  .navbar-toggler {
+    display: none; /* Hide the toggle button */
+  }
+}
 
 
 /* Shortcut Panel at the top */
