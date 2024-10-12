@@ -101,14 +101,29 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     const exportData = this.installmenttransactions.map(transaction => ({
       Date: transaction.createdAt,
       'Invoice No': transaction.invoice.invoiceNo,
-      'Customer NIC': transaction.customer.customerNIC,
-      'Principle Amount': transaction.subTotal,
-      'Interest Amount': transaction.interestAmount,
-      'Total Amount (Rs.)': transaction.totalAmount
+    'Customer Name': transaction.customer.customerName,
+    'Customer NIC': transaction.customer.customerNIC,
+    'Customer Contact No.': transaction.customer.customerContactNo,
+    'Customer Address': transaction.customer.customerAddress,
+    'Principle Amount': transaction.subTotal,
+    'Interest Amount': transaction.interestAmount,
+    'Total Amount (Rs.)': transaction.totalAmount
     }));
 
-    const titleRow = [{ Date: `Installment Transactions Report`, 'Invoice No': year, 'Customer NIC': month }];
-    const headerRow = [{ Date: 'Date', 'Invoice No': 'Invoice No', 'Customer NIC': 'Customer NIC', 'Principle Amount': 'Principle Amount', 'Interest Amount': 'Interest Amount', 'Total Amount (Rs.)': 'Total Amount (Rs.)' }];
+    const titleRow = [{ Date: `Loan Transactions Report`, 'Invoice No': year, 'Customer Name': '','Customer NIC': '','Customer Contact No.': '','Customer Address': '', 'Principle Amount': '', 'Interest Amount': '', 'Total Amount (Rs.)': '' }];
+  
+    // Add table header row
+    const headerRow = [{
+      Date: 'Date', 
+      'Invoice No': 'Invoice No',
+      'Customer Name': 'Customer Name', 
+      'Customer NIC': 'Customer NIC',
+      'Customer Contact No.': 'Customer Contact No.',
+      'Customer Address': 'Customer Address', 
+      'Principle Amount': 'Principle Amount', 
+      'Interest Amount': 'Interest Amount', 
+      'Total Amount (Rs.)': 'Total Amount (Rs.)'
+    }];
     const exportDataWithTitleAndHeader = [...titleRow, ...headerRow, ...exportData];
     
     const worksheet = XLSX.utils.json_to_sheet(exportDataWithTitleAndHeader, { skipHeader: true });
