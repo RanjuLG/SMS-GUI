@@ -1,12 +1,16 @@
-.footer {
+.footer-sm {
   background-color: #f8f9fa;
-  padding: 1rem 0;
-  position: fixed; /* Stays at the bottom */
+  padding: 0.5rem 0; /* Reduced padding for a smaller appearance */
+  position: fixed;
   bottom: 0;
   width: 100%;
-  font-size: smaller;
+  font-size: x-small; /* Smaller font size */
   color: #4360ac;
-  z-index: 0; /* Ensure it has the lowest stack order */
+  z-index: 0;
+}
+
+.footer-sm p {
+  margin-bottom: 0; /* Ensure there is no margin below the text */
 }
 
 a {
