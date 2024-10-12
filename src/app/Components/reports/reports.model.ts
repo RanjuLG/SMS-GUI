@@ -43,7 +43,18 @@ export interface ReportByCustomer {
     customer: GetCustomerDTO;
     invoice: InvoiceReportDto;
     installments: Installment[];
+    loan: LoanReportDto | null;
   }
+  export interface LoanReportDto {
+    loanId: number;
+    loanPeriodId?: number; // Optional since it can be null
+    startDate: string;
+    endDate: string;
+    amountPaid: number;
+    outstandingAmount: number;
+    isSettled: boolean;
+  }
+  
   export interface InvoiceReportDto {
     invoiceId: number;
     invoiceTypeId: number;

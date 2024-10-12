@@ -195,32 +195,51 @@ exportToExcel(): void {
 
   // Prepare the data to be exported
   const exportData = this.loanIssuetransactions.map(transaction => ({
-    Date: transaction.createdAt,
+    Date: new Date(transaction.createdAt).toLocaleDateString(),
     'Invoice No': transaction.invoice.invoiceNo,
+    'Date Generated':new Date(transaction.invoice.dateGenerated).toLocaleDateString(),
     'Customer Name': transaction.customer.customerName,
     'Customer NIC': transaction.customer.customerNIC,
     'Customer Contact No.': transaction.customer.customerContactNo,
     'Customer Address': transaction.customer.customerAddress,
     'Principle Amount': transaction.subTotal,
     'Interest Amount': transaction.interestAmount,
-    'Total Amount (Rs.)': transaction.totalAmount
+    'Total Amount (Rs.)': transaction.totalAmount,
+    'Amount Paid (Rs.)':transaction.loan?.amountPaid,
+    'Outstanding Amount (Rs.)':transaction.loan?.outstandingAmount
   }));
 
   // Add a title row with year and month in separate columns
-  const titleRow = [{ Date: `Loan Transactions Report`, 'Invoice No': year, 'Customer Name': '','Customer NIC': '','Customer Contact No.': '','Customer Address': '', 'Principle Amount': '', 'Interest Amount': '', 'Total Amount (Rs.)': '' }];
-  
-  // Add table header row
-  const headerRow = [{
-    Date: 'Date', 
-    'Invoice No': 'Invoice No',
-    'Customer Name': 'Customer Name', 
-    'Customer NIC': 'Customer NIC',
-    'Customer Contact No.': 'Customer Contact No.',
-    'Customer Address': 'Customer Address', 
-    'Principle Amount': 'Principle Amount', 
-    'Interest Amount': 'Interest Amount', 
-    'Total Amount (Rs.)': 'Total Amount (Rs.)'
-  }];
+  const titleRow = [{
+    Date: `Loan Transactions Report`,
+     'Invoice No': '',
+     'Date Generated': '', 
+     'Customer Name': '',
+     'Customer NIC': '',
+     'Customer Contact No.': '',
+     'Customer Address': '',
+      'Principle Amount': '', 
+     'Interest Amount': '',
+      'Total Amount (Rs.)': '' ,
+      'Amount Paid (Rs.)':'',
+      'Outstanding Amount (Rs.)':''
+     }];
+
+ // Add table header row
+ const headerRow = [{
+   Date: 'Date', 
+   'Invoice No': 'Invoice No',
+   'Date Generated':'Date Generated',
+   'Customer Name': 'Customer Name', 
+   'Customer NIC': 'Customer NIC',
+   'Customer Contact No.': 'Customer Contact No.',
+   'Customer Address': 'Customer Address', 
+   'Principle Amount': 'Principle Amount', 
+   'Interest Amount': 'Interest Amount', 
+   'Total Amount (Rs.)': 'Total Amount (Rs.)',
+   'Amount Paid (Rs.)': 'Amount Paid (Rs.)',
+   'Outstanding Amount (Rs.)': 'Outstanding Amount (Rs.)'
+ }];
 
   // Merge title row, header row, and actual data
   const exportDataWithTitleAndHeader = [...titleRow, ...headerRow, ...exportData];

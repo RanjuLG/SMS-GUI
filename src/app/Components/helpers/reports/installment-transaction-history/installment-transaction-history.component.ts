@@ -99,8 +99,9 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     const month = this.from.toLocaleString('default', { month: 'long' });
     
     const exportData = this.installmenttransactions.map(transaction => ({
-      Date: transaction.createdAt,
-      'Invoice No': transaction.invoice.invoiceNo,
+    Date: new Date(transaction.createdAt).toLocaleDateString(),
+    'Invoice No': transaction.invoice.invoiceNo,
+    'Date Generated':new Date(transaction.invoice.dateGenerated).toLocaleDateString(),
     'Customer Name': transaction.customer.customerName,
     'Customer NIC': transaction.customer.customerNIC,
     'Customer Contact No.': transaction.customer.customerContactNo,
@@ -110,19 +111,20 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     'Total Amount (Rs.)': transaction.totalAmount
     }));
 
-    const titleRow = [{ Date: `Loan Transactions Report`, 'Invoice No': year, 'Customer Name': '','Customer NIC': '','Customer Contact No.': '','Customer Address': '', 'Principle Amount': '', 'Interest Amount': '', 'Total Amount (Rs.)': '' }];
+    const titleRow = [{ Date: `Loan Transactions Report`, 'Invoice No': year, 'Date Generated': '',  'Customer Name': '','Customer NIC': '','Customer Contact No.': '','Customer Address': '', 'Principle Amount': '', 'Interest Amount': '', 'Total Amount (Rs.)': '' }];
   
     // Add table header row
     const headerRow = [{
       Date: 'Date', 
       'Invoice No': 'Invoice No',
+      'Date Generated': '', 
       'Customer Name': 'Customer Name', 
       'Customer NIC': 'Customer NIC',
       'Customer Contact No.': 'Customer Contact No.',
       'Customer Address': 'Customer Address', 
       'Principle Amount': 'Principle Amount', 
       'Interest Amount': 'Interest Amount', 
-      'Total Amount (Rs.)': 'Total Amount (Rs.)'
+      'Total Amount (Rs.)': 'Total Amount (Rs.)',
     }];
     const exportDataWithTitleAndHeader = [...titleRow, ...headerRow, ...exportData];
     
