@@ -71,8 +71,8 @@ ngOnChanges(changes: SimpleChanges): void {
   }
 }
   ngOnInit() {
-    console.log(this.from," : ",this.to)
-    this.loadTransactions();
+  //  console.log(this.from," : ",this.to)
+   // this.loadTransactions();
   }
   
 
@@ -142,19 +142,28 @@ calculateTotalAmount(transactions: TransactionReportDto[]): number {
   }
 
   
-  onStartDateChange(event: any): void{
-    this.from = new Date(event.value)
-    console.log("this.from: ", this.from);
-
-
+  onStartDateChange(event: any): void {
+    if (event && event.value) {
+      // Create a new UTC date for 'from'
+      const fromDate = new Date(event.value);
+      this.from = new Date(Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0));
+      
+      console.log("this.from (UTC): ", this.from);
+     
+    } else {
+      console.error('Start date event or value is null');
+    }
+    this.cdr.markForCheck();
   }
+
   onDateRangeChange(event: any): void {
    
     if (event && event.value) 
     {
       const {end } = event.value;
       
-        this.to = new Date(event.value);
+        const toDate = new Date(event.value);
+        this.to = new Date(Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 0, 0, 0));
         this.to.setDate(this.to.getDate() + 1);
         
         console.log("this.to: ", this.to);

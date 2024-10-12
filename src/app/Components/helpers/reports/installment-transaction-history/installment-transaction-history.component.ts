@@ -51,8 +51,8 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     private cdr: ChangeDetectorRef ) {}
 
   ngOnInit() {
-    this.from.setDate(this.from.getDate() - 30);
-    this.to.setDate(this.to.getDate() + 1);
+    //this.from.setDate(this.from.getDate() - 30);
+    //this.to.setDate(this.to.getDate() + 1);
     this.loadTransactions();
     this.cdr.detectChanges();
   }

@@ -70,8 +70,9 @@ export class IncomeReportComponent {
   generateReport(): void {
     if (this.selectedYear !== '' && this.selectedMonth !== '' && this.selectedReportType !== '') {
       // Set the date range based on selected month and year
-      this.from = new Date(+this.selectedYear, +this.selectedMonth, 1);
-      this.to = new Date(+this.selectedYear, this.from.getMonth() + 1, 0); // Last day of the selected month
+      this.from = new Date(Date.UTC(+this.selectedYear, +this.selectedMonth, 1, 0, 0, 0));
+      this.to = new Date(Date.UTC(+this.selectedYear, +this.selectedMonth + 1, 1, 0, 0, 0));
+      
   
       // Hide the transaction history first to reset components
       this.showTransactionHistory = false;
