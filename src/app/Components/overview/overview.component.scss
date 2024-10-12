@@ -2,79 +2,20 @@
 .container-fluid {
   padding: 0.5rem;
 }
-.card-main-title {
-  font-size: 1.25rem;  /* Increase font size */
-  font-weight: 600;    /* Bolder font for emphasis */
-  color: #000000;      /* Primary blue theme color for "Management System" */
-  text-align: left;    /* Align left for better readability */
-  margin-bottom: 0.75rem; /* Add margin to separate title from content */
-  padding-left: 0.5rem;   /* Add padding for spacing from the edge */
-}
 
-.golden-title {
-  color: #efc75e;
-        /* Golden color for "Gold Cash" */
-}
-
-.card-title {
-  font-size: 1rem !important;
-  font-weight: 500;
-}
-/* Card layout and hover effects */
-.card-hover {
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  cursor: pointer;
-  border-radius: 0.25rem;
-  overflow: hidden;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-}
-
-.card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-}
-
-/* Card image styling */
-.card-img-top {
-  object-fit: cover;
-  width: 100%;
-  height: auto;
-  max-width: 100%;
-  border-bottom: 1px solid #e9ecef;
-}
-
-/* Card body and title */
-.card-body {
-  padding: 0.25rem;
-}
-
-.card-title {
-  font-size: 0.75rem;
-  font-weight: 500;
+/* Greeting Section */
+.greeting-text {
+  font-size: 1.5rem; /* Smaller font for greeting */
+  font-weight: 600;
   color: #2b124c;
+  margin-bottom: 0.25rem;
 }
-
-/* Responsive typography */
-h6 {
-  font-size: 0.75rem;
+.sub-greeting {
+  font-size: 0.875rem; /* Slightly smaller subtitle */
   color: #495057;
-  text-align: center;
 }
 
-@media (min-width: 768px) {
-  h6 {
-    font-size: 0.85rem;
-  }
-}
-
-@media (min-width: 1024px) {
-  h6 {
-    font-size: 0.9rem;
-  }
-}
-
-/* Shortcut Panel at the top */
+/* Shortcut Panel */
 .shortcut-panel {
   display: flex;
   justify-content: center;
@@ -83,23 +24,23 @@ h6 {
   border-bottom: 1px solid #e0e0e0;
 }
 
-/* Shortcut Items */
 .shortcut-item {
   display: flex;
   flex-direction: column;
   align-items: center;
   cursor: pointer;
   color: #4360ac !important;
+  transition: transform 0.2s;
 }
 
 .shortcut-icon {
-  width: 48px;
-  height: 48px;
-  margin-bottom: 0.25rem;
+  width: 40px;  /* Reduced size for icons */
+  height: 40px;
+  margin-bottom: 0.2rem;
 }
 
 .shortcut-item h6 {
-  font-size: 0.7rem;
+  font-size: 0.65rem; /* Smaller text under shortcut icons */
   color: #495057;
   margin: 0;
 }
@@ -108,22 +49,72 @@ h6 {
 .widget-card {
   background-color: #fff;
   border-radius: 0.25rem;
-  padding: 0.75rem;
-  border: 1px solid #e0e0e0; /* Subtle border for depth */
+  padding: 0.5rem;
+  border: 1px solid #e0e0e0;
   transition: transform 0.2s ease-in-out;
 }
 
+.widget-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .widget-value {
-  font-size: 1.5rem;
+  font-size: 1.25rem; /* Reduced font size for stats */
   font-weight: bold;
   color: #4360ac;
 }
 
-/* Initial button styles */
+/* Card Title and Typography */
+h6 {
+  font-size: 0.7rem;
+  color: #495057;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  h6 {
+    font-size: 0.8rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  h6 {
+    font-size: 0.85rem;
+  }
+}
+
+.card-title {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #2b124c;
+}
+
+.card-body {
+  padding: 0.25rem;
+}
+
+/* Widget Title */
+.card-main-title {
+  font-size: 1rem; /* Smaller primary title */
+  font-weight: 600;
+  color: #000000;
+  text-align: left;
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+.golden-title {
+  color: #efc75e;
+}
+
+/* Range Button Styles */
 .range-btn {
   background-color: white;
   color: orange;
   border: 1px solid #000000;
+  font-size: 0.7rem; /* Reduced button text size */
+  padding: 0.25rem 0.5rem;
   transition: background-color 0.3s, color 0.3s;
 }
 
@@ -137,22 +128,32 @@ h6 {
   transform: scale(1.05);
   cursor: pointer;
 }
-.coming-soon-img {
-  max-width: 200px;
-  max-height: 200px;
-}
 
-
+/* Loading Section */
 .loading-container {
-  flex-grow: 1; /* Ensure the container takes up the remaining space */
+  flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: calc(100vh - 200px); /* Adjust the height to fill space below header */
+  height: calc(100vh - 200px);
 }
 
 .loading-image {
-  max-width: 100px; /* Adjust the size of the loading image */
-  width: 100%; 
+  max-width: 80px; /* Smaller loading image */
+  width: 100%;
   height: auto;
+}
+
+/* Card Hover Effect */
+.card-hover {
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border-radius: 0.25rem;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.card-hover:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
 }

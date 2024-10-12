@@ -1,89 +1,73 @@
 <div class="container-fluid my-4">
+  <!-- Greeting Section -->
+  <div class="row mb-4">
+    <div class="col text-start">
+      <h2 class="greeting-text">{{greeting}}, {{userName}}!</h2> 
+      <p class="sub-greeting">Today is {{ currentDate }}.</p> <!-- Display only the date -->
+       <!--<p class="sub-greeting">Streamline operations and focus on what matters most.</p>  -->
+      
+    </div>
+  </div>
 
-  <!-- Shortcut Panel at the top -->
+  <!-- Shortcut Panel -->
   <div class="row mb-5 justify-content-center shortcut-panel">
     <div class="col-auto">
       <div class="shortcut-item text-center" routerLink="/create-invoice">
         <img src="overview/createInvoice2.png" alt="Create Invoice" class="shortcut-icon" data-bs-toggle="tooltip"
-          data-bs-placement="right" data-bs-original-title="Create Invoice">
+          data-bs-placement="right" title="Create Invoice">
+        <h6>Create Invoice</h6>
       </div>
     </div>
     <div class="col-auto">
       <div class="shortcut-item text-center" routerLink="/reports/by-customer">
         <img src="reports/customer.png" alt="Customer History" class="shortcut-icon" data-bs-toggle="tooltip"
-          data-bs-placement="right" data-bs-original-title="Customer History">
+          data-bs-placement="right" title="Customer History">
+        <h6>Customer History</h6>
       </div>
     </div>
   </div>
-<!-- Summary Statistics -->
-<div class="row mb-4 g-3 justify-content-center">
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Total Active Loans</h6>
-        <!-- Use Angular binding to update the value dynamically -->
-        <span class="widget-value" id="total-loans">{{ totalLoans }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Total Invoices</h6>
-        <span class="widget-value" id="total-invoices">{{ totalInvoices }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Revenue Generated</h6>
-        <span class="widget-value" id="total-revenue">Rs.{{ totalRevenue }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Inventory Count</h6>
-        <span class="widget-value" id="inventory-count">{{ inventoryCount }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Customer Count</h6>
-        <span class="widget-value" id="customer-count">{{ customerCount }}</span>
-      </div>
-    </div>
-  </div>
-</div>
 
-</div>
-  <!-- Dashboard Charts Section 
-  <div class="row justify-content-center">
-    <div class="col-lg-4 col-md-6 mb-3">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title" style="padding-left: 2%;">Revenue Summary</h5>
-            -->
-
-            <!-- Date Range Selector Icons
-            <div class="date-range-selector d-flex gap-2">
-              <button class="btn btn-sm range-btn" id="btn-7D" (click)="updateChartData('7D', 'btn-7D')">7D</button>
-              <button class="btn btn-sm range-btn" id="btn-31D" (click)="updateChartData('31D', 'btn-31D')">31D</button>
-              <button class="btn btn-sm range-btn" id="btn-12M" (click)="updateChartData('12M', 'btn-12M')">12M</button>
-              <button class="btn btn-sm range-btn" id="btn-5Y" (click)="updateChartData('5Y', 'btn-5Y')">5Y</button>
-            </div>
-          </div>
-           -->
-
-          <!-- Chart 
-          <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" chartType="line"></canvas>
+  <!-- Summary Statistics -->
+  <div class="row mb-4 g-3 justify-content-center">
+    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+      <div class="card widget-card shadow-sm">
+        <div class="card-body text-center">
+          <h6>Total Active Loans</h6>
+          <span class="widget-value">{{ totalLoans }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+      <div class="card widget-card shadow-sm">
+        <div class="card-body text-center">
+          <h6>Total Invoices</h6>
+          <span class="widget-value">{{ totalInvoices }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+      <div class="card widget-card shadow-sm">
+        <div class="card-body text-center">
+          <h6>Revenue Generated</h6>
+          <span class="widget-value">Rs. {{ totalRevenue }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+      <div class="card widget-card shadow-sm">
+        <div class="card-body text-center">
+          <h6>Inventory Count</h6>
+          <span class="widget-value">{{ inventoryCount }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
+      <div class="card widget-card shadow-sm">
+        <div class="card-body text-center">
+          <h6>Customer Count</h6>
+          <span class="widget-value">{{ customerCount }}</span>
         </div>
       </div>
     </div>
   </div>
-  -->
+</div>

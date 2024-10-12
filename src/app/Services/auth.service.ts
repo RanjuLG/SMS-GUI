@@ -18,16 +18,32 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router, private configService: ConfigService) { }
 
   login(username: string, password: string): Observable<any> {
-    console.log("this.authUrl: ",this.authUrl)
+    console.log("this.authUrl: ", this.authUrl);
+
     return this.http.post(`${this.authUrl}/login`, { username, password }).pipe(
       tap((response: any) => {
+        // Store the token and username in localStorage
         localStorage.setItem('token', response.token);
+        localStorage.setItem('username', username);
+
+        // Decode the token and update the current user
         const decodedToken = this.jwtHelper.decodeToken(response.token);
         this.currentUserSubject.next(decodedToken);
-        this.authStatus.emit(true);  // Notify components of login status
+
+        // Emit login status to notify other components
+        this.authStatus.emit(true);
       })
     );
   }
+
+  getUserName(): string | boolean {
+    if (this.isLoggedIn) {
+      const username = localStorage.getItem('username');
+      return username ? username : false;
+    }
+    return false;
+  }
+  
 
   logout() {
     localStorage.removeItem('token');
@@ -39,10 +55,10 @@ export class AuthService {
   register(username: string, email: string, password: string, role: string): Observable<any> {
     const token = localStorage.getItem('token');
     return this.http.post(`${this.authUrl}/register?token=${token}`,
-      { username, email, password, roles: [role] }, 
+      { username, email, password, roles: [role] },
     );
   }
-    
+
   get isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
     return !!token && !this.jwtHelper.isTokenExpired(token);
@@ -56,5 +72,5 @@ export class AuthService {
     }
     return null;
   }
-  
+
 }
