@@ -229,7 +229,14 @@ exportToExcel(): void {
 
   // Save the file using file-saver
   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-  saveAs(blob, `Loan_Transactions_${year}-${month}.xlsx`);
+  const today = new Date();
+    let filename = '';
+    if (year === 2000) {
+      filename = `Loan_Transactions_All-Time_${today.toLocaleDateString()}.xlsx`;
+    } else {
+      filename = `Loan_Transactions_${year}-${month}.xlsx`;
+    }
+    saveAs(blob, filename);
 }
 
 

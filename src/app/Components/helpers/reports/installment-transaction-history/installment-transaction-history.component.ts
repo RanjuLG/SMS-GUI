@@ -115,7 +115,15 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     const workbook = { Sheets: { 'Installment Transactions': worksheet }, SheetNames: ['Installment Transactions'] };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(blob, `Installment_Transactions_${year}-${month}.xlsx`);
+
+    const today = new Date();
+    let filename = '';
+    if (year === 2000) {
+      filename = `Installment_Transactions_All-Time_${today.toLocaleDateString()}.xlsx`;
+    } else {
+      filename = `Installment_Transactions_${year}-${month}.xlsx`;
+    }
+    saveAs(blob, filename);
   }
 
   getInstallmentStartIndex(): number {
