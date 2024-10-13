@@ -70,73 +70,94 @@
                 <h5 class="section-title">Item Details</h5>
                 <div formArrayName="items">
                   <div *ngFor="let item of items().controls; let i = index" [formGroupName]="i" class="row item-row">
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label for="itemSelection">Select Item</label>
-                        <select id="itemSelection" class="form-control" (change)="onItemSelected($event, i)">
-                          <option value="">-- New Item --</option>
-                          <option *ngFor="let existingItem of customerItems" [value]="existingItem.itemId">
-                            {{ existingItem.itemDescription }}
-                          </option>
-                        </select>
+                    <!-- Row 1 -->
+                    <div class="col-md-6">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemSelection">Select Item</label>
+                            <select id="itemSelection" class="form-control form-control-sm" (change)="onItemSelected($event, i)">
+                              <option value="">-- New Item --</option>
+                              <option *ngFor="let existingItem of customerItems" [value]="existingItem.itemId">
+                                {{ existingItem.itemDescription }}
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemDescription">Description</label>
+                            <input id="itemDescription" class="form-control form-control-sm" formControlName="itemDescription" required />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label for="itemDescription">Description</label>
-                        <input id="itemDescription" class="form-control" formControlName="itemDescription" required />
+              
+                    <div class="col-md-6">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemRemarks">Remarks</label>
+                            <input id="itemRemarks" class="form-control form-control-sm" formControlName="itemRemarks" />
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemCaratage">Karat (K)</label>
+                            <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required>
+                              <option *ngFor="let karat of karats" [value]="karat.karatValue">{{ karat.karatValue }}</option>
+                            </select>
+                            <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" readonly />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-1">
-                      <div class="form-group">
-                        <label for="itemCaratage">Karat (K)</label>
-                        <select *ngIf="!isExistingItem(i)" id="itemCaratage" class="form-control form-control-sm"
-                          formControlName="itemCaratage" required>
-                          <option *ngFor="let karat of karats" [value]="karat.karatValue">{{ karat.karatValue }}
-                          </option>
-                        </select>
-                        <input *ngIf="isExistingItem(i)" type="number" id="itemCaratage"
-                          class="form-control form-control-sm" formControlName="itemCaratage" readonly />
+              
+                    <!-- Row 2 -->
+                    <div class="col-md-6">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemWeight">Net Wt.(g)</label>
+                            <input type="number" step="0.001" id="itemWeight" class="form-control form-control-sm" formControlName="itemWeight" min="0" required />
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemGoldWeight">Gold Wt.(g)</label>
+                            <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm" formControlName="itemGoldWeight" min="0" required />
+                          </div>
+                        </div>
                       </div>
                     </div>
-                    <div class="col-md-1">
-                      <div class="form-group">
-                        <label for="itemWeight">Net Wt.(g)</label>
-                        <input type="number" step="0.001" id="itemWeight" class="form-control form-control-sm"
-                          formControlName="itemWeight" min="0" required />
+              
+                    <div class="col-md-6">
+                      <div class="row">
+                        <div class="col-md-6">
+                          <div class="form-group">
+                            <label for="itemValue">Value (Rs)</label>
+                            <input type="number" step="100" id="itemValue" class="form-control form-control-sm" formControlName="itemValue" />
+                          </div>
+                        </div>
+                        <div class="col-md-6 d-flex justify-content-end align-items-center">
+                          <button type="button" class="btn btn-outline-primary btn-sm" (click)="onCalculateItemValue(i)">
+                            <i class="ri-refresh-line"></i>
+                          </button>
+                          <button type="button" class="btn btn-outline-danger btn-sm ms-2" (click)="removeItem(i)">
+                            <i class="ri-close-line"></i>
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div class="col-md-1">
-                      <div class="form-group">
-                        <label for="itemGoldWeight">Gold Wt.(g)</label>
-                        <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm"
-                          formControlName="itemGoldWeight" min="0" required />
-                      </div>
-                    </div>
-                    <div class="col-md-2">
-                      <div class="form-group">
-                        <label for="itemValue">Value (Rs)</label>
-                        <input type="number" step="100" id="itemValue" class="form-control form-control-sm"
-                          formControlName="itemValue" />
-                      </div>
-                    </div>
-                    <div class="d-flex justify-content-end align-items-center">
-                      <button type="button" class="btn btn-outline-primary btn-sm" (click)="onCalculateItemValue(i)">
-                        <i class="ri-refresh-line"></i>
-                      </button>
-                      <button type="button" class="btn btn-outline-danger btn-sm ms-2" (click)="removeItem(i)">
-                        <i class="ri-close-line"></i>
-                      </button>
                     </div>
                   </div>
                 </div>
+              
                 <div class="d-flex justify-content-end mt-2">
                   <button type="button" class="btn btn-outline-success btn-sm" (click)="addItem()">
                     <i class="ri-add-line"></i> Add Item
                   </button>
                 </div>
               </div>
-
               <!-- Payment Information -->
               <div class="section-wrapper mt-4">
                 <h5 class="section-title">Payment Info</h5>

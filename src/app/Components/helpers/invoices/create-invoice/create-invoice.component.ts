@@ -122,6 +122,7 @@ export class CreateInvoiceComponent implements OnInit {
     return this.fb.group({
       itemId: [null], // Include itemId field
       itemDescription: ['', Validators.required],
+      itemRemarks: [''],
       itemCaratage: [0, Validators.required],
       itemWeight: [0, Validators.required],
       itemGoldWeight: [0, Validators.required],
@@ -155,6 +156,7 @@ export class CreateInvoiceComponent implements OnInit {
         itemFormGroup.patchValue({
           itemId: selectedItem.itemId,
           itemDescription: selectedItem.itemDescription,
+          itemRemarks: selectedItem.itemRemarks,
           itemCaratage: selectedItem.itemCaratage,
           itemWeight:selectedItem.itemWeight,
           itemGoldWeight: selectedItem.itemGoldWeight,
@@ -163,6 +165,7 @@ export class CreateInvoiceComponent implements OnInit {
 
         // Disable form controls for existing items
         itemFormGroup.get('itemDescription')?.disable();
+        itemFormGroup.get('itemRemarks')?.disable();
         itemFormGroup.get('itemCaratage')?.disable();
         itemFormGroup.get('itemWeight')?.disable();
         itemFormGroup.get('itemGoldWeight')?.disable();
@@ -173,6 +176,7 @@ export class CreateInvoiceComponent implements OnInit {
       itemFormGroup.reset();
       // Enable form controls for new items
       itemFormGroup.get('itemDescription')?.enable();
+      itemFormGroup.get('itemRemarks')?.enable();
       itemFormGroup.get('itemCaratage')?.enable();
       itemFormGroup.get('itemWeight')?.enable();
       itemFormGroup.get('itemGoldWeight')?.enable();
@@ -191,6 +195,7 @@ export class CreateInvoiceComponent implements OnInit {
   this.subscribeToItemChanges(newItem);
     // Enable form controls for new items
     newItem.get('itemDescription')?.enable();
+    newItem.get('itemRemarks')?.enable();
     newItem.get('itemCaratage')?.enable();
     newItem.get('itemGoldWeight')?.enable();
     newItem.get('itemValue')?.enable();
