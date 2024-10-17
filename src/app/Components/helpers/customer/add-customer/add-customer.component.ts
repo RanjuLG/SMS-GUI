@@ -18,7 +18,7 @@ export class AddCustomerComponent {
   @Output() saveCustomer = new EventEmitter<CreateCustomerDto>();
   customerForm: FormGroup;
   nicPhotoFile: File | null = null;  // To store the uploaded NIC file
-
+  nicPhotoUrl: string | null = null;  // To display the current NIC photo URL
   // ViewChild to reference the file input element
   @ViewChild('fileInput') fileInput: any;
   
@@ -41,6 +41,7 @@ export class AddCustomerComponent {
   ngOnInit() {
     if (this.customer) {
       this.customerForm.patchValue(this.customer);
+      this.nicPhotoUrl = this.customer.nicPhotoPath ? this.customer.nicPhotoPath : null;
     }
   }
 
@@ -48,40 +49,36 @@ export class AddCustomerComponent {
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       this.nicPhotoFile = event.target.files[0];  // Store the selected file
+      this.nicPhotoUrl = null;  // Clear the current photo preview
       this.cdr.detectChanges();  // Trigger change detection to update the view
     }
   }
    // Remove the NIC photo
    removeNicPhoto() {
-    this.nicPhotoFile = null;  // Clear the selected file
-
-    // Reset the file input field
+    this.nicPhotoFile = null;  // Clear the uploaded file
+    this.nicPhotoUrl = null;  // Clear the current photo preview
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';  // Reset the file input value to null
     }
-
     this.cdr.detectChanges();  // Update the view to reflect the change
   }
 
   onSubmit() {
     if (this.customerForm.valid) {
       const customerDto: CreateCustomerDto = this.customerForm.value;
+      const formData = new FormData();
 
-      // Create FormData object to send along with file
-              const formData = new FormData();
-        formData.append('customerNIC', customerDto.customerNIC);
-        formData.append('customerName', customerDto.customerName);
-        formData.append('customerAddress', customerDto.customerAddress);
-        formData.append('customerContactNo', customerDto.customerContactNo);
+      formData.append('customerNIC', customerDto.customerNIC);
+      formData.append('customerName', customerDto.customerName);
+      formData.append('customerAddress', customerDto.customerAddress);
+      formData.append('customerContactNo', customerDto.customerContactNo);
 
-        if (this.nicPhotoFile) {
-          formData.append('nicPhoto', this.nicPhotoFile);  // Append file only if present
-        } else {
-          formData.append('nicPhoto', '');  // Add an empty string or skip this
-        }
+      if (this.nicPhotoFile) {
+        formData.append('nicPhoto', this.nicPhotoFile);
+      } else if (this.nicPhotoUrl === null && this.customer) {
+        formData.append('nicPhoto', '');  // Mark the NIC photo as removed
+      }
 
-
-      // Show confirmation and process the form data
       Swal.fire({
         title: 'Save Changes',
         text: 'Are you sure you want to save these changes?',
@@ -92,8 +89,7 @@ export class AddCustomerComponent {
       }).then((result) => {
         if (result.isConfirmed) {
           if (this.customer) {
-            // Edit existing customer
-            this.apiService.updateCustomer(this.customer.customerId, customerDto,this.nicPhotoFile).subscribe({
+            this.apiService.updateCustomer(this.customer.customerId, customerDto, this.nicPhotoFile).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
                 this.activeModal.close();
@@ -105,7 +101,6 @@ export class AddCustomerComponent {
               }
             });
           } else {
-            // Create new customer
             this.apiService.createCustomer(customerDto, this.nicPhotoFile).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);

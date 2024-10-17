@@ -19,12 +19,20 @@
       </div>
       <div class="col-12">
         <label for="nicPhoto" class="form-label">NIC Photo</label>
-        <input type="file" id="nicPhoto" #fileInput (change)="onFileChange($event)" class="form-control form-control-sm" />
-        <div *ngIf="nicPhotoFile" class="d-flex justify-content-between align-items-center mt-2">
-          <span class="small text-muted">{{ nicPhotoFile.name }}</span>
+        <input
+          type="file"
+          id="nicPhoto"
+          #fileInput
+          (change)="onFileChange($event)"
+          class="form-control form-control-sm"
+        />
+        <div *ngIf="nicPhotoUrl || nicPhotoFile" class="d-flex justify-content-between align-items-center mt-2">
+          <img *ngIf="nicPhotoUrl" [src]="nicPhotoUrl" alt="NIC Photo" class="img-thumbnail" style="max-width: 100px;" />
+          <span class="small text-muted" *ngIf="nicPhotoFile">{{ nicPhotoFile.name }}</span>
           <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeNicPhoto()">Remove</button>
         </div>
       </div>
+      
       <div class="col-12">
         <label for="contactNo" class="form-label">Contact No.</label>
         <input type="text" id="customerContactNo" formControlName="customerContactNo" class="form-control form-control-sm" />

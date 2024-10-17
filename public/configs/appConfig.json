@@ -1,5 +1,5 @@
 {
-	"api_host": "http://localhost:5048",
+	"api_host": "https://localhost:7217",
 	"invoice_settings": {
 		"width": 229,
 		"height": 180
