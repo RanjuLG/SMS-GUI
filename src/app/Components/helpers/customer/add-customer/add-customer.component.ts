@@ -32,10 +32,9 @@ export class AddCustomerComponent {
       customerNIC: ['', Validators.required],
       customerName: ['', Validators.required],
       customerAddress: ['', Validators.required],
-      customerContactNo: ['', Validators.required],
+      customerContactNo: [''],
       status: [1, Validators.required],
-       nicPhoto: [null],
-      // Additional Form Controls for file upload if needed
+      nicPhoto: [null],
     });
   }
 
