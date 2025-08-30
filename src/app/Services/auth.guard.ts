@@ -28,7 +28,7 @@ export class AuthGuard implements CanActivate {
       }
 
       // Check if user has valid roles for general access (Cashier or Admin)
-      if (expectedRole === "Cashier" && userRole !== "Cashier" && userRole !== "Admin") {
+      if (expectedRole === "Cashier" && userRole !== "Cashier" && userRole !== "Admin" && userRole !== "SuperAdmin") {
         const customMessage = `Access denied. You need Cashier or Administrator privileges to access this area. Your current role: ${userRole || 'None'}`;
         this.notificationService.showUnauthorizedPopup(customMessage);
         return false;
