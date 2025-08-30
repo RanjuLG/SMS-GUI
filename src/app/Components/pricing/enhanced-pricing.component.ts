@@ -26,14 +26,19 @@ import { AdvancedSearchComponent, SearchField } from '../../shared/components/ad
       subtitle="Manage gold pricing configurations with advanced search and filtering">
       
       <div slot="actions" class="header-actions">
-        <button type="button" class="btn btn-primary" (click)="openAddPricingModal()">
-          <i class="ri-add-line align-bottom me-1"></i> Add Pricing
-        </button>
-        <button type="button" class="btn btn-success ms-2" (click)="openBatchModal()">
-          <i class="ri-stack-line"></i> Batch Upload
-        </button>
+        <div class="btn-group" role="group" aria-label="Pricing actions">
+          <button type="button" class="btn btn-primary" (click)="openAddPricingModal()">
+            <i class="ri-add-line me-1"></i> Add Pricing
+          </button>
+          <button type="button" class="btn btn-success" (click)="openBatchModal()">
+            <i class="ri-file-upload-line me-1"></i> Batch Upload
+          </button>
+          <button type="button" class="btn btn-info" (click)="downloadTemplate()">
+            <i class="ri-download-line me-1"></i> Download Template
+          </button>
+        </div>
         <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedPricings()">
-          <i class="ri-delete-bin-2-line"></i> Delete Selected
+          <i class="ri-delete-bin-2-line me-1"></i> Delete Selected
         </button>
       </div>
     </app-page-header>
@@ -73,17 +78,7 @@ import { AdvancedSearchComponent, SearchField } from '../../shared/components/ad
       </app-data-table>
     </div>
   `,
-  styles: [`
-    .header-actions {
-      display: flex;
-      gap: 0.5rem;
-      align-items: center;
-    }
-
-    .container-fluid {
-      padding: 0 1.5rem;
-    }
-  `]
+  styleUrl: './enhanced-pricing.component.scss'
 })
 export class EnhancedPricingComponent implements OnInit {
   pricings: any[] = [];
@@ -327,6 +322,10 @@ export class EnhancedPricingComponent implements OnInit {
 
   openBatchModal(): void {
     console.log('Open batch upload modal');
+  }
+
+  downloadTemplate(): void {
+    console.log('Download template');
   }
 
   editPricing(pricing: any): void {

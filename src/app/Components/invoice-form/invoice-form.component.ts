@@ -16,6 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {RouterLink} from '@angular/router';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
   selected?: boolean;
@@ -35,7 +36,8 @@ export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
     MatHint,
     MatFormFieldModule,
     MatInputModule,
-    RouterLink
+    RouterLink,
+    PageHeaderComponent
   ],
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],

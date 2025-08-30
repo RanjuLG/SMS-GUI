@@ -247,79 +247,82 @@
     <div class="col-lg-8 mb-4">
       <app-card title="Recent Activities" [showHeaderActions]="true">
         <div slot="header-actions">
+          <button 
+            class="btn btn-sm btn-outline-secondary rounded-pill me-2"
+            (click)="loadRecentActivities()"
+            [disabled]="isActivitiesLoading">
+            <i class="ri-refresh-line me-1"></i>
+            Refresh
+          </button>
           <button class="btn btn-sm btn-outline-primary rounded-pill">
             <i class="ri-external-link-line me-1"></i>
             View All
           </button>
         </div>
         
-        <div class="activity-list">
-          <div class="activity-item">
-            <div class="activity-icon bg-primary">
-              <i class="ri-file-add-line"></i>
+        <!-- Loading State -->
+        <div *ngIf="isActivitiesLoading" class="text-center py-5">
+          <div class="loading-activity-container">
+            <div class="loading-spinner-activity"></div>
+            <p class="loading-text mt-3">Loading recent activities...</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="activitiesError && !isActivitiesLoading" class="alert alert-warning py-3 mb-3">
+          <div class="d-flex align-items-center">
+            <i class="ri-error-warning-line me-2 fs-5"></i>
+            <div>
+              <strong>Unable to load activities</strong>
+              <br>
+              <small>{{ activitiesError }}. Showing sample data instead.</small>
             </div>
-            <div class="activity-content">
-              <div class="activity-title">New invoice created</div>
-              <div class="activity-description">Invoice #INV-{{ ((Math.random() * 9000) + 1000).toFixed(0) }} was created for a customer with total amount Rs. {{ (Math.random() * 50000 + 10000).toFixed(0) }}</div>
-              <div class="activity-time">
-                <i class="ri-time-line me-1"></i>
-                {{ (Math.random() * 5 + 1).toFixed(0) }} hours ago
+          </div>
+        </div>
+
+        <!-- Activities List -->
+        <div class="activity-list modern-activities" *ngIf="!isActivitiesLoading">
+          <div 
+            class="activity-item modern-activity-item" 
+            *ngFor="let activity of recentActivities; trackBy: trackByActivityId"
+            [attr.data-activity-type]="activity.type">
+            
+            <div class="activity-icon-wrapper">
+              <div class="activity-icon" [ngClass]="activity.iconBg">
+                <i [class]="activity.icon"></i>
               </div>
             </div>
+            
+            <div class="activity-content">
+              <div class="activity-header">
+                <div class="activity-title">{{ activity.title }}</div>
+                <div class="activity-time">
+                  <i class="ri-time-line me-1"></i>
+                  {{ activity.time }}
+                </div>
+              </div>
+              <div class="activity-description">{{ activity.description }}</div>
+              <div class="activity-meta">
+                <span class="activity-type-badge" [attr.data-type]="activity.type">
+                  {{ activity.type | titlecase }}
+                </span>
+              </div>
+            </div>
+            
             <div class="activity-status">
-              <span class="badge bg-success">Completed</span>
+              <span class="badge modern-badge" [ngClass]="activity.statusBg">
+                {{ activity.status }}
+              </span>
             </div>
           </div>
 
-          <div class="activity-item">
-            <div class="activity-icon bg-success">
-              <i class="ri-user-add-line"></i>
+          <!-- Empty State -->
+          <div *ngIf="recentActivities.length === 0" class="empty-activities-state">
+            <div class="empty-icon">
+              <i class="ri-history-line"></i>
             </div>
-            <div class="activity-content">
-              <div class="activity-title">New customer registered</div>
-              <div class="activity-description">A new customer was added to the database with complete profile information</div>
-              <div class="activity-time">
-                <i class="ri-time-line me-1"></i>
-                {{ (Math.random() * 12 + 6).toFixed(0) }} hours ago
-              </div>
-            </div>
-            <div class="activity-status">
-              <span class="badge bg-info">Active</span>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon bg-warning">
-              <i class="ri-money-dollar-circle-line"></i>
-            </div>
-            <div class="activity-content">
-              <div class="activity-title">Payment received</div>
-              <div class="activity-description">Payment of Rs. {{ (Math.random() * 30000 + 5000).toFixed(0) }} received for an outstanding invoice</div>
-              <div class="activity-time">
-                <i class="ri-time-line me-1"></i>
-                {{ (Math.random() * 24 + 12).toFixed(0) }} hours ago
-              </div>
-            </div>
-            <div class="activity-status">
-              <span class="badge bg-success">Paid</span>
-            </div>
-          </div>
-
-          <div class="activity-item">
-            <div class="activity-icon bg-info">
-              <i class="ri-archive-line"></i>
-            </div>
-            <div class="activity-content">
-              <div class="activity-title">Inventory updated</div>
-              <div class="activity-description">{{ (Math.random() * 20 + 5).toFixed(0) }} new jewelry items were added to the inventory</div>
-              <div class="activity-time">
-                <i class="ri-time-line me-1"></i>
-                {{ (Math.random() * 48 + 24).toFixed(0) }} hours ago
-              </div>
-            </div>
-            <div class="activity-status">
-              <span class="badge bg-primary">Updated</span>
-            </div>
+            <h6>No Recent Activities</h6>
+            <p class="text-muted mb-0">Activities will appear here as they occur in your jewelry shop.</p>
           </div>
         </div>
       </app-card>

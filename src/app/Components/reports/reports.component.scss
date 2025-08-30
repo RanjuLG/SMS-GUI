@@ -1,66 +1,369 @@
-.container-fluid {
-  padding: 0.75rem; /* Reduce padding for compact layout */
-  background-color: var(--primary-bg);
+/* Reports Component Modern Styling */
+
+/* Root Variables for Consistent Theming */
+:root {
+  --reports-primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --reports-customer-gradient: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+  --reports-transaction-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --reports-invoice-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --reports-financial-gradient: linear-gradient(135deg, #a855f7 0%, #c084fc 100%);
+  --reports-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --reports-shadow-light: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --reports-border-radius: 20px;
+  --reports-border-radius-sm: 12px;
+  
+  /* Text colors */
+  --reports-text-primary: #2d3748;
+  --reports-text-secondary: #4a5568;
+  --reports-text-light: rgba(255, 255, 255, 0.95);
+  
+  /* Background colors */
+  --reports-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --reports-header-bg: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --reports-card-bg: rgba(255, 255, 255, 0.95);
 }
 
-.breadcrumb-container {
-  font-size: 0.8rem; /* Make breadcrumb text smaller */
-  margin-bottom: 1rem; /* Less space below breadcrumb */
+/* Dark theme adjustments */
+[data-theme="dark"] {
+  --reports-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --reports-shadow-light: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  /* Dark mode backgrounds */
+  --reports-bg: linear-gradient(135deg, #0f1419 0%, #1a1f29 100%);
+  --reports-header-bg: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+  --reports-card-bg: rgba(26, 32, 44, 0.95);
+  
+  /* Dark mode text */
+  --reports-text-primary: #f7fafc;
+  --reports-text-secondary: #e2e8f0;
+  
+  /* Adjust gradients for dark theme */
+  --reports-customer-gradient: linear-gradient(135deg, #4a9428 0%, #96d4bd 100%);
+  --reports-transaction-gradient: linear-gradient(135deg, #3d8bec 0%, #00d9ec 100%);
+  --reports-invoice-gradient: linear-gradient(135deg, #de81e9 0%, #e34a5a 100%);
+  --reports-financial-gradient: linear-gradient(135deg, #9643e5 0%, #ae72ea 100%);
 }
 
-.row {
-  --bs-gutter-x: 0.75rem; /* Less gap between cards */
+/* Modern Container */
+.modern-reports {
+  background: var(--reports-bg);
+  min-height: 100vh;
+  transition: background 0.3s ease;
 }
 
-.card {
-  border-radius: 0.375rem; /* Smaller border radius */
+/* Header Section */
+.reports-header {
+  background: var(--reports-header-bg);
+  padding: 2rem 0;
+  position: relative;
   overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--card-bg);
-  border: 1px solid var(--border-color);
-  box-shadow: 0 2px 4px var(--shadow);
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-}
-
-.card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 6px 12px var(--shadow);
-}
-
-.card-img-top {
-  object-fit: contain;
-  width: 100%;
-  height: 120px; /* Smaller image height */
-  border-bottom: 1px solid var(--border-color);
-  background-color: var(--secondary-bg);
-}
-
-.card-body {
-  padding: 0.5rem; /* Compact padding */
-  text-align: center;
-}
-
-.card-title {
-  font-size: 0.8rem; /* Smaller font size */
-  color: var(--primary-text);
-  font-weight: 500;
-}
-
-h6 {
-  font-size: 0.8rem;
-  color: var(--secondary-text);
-  margin-bottom: 0.5rem;
-}
-
-@media (min-width: 768px) {
-  h6 {
-    font-size: 0.85rem;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 100" fill="rgba(255,255,255,0.1)"><polygon points="1000,100 1000,0 0,100"/></svg>');
+    background-size: cover;
+    pointer-events: none;
   }
 }
 
-@media (min-width: 1024px) {
-  h6 {
+/* Modern Breadcrumb */
+.modern-breadcrumb {
+  margin-bottom: 1rem;
+  
+  .breadcrumb {
+    background: none;
+    padding: 0;
+    margin: 0;
     font-size: 0.9rem;
+    
+    .breadcrumb-item {
+      color: var(--reports-text-light);
+      
+      &.active {
+        color: rgba(255, 255, 255, 0.8);
+      }
+      
+      + .breadcrumb-item::before {
+        content: "›";
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: bold;
+      }
+    }
+  }
+  
+  .breadcrumb-link {
+    color: var(--reports-text-light);
+    text-decoration: none;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: #ffffff;
+      text-decoration: none;
+    }
+    
+    i {
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+/* Page Header */
+.page-header {
+  text-align: center;
+  color: var(--reports-text-light);
+  
+  .page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    
+    i {
+      margin-right: 1rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+  }
+  
+  .page-subtitle {
+    font-size: 1.1rem;
+    margin: 0;
+    opacity: 0.9;
+    font-weight: 300;
+  }
+}
+
+/* Reports Content */
+.reports-content {
+  padding: 3rem 0;
+  position: relative;
+}
+
+/* Reports Grid */
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+/* Report Card Wrapper */
+.report-card-wrapper {
+  perspective: 1000px;
+}
+
+/* Report Cards */
+.report-card {
+  background: var(--reports-card-bg);
+  border-radius: var(--reports-border-radius);
+  padding: 2rem;
+  box-shadow: var(--reports-shadow-light);
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--reports-primary-gradient);
+    transition: height 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--reports-shadow-hover);
+    
+    &::before {
+      height: 6px;
+    }
+    
+    .card-arrow {
+      transform: translateX(5px);
+      opacity: 1;
+    }
+    
+    .card-icon {
+      transform: scale(1.1);
+    }
+  }
+  
+  &.customer-card::before {
+    background: var(--reports-customer-gradient);
+  }
+  
+  &.transactions-card::before {
+    background: var(--reports-transaction-gradient);
+  }
+  
+  &.invoice-card::before {
+    background: var(--reports-invoice-gradient);
+  }
+  
+  &.financial-card::before {
+    background: var(--reports-financial-gradient);
+  }
+}
+
+/* Card Icon */
+.card-icon {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+  transition: all 0.3s ease;
+  background: var(--reports-primary-gradient);
+  
+  i {
+    font-size: 1.5rem;
+    color: white;
+  }
+  
+  .customer-card & {
+    background: var(--reports-customer-gradient);
+  }
+  
+  .transactions-card & {
+    background: var(--reports-transaction-gradient);
+  }
+  
+  .invoice-card & {
+    background: var(--reports-invoice-gradient);
+  }
+  
+  .financial-card & {
+    background: var(--reports-financial-gradient);
+  }
+}
+
+/* Card Content */
+.card-content {
+  flex: 1;
+  
+  .card-title {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 0.8rem;
+    color: var(--reports-text-primary);
+    transition: color 0.3s ease;
+  }
+  
+  .card-description {
+    color: var(--reports-text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 0;
+    transition: color 0.3s ease;
+  }
+}
+
+/* Card Arrow */
+.card-arrow {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  opacity: 0.6;
+  transition: all 0.3s ease;
+  
+  i {
+    font-size: 1.2rem;
+    color: var(--reports-text-secondary);
+  }
+}
+
+/* Card Badge */
+.card-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  
+  .badge {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    box-shadow: 0 2px 8px rgba(240, 147, 251, 0.3);
+  }
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.report-card-wrapper {
+  animation: fadeInUp 0.6s ease-out forwards;
+  
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .reports-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    padding: 0 1rem;
+  }
+  
+  .page-header .page-title {
+    font-size: 2rem;
+  }
+  
+  .reports-header {
+    padding: 1.5rem 0;
+  }
+  
+  .reports-content {
+    padding: 2rem 0;
+  }
+  
+  .report-card {
+    padding: 1.5rem;
+    min-height: 160px;
+  }
+}
+
+@media (max-width: 480px) {
+  .page-header .page-title {
+    font-size: 1.8rem;
+  }
+  
+  .page-header .page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .reports-grid {
+    gap: 1rem;
   }
 }

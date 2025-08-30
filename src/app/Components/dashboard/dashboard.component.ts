@@ -4,6 +4,7 @@ import { InvoiceTypesComponent } from '../helpers/invoices/invoice-types/invoice
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { CreateSettlementInvoiceComponent } from '../helpers/invoices/create-settlement-invoice/create-settlement-invoice.component';
 import { RouterLink } from '@angular/router';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,8 @@ import { RouterLink } from '@angular/router';
     InvoiceTypesComponent,
     CreateInvoiceComponent,
     CreateSettlementInvoiceComponent,
-    RouterLink
+    RouterLink,
+    PageHeaderComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'

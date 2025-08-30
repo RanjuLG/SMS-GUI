@@ -1,32 +1,32 @@
+<!-- Cash Balance Management with Modern Components -->
+<app-page-header 
+  title="Cash Balance Management"
+  subtitle="Monitor cash flow, track balances, and manage financial records">
+  
+  <div slot="actions" class="header-actions">
+    <button type="button" class="btn btn-primary" (click)="openEnterBalanceModal()">
+      <i class="ri-add-line align-bottom me-1"></i> Enter Balance
+    </button>
+    <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedBalances()">
+      <i class="ri-delete-bin-2-line"></i> Delete Selected
+    </button>
+  </div>
+</app-page-header>
+
 <div class="container-fluid">
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="card shadow-sm">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0">Cash Balance</h4>
-                    <div>
-                        <button type="button" class="btn btn-primary" (click)="openEnterBalanceModal()">
-                            <i class="ri-add-line align-bottom me-1"></i> Enter Balance
-                        </button>
-                        <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedBalances()">
-                            <i class="ri-delete-bin-2-line"></i> Delete Selected
-                        </button>
-                    </div>
-                </div>
-                <div class="card-body">
-                    <app-data-table
-                        [data]="processedBalances"
-                        [columns]="tableColumns"
-                        [actions]="[
-                            { key: 'edit', label: 'Edit', icon: 'ri-edit-box-line', color: 'warning' },
-                            { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
-                        ]"
-                        [selectable]="true"
-                        (action)="onTableAction($event)"
-                        title="Cash Balance">
-                    </app-data-table>
-                </div><!-- end card body -->
-            </div><!-- end card -->
-        </div><!-- end col -->
-    </div><!-- end row -->
-</div><!-- end container-fluid -->
+  <!-- Enhanced Data Table -->
+  <app-data-table
+    title="Cash Balance Records"
+    [data]="processedBalances"
+    [columns]="tableColumns"
+    [actions]="[
+      { key: 'edit', label: 'Edit', icon: 'ri-edit-box-line', color: 'warning' },
+      { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
+    ]"
+    [searchable]="true"
+    [selectable]="true"
+    [showActions]="true"
+    [showAddButton]="false"
+    (action)="onTableAction($event)">
+  </app-data-table>
+</div>

@@ -47,6 +47,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   greeting: string = '';
   currentDate: string = '';
   isLoading: boolean = true;
+
+  // Recent Activities Properties
+  recentActivities: any[] = [];
+  isActivitiesLoading: boolean = true;
+  activitiesError: string | null = null;
   
   // System Health Properties
   systemHealth: SystemHealthOverview | null = null;
@@ -100,6 +105,7 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.updateDate();
     this.loadDashboardData();
     this.loadSystemHealth();
+    this.loadRecentActivities();
 
     // Default to last 31 days and set the 31D button as active
     this.updateChartData('7D', 'btn-7D');
@@ -215,6 +221,178 @@ export class OverviewComponent implements OnInit, AfterViewInit {
         this.isLoading = false;
       }
     });
+  }
+
+  // Load recent activities data
+  loadRecentActivities(): void {
+    this.isActivitiesLoading = true;
+    this.activitiesError = null;
+
+    // Get recent activities data from multiple sources
+    const currentDate = new Date();
+    const lastWeek = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+
+    forkJoin({
+      transactions: this.apiService.getTransactions(lastWeek, currentDate, 1, 3, '', 'CreatedAt', 'desc').pipe(
+        catchError(() => of({ data: [], total: 0 }))
+      ),
+      invoices: this.apiService.getInvoices(lastWeek, currentDate, 1, 3, '', 'CreatedAt', 'desc').pipe(
+        catchError(() => of({ data: [], total: 0 }))
+      ),
+      customers: this.apiService.getCustomers(lastWeek, currentDate, 1, 2, '', 'CreatedAt', 'desc').pipe(
+        catchError(() => of({ data: [], total: 0 }))
+      )
+    }).subscribe({
+      next: (data) => {
+        this.recentActivities = this.processRecentActivities(data);
+        this.isActivitiesLoading = false;
+      },
+      error: (err) => {
+        console.error('Error fetching recent activities:', err);
+        this.activitiesError = 'Failed to load recent activities';
+        this.isActivitiesLoading = false;
+        // Generate mock data as fallback
+        this.recentActivities = this.generateMockActivities();
+      }
+    });
+  }
+
+  // Process real data into activities format
+  processRecentActivities(data: any): any[] {
+    const activities: any[] = [];
+
+    // Process transactions
+    if (data.transactions?.data) {
+      data.transactions.data.slice(0, 2).forEach((transaction: any) => {
+        activities.push({
+          id: `transaction-${transaction.transactionId}`,
+          type: 'transaction',
+          icon: 'ri-money-dollar-circle-line',
+          iconBg: 'bg-success',
+          title: 'Payment Received',
+          description: `Payment of Rs. ${transaction.amount?.toLocaleString()} received${transaction.customerName ? ` from ${transaction.customerName}` : ''}`,
+          time: this.formatActivityTimeAgo(transaction.createdAt),
+          status: transaction.transactionType === 1 ? 'Payment' : 'Received',
+          statusBg: 'bg-success'
+        });
+      });
+    }
+
+    // Process invoices
+    if (data.invoices?.data) {
+      data.invoices.data.slice(0, 2).forEach((invoice: any) => {
+        activities.push({
+          id: `invoice-${invoice.invoiceId}`,
+          type: 'invoice',
+          icon: 'ri-file-add-line',
+          iconBg: 'bg-primary',
+          title: 'New Invoice Created',
+          description: `Invoice #${invoice.invoiceNumber || invoice.invoiceId} created with total amount Rs. ${invoice.totalAmount?.toLocaleString()}`,
+          time: this.formatActivityTimeAgo(invoice.createdAt),
+          status: 'Created',
+          statusBg: 'bg-primary'
+        });
+      });
+    }
+
+    // Process customers
+    if (data.customers?.data) {
+      data.customers.data.slice(0, 1).forEach((customer: any) => {
+        activities.push({
+          id: `customer-${customer.customerId}`,
+          type: 'customer',
+          icon: 'ri-user-add-line',
+          iconBg: 'bg-info',
+          title: 'New Customer Registered',
+          description: `${customer.firstName} ${customer.lastName} has been added to the system`,
+          time: this.formatActivityTimeAgo(customer.createdAt),
+          status: 'Registered',
+          statusBg: 'bg-info'
+        });
+      });
+    }
+
+    // Sort by time (newest first) and limit to 5
+    return activities
+      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
+      .slice(0, 5);
+  }
+
+  // Generate mock activities as fallback
+  generateMockActivities(): any[] {
+    return [
+      {
+        id: 'mock-1',
+        type: 'invoice',
+        icon: 'ri-file-add-line',
+        iconBg: 'bg-primary',
+        title: 'New Invoice Created',
+        description: `Invoice #INV-${((Math.random() * 9000) + 1000).toFixed(0)} created with total amount Rs. ${(Math.random() * 50000 + 10000).toFixed(0)}`,
+        time: `${(Math.random() * 5 + 1).toFixed(0)} hours ago`,
+        status: 'Created',
+        statusBg: 'bg-primary'
+      },
+      {
+        id: 'mock-2',
+        type: 'customer',
+        icon: 'ri-user-add-line',
+        iconBg: 'bg-info',
+        title: 'New Customer Registered',
+        description: 'A new customer was added to the database with complete profile information',
+        time: `${(Math.random() * 12 + 6).toFixed(0)} hours ago`,
+        status: 'Registered',
+        statusBg: 'bg-info'
+      },
+      {
+        id: 'mock-3',
+        type: 'payment',
+        icon: 'ri-money-dollar-circle-line',
+        iconBg: 'bg-success',
+        title: 'Payment Received',
+        description: `Payment of Rs. ${(Math.random() * 30000 + 5000).toFixed(0)} received for an outstanding invoice`,
+        time: `${(Math.random() * 24 + 12).toFixed(0)} hours ago`,
+        status: 'Paid',
+        statusBg: 'bg-success'
+      },
+      {
+        id: 'mock-4',
+        type: 'inventory',
+        icon: 'ri-archive-line',
+        iconBg: 'bg-warning',
+        title: 'Inventory Updated',
+        description: `${(Math.random() * 20 + 5).toFixed(0)} new jewelry items were added to the inventory`,
+        time: `${(Math.random() * 48 + 24).toFixed(0)} hours ago`,
+        status: 'Updated',
+        statusBg: 'bg-warning'
+      }
+    ];
+  }
+
+  // Format time ago for activities
+  formatActivityTimeAgo(dateString: string): string {
+    if (!dateString) return 'Unknown';
+    
+    const now = new Date();
+    const time = new Date(dateString);
+    const diffMs = now.getTime() - time.getTime();
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays > 0) {
+      return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+    } else if (diffHours > 0) {
+      return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+    } else if (diffMinutes > 0) {
+      return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+    } else {
+      return 'Just now';
+    }
+  }
+
+  // TrackBy function for activities list performance
+  trackByActivityId(index: number, activity: any): string {
+    return activity.id || index.toString();
   }
 
   // Load system health data

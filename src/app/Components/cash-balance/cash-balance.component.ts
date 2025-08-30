@@ -5,6 +5,7 @@ import Swal from 'sweetalert2';
 import { CreateBalanceComponent } from '../helpers/cash-balance/create-balance/create-balance.component';
 import { FormsModule } from '@angular/forms';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 interface Balance {
   date: string;
@@ -16,7 +17,7 @@ interface Balance {
 @Component({
   selector: 'app-cash-balance',
   standalone: true,
-  imports: [CommonModule, FormsModule, DataTableComponent],
+  imports: [CommonModule, FormsModule, DataTableComponent, PageHeaderComponent],
   templateUrl: './cash-balance.component.html',
   styleUrls: ['./cash-balance.component.scss']
 })

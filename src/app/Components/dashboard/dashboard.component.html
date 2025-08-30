@@ -1,32 +1,12 @@
+<!-- Create Invoice Dashboard -->
+<app-page-header 
+  title="Create Invoice"
+  subtitle="Generate new loan invoices for customers with comprehensive details">
+</app-page-header>
+
 <div class="container-fluid">
-    <div class="row">
-        <div class="breadcrumb-container mb-3">
-            <nav aria-label="breadcrumb">
-              <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                  <a routerLink="/overview">Home</a>
-                </li>
-                <li class="breadcrumb-item">
-                  <a routerLink="/invoices">Invoices</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">Create Invoice</li>
-              </ol>
-            </nav>
-          </div>
-    
-        <!-- First row item -->
-         <!--
-        <div class="col-md-12 mb-8">
-            <div class="container-fluid bg-light p-3">
-                <app-report-by-customer></app-report-by-customer>
-            </div>
-        </div>
-        -->
-        <!-- Second row item -->
-
-                <app-invoice-types></app-invoice-types>
-
-    </div>
+  <!-- Invoice Creation Component -->
+  <app-invoice-types></app-invoice-types>
 </div>
 
 

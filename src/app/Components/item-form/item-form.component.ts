@@ -15,6 +15,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
@@ -33,7 +34,8 @@ export interface ExtendedItemDto extends ItemDto {
     MatFormFieldModule,
     MatInputModule,
     RouterLink,
-    DataTableComponent
+    DataTableComponent,
+    PageHeaderComponent
   ],
   templateUrl: './item-form.component.html',
   styleUrls: ['./item-form.component.scss'],
