@@ -1,19 +1,27 @@
 .footer-sm {
-  background-color: #f8f9fa;
+  background-color: var(--navbar-bg);
+  border-top: 1px solid var(--border-color);
   padding: 0.5rem 0; /* Reduced padding for a smaller appearance */
   position: fixed;
   bottom: 0;
   width: 100%;
   font-size: x-small; /* Smaller font size */
-  color: #4360ac;
+  color: var(--secondary-text);
   z-index: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
 .footer-sm p {
   margin-bottom: 0; /* Ensure there is no margin below the text */
+  color: var(--secondary-text);
 }
 
 a {
-  color: #0843d8;
+  color: var(--brand-primary);
   text-decoration: none !important;
+  
+  &:hover {
+    color: var(--brand-primary);
+    text-decoration: underline !important;
+  }
 }

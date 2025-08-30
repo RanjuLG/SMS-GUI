@@ -1,0 +1,190 @@
+// Data Table Component Styles
+
+.data-table-container {
+  .search-container {
+    position: relative;
+
+    .search-icon {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary-text);
+      pointer-events: none;
+    }
+
+    .form-control {
+      padding-right: 2.5rem;
+      background-color: var(--primary-bg);
+      border-color: var(--border-color);
+      color: var(--primary-text);
+
+      &:focus {
+        background-color: var(--primary-bg);
+        border-color: var(--brand-primary);
+        color: var(--primary-text);
+        box-shadow: 0 0 0 0.2rem rgba(61, 120, 227, 0.25);
+      }
+
+      &::placeholder {
+        color: var(--secondary-text);
+      }
+    }
+  }
+
+  .table {
+    margin-bottom: 0;
+    --bs-table-bg: var(--card-bg);
+    --bs-table-color: var(--primary-text);
+    --bs-table-border-color: var(--border-color);
+    --bs-table-hover-bg: var(--tertiary-bg);
+    --bs-table-striped-bg: var(--secondary-bg);
+    background-color: var(--card-bg) !important;
+    color: var(--primary-text) !important;
+
+    thead {
+      th {
+        background-color: var(--secondary-bg) !important;
+        color: var(--primary-text) !important;
+        border-color: var(--border-color) !important;
+      }
+    }
+
+    tbody {
+      tr {
+        background-color: var(--card-bg) !important;
+        color: var(--primary-text) !important;
+        border-color: var(--border-color) !important;
+
+        &:hover {
+          background-color: var(--tertiary-bg) !important;
+        }
+      }
+
+      td {
+        background-color: inherit !important;
+        color: var(--primary-text) !important;
+        border-color: var(--border-color) !important;
+      }
+    }
+
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background-color 0.2s ease;
+
+      &:hover {
+        background-color: var(--tertiary-bg) !important;
+      }
+
+      i {
+        margin-left: 0.5rem;
+        font-size: 0.8rem;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    .selected {
+      background-color: rgba(61, 120, 227, 0.1) !important;
+    }
+  }
+
+  .checkbox-column {
+    width: 50px;
+  }
+
+  .items-per-page-select {
+    width: auto;
+    background-color: var(--primary-bg);
+    border-color: var(--border-color);
+    color: var(--primary-text);
+
+    &:focus {
+      background-color: var(--primary-bg);
+      border-color: var(--brand-primary);
+      color: var(--primary-text);
+      box-shadow: 0 0 0 0.2rem rgba(61, 120, 227, 0.25);
+    }
+  }
+
+  .loading-container {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .pagination {
+    .page-link {
+      border-color: var(--border-color);
+      color: var(--secondary-text);
+      background-color: var(--primary-bg);
+
+      &:hover {
+        background-color: var(--tertiary-bg);
+        border-color: var(--border-color);
+        color: var(--primary-text);
+      }
+
+      &:focus {
+        box-shadow: 0 0 0 0.2rem rgba(61, 120, 227, 0.25);
+      }
+    }
+
+    .page-item.active .page-link {
+      background-color: var(--brand-primary);
+      border-color: var(--brand-primary);
+      color: white;
+    }
+
+    .page-item.disabled .page-link {
+      color: var(--secondary-text);
+      background-color: var(--primary-bg);
+      border-color: var(--border-color);
+    }
+  }
+
+  .pagination-info {
+    font-size: 0.875rem;
+    color: var(--secondary-text);
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .data-table-container {
+    .table-controls {
+      .row {
+        --bs-gutter-x: 1rem;
+      }
+    }
+
+    .table {
+      font-size: 0.875rem;
+    }
+
+    .d-flex.justify-content-between {
+      flex-direction: column;
+      gap: 1rem;
+
+      .pagination-info {
+        order: -1;
+        text-align: center;
+      }
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .data-table-container {
+    .table-responsive {
+      font-size: 0.8rem;
+    }
+
+    .btn-sm {
+      padding: 0.25rem 0.4rem;
+      font-size: 0.75rem;
+    }
+  }
+}

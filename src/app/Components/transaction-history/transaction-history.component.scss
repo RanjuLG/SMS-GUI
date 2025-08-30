@@ -9,7 +9,7 @@
 }
 
 .table thead th {
-  background-color: #f8f9fa;
+  background-color: var(--secondary-bg);
   color: #6c757d;
 }
 
@@ -67,8 +67,8 @@
         margin-left: 0.3rem;
         border-radius: 0.25rem !important; /* Adjusted border-radius */
         border: 1px solid #dee2e6; /* Light grey border */
-        background-color: #f8f9fa; /* Light background color */
-        color: #343a40; /* Dark grey text color */
+        background-color: var(--secondary-bg); /* Light background color */
+        color: var(--primary-text); /* Dark grey text color */
 
         &:last-child {
             border-right: 1px solid #dee2e6;
@@ -78,12 +78,12 @@
         &:hover:disabled,
         &[disabled] {
             color: #6c757d; /* Grey color for disabled state */
-            background-color: #f8f9fa;
+            background-color: var(--secondary-bg);
         }
 
         &:hover {
             background-color: #e2e6ea; /* Slightly darker background on hover */
-            color: #343a40; /* Same text color on hover */
+            color: var(--primary-text); /* Same text color on hover */
         }
 
         &:focus {

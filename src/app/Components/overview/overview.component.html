@@ -1,73 +1,210 @@
-<div class="container-fluid my-4">
-  <!-- Greeting Section -->
+<div class="modern-overview">
+  <!-- Page Header -->
+  <app-page-header 
+    [title]="greeting + ', ' + userName + '!'" 
+    [subtitle]="'Today is ' + currentDate + '. Manage your jewelry shop operations efficiently.'"
+    [showActions]="false">
+  </app-page-header>
+
+  <!-- Quick Actions Cards -->
+  <div class="row mb-5">
+    <div class="col-12">
+      <app-card title="Quick Actions" [showFooter]="false" cardClass="quick-actions-card">
+        <div class="quick-actions-grid">
+          <div class="quick-action-item" routerLink="/create-invoice">
+            <div class="action-icon">
+              <i class="ri-file-add-line"></i>
+            </div>
+            <div class="action-content">
+              <h6>Create Invoice</h6>
+              <p>Generate new loans and invoices</p>
+            </div>
+          </div>
+
+          <div class="quick-action-item" routerLink="/reports/by-customer">
+            <div class="action-icon">
+              <i class="ri-user-search-line"></i>
+            </div>
+            <div class="action-content">
+              <h6>Customer History</h6>
+              <p>View customer transaction history</p>
+            </div>
+          </div>
+
+          <div class="quick-action-item" routerLink="/customers">
+            <div class="action-icon">
+              <i class="ri-user-3-line"></i>
+            </div>
+            <div class="action-content">
+              <h6>Manage Customers</h6>
+              <p>Add and manage customer profiles</p>
+            </div>
+          </div>
+
+          <div class="quick-action-item" routerLink="/items">
+            <div class="action-icon">
+              <i class="ri-archive-line"></i>
+            </div>
+            <div class="action-content">
+              <h6>Inventory</h6>
+              <p>Manage jewelry items and stock</p>
+            </div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- Statistics Cards -->
   <div class="row mb-4">
-    <div class="col text-start">
-      <h2 class="greeting-text">{{greeting}}, {{userName}}!</h2> 
-      <p class="sub-greeting">Today is {{ currentDate }}.</p> <!-- Display only the date -->
-       <!--<p class="sub-greeting">Streamline operations and focus on what matters most.</p>  -->
-      
+    <div class="col-12 mb-3">
+      <h4 class="section-title">Business Overview</h4>
+    </div>
+    
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+      <app-card [showHeader]="false" cardClass="stat-card stat-card-primary">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="ri-file-list-3-line"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-number">{{ totalLoans }}</div>
+            <div class="stat-label">Active Loans</div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+      <app-card [showHeader]="false" cardClass="stat-card stat-card-success">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="ri-bill-line"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-number">{{ totalInvoices }}</div>
+            <div class="stat-label">Total Invoices</div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+      <app-card [showHeader]="false" cardClass="stat-card stat-card-warning">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="ri-money-dollar-circle-line"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-number">Rs. {{ totalRevenue | number:'1.0-0' }}</div>
+            <div class="stat-label">Revenue Generated</div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+      <app-card [showHeader]="false" cardClass="stat-card stat-card-info">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="ri-archive-line"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-number">{{ inventoryCount }}</div>
+            <div class="stat-label">Inventory Items</div>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
+      <app-card [showHeader]="false" cardClass="stat-card stat-card-purple">
+        <div class="stat-content">
+          <div class="stat-icon">
+            <i class="ri-user-line"></i>
+          </div>
+          <div class="stat-details">
+            <div class="stat-number">{{ customerCount }}</div>
+            <div class="stat-label">Total Customers</div>
+          </div>
+        </div>
+      </app-card>
     </div>
   </div>
 
-  <!-- Shortcut Panel -->
-  <div class="row mb-5 justify-content-center shortcut-panel">
-    <div class="col-auto">
-      <div class="shortcut-item text-center" routerLink="/create-invoice">
-        <img src="overview/createInvoice2.png" alt="Create Invoice" class="shortcut-icon" data-bs-toggle="tooltip"
-          data-bs-placement="right" title="Create Invoice">
-        <h6>Create Invoice</h6>
-      </div>
-    </div>
-    <div class="col-auto">
-      <div class="shortcut-item text-center" routerLink="/reports/by-customer">
-        <img src="reports/customer.png" alt="Customer History" class="shortcut-icon" data-bs-toggle="tooltip"
-          data-bs-placement="right" title="Customer History">
-        <h6>Customer History</h6>
-      </div>
-    </div>
-  </div>
+  <!-- Recent Activity Section -->
+  <div class="row">
+    <div class="col-lg-8 mb-4">
+      <app-card title="Recent Activities" [showHeaderActions]="true">
+        <div slot="header-actions">
+          <button class="btn btn-sm btn-outline-primary">View All</button>
+        </div>
+        
+        <div class="activity-list">
+          <div class="activity-item">
+            <div class="activity-icon bg-primary">
+              <i class="ri-file-add-line"></i>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">New invoice created</div>
+              <div class="activity-description">Invoice #INV-2024-001 was created for customer John Doe</div>
+              <div class="activity-time">2 hours ago</div>
+            </div>
+          </div>
 
-  <!-- Summary Statistics -->
-  <div class="row mb-4 g-3 justify-content-center">
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Total Active Loans</h6>
-          <span class="widget-value">{{ totalLoans }}</span>
+          <div class="activity-item">
+            <div class="activity-icon bg-success">
+              <i class="ri-user-add-line"></i>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">New customer added</div>
+              <div class="activity-description">Jane Smith was added to the customer database</div>
+              <div class="activity-time">4 hours ago</div>
+            </div>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon bg-warning">
+              <i class="ri-money-dollar-circle-line"></i>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">Payment received</div>
+              <div class="activity-description">Payment of Rs. 25,000 received for Invoice #INV-2024-002</div>
+              <div class="activity-time">1 day ago</div>
+            </div>
+          </div>
         </div>
-      </div>
+      </app-card>
     </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Total Invoices</h6>
-          <span class="widget-value">{{ totalInvoices }}</span>
+
+    <div class="col-lg-4 mb-4">
+      <app-card title="System Status" [showHeaderActions]="false">
+        <div class="status-list">
+          <div class="status-item">
+            <div class="status-indicator bg-success"></div>
+            <div class="status-content">
+              <div class="status-title">Database</div>
+              <div class="status-description">Connected and healthy</div>
+            </div>
+          </div>
+
+          <div class="status-item">
+            <div class="status-indicator bg-success"></div>
+            <div class="status-content">
+              <div class="status-title">API Services</div>
+              <div class="status-description">All services operational</div>
+            </div>
+          </div>
+
+          <div class="status-item">
+            <div class="status-indicator bg-warning"></div>
+            <div class="status-content">
+              <div class="status-title">Backup</div>
+              <div class="status-description">Last backup: 2 hours ago</div>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Revenue Generated</h6>
-          <span class="widget-value">Rs. {{ totalRevenue }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Inventory Count</h6>
-          <span class="widget-value">{{ inventoryCount }}</span>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-      <div class="card widget-card shadow-sm">
-        <div class="card-body text-center">
-          <h6>Customer Count</h6>
-          <span class="widget-value">{{ customerCount }}</span>
-        </div>
-      </div>
+      </app-card>
     </div>
   </div>
 </div>

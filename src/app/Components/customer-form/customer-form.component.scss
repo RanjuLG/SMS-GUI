@@ -1,80 +1,233 @@
+/* Customer Form Component Modern Styles */
+
+/* Container */
+.container-fluid {
+  padding: 1rem;
+}
+
+/* Card Styling */
 .card {
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px var(--shadow);
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
 }
 
 .card-title {
   font-size: 1.25rem;
-  font-weight: 500;
+  font-weight: 600;
+  color: var(--primary-text);
 }
 
+/* Table Styling */
 .table thead th {
-  background-color: #f8f9fa;
-  color: #6c757d;
+  background-color: var(--secondary-bg) !important;
+  color: var(--primary-text) !important;
+  font-weight: 600;
+  border-bottom: 2px solid var(--border-color) !important;
+}
+
+.table tbody tr {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
 }
 
 .table tbody tr:hover {
-  background-color: #f1f3f5;
+  background-color: var(--tertiary-bg) !important;
+}
+
+.table td, .table th {
+  border-color: var(--border-color) !important;
+  color: var(--primary-text) !important;
 }
 
 .table .badge {
   font-size: 0.875rem;
 }
 
+/* Button Styling */
 .btn {
   font-size: 0.875rem;
   font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.2s ease;
 }
 
 .btn-outline-warning,
 .btn-outline-danger {
-  color: #6c757d;
+  color: var(--secondary-text);
 }
 
+/* Header Actions */
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Form Controls */
 #searchResultList {
   max-width: 100%;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 0.2rem rgba(61, 120, 227, 0.25);
+  }
 }
 
 .form-select {
   max-width: 100px;
+  border-radius: 6px;
+  background-color: var(--primary-bg);
+  border-color: var(--border-color);
+  color: var(--primary-text);
 }
 
+.form-label {
+  font-weight: 500;
+  color: var(--primary-text);
+  margin-bottom: 0.5rem;
+}
+
+/* Material Form Fields */
+.w-100 {
+  width: 100%;
+}
+
+.mat-form-field {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.5rem;
+  }
+
+  .mat-form-field-flex {
+    font-size: 0.875rem;
+  }
+
+  .mat-date-range-input input {
+    height: 1.5rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
+
+/* Date Range Picker */
+.small-date-range {
+  .mat-form-field-wrapper {
+    padding-bottom: 0.5rem;
+  }
+  
+  .mat-form-field-flex {
+    font-size: 0.875rem;
+  }
+  
+  .mat-date-range-input {
+    input {
+      height: 1.5rem;
+      padding: 0.25rem 0.5rem;
+    }
+  }
+}
+
+.search-nic {
+  width: 225px;
+}
+
+.me-2 {
+  margin-right: 0.5rem;
+}
+
+/* Modal Styling */
+.modal-body {
+  .large-icon {
+    font-size: 4rem;
+  }
+}
+
+/* Pagination */
 .pagination-controls {
   .pagination {
     margin: 0;
   }
 }
 
-.small-date-range {
-  .mat-form-field-wrapper {
-    padding-bottom: 0.5rem; // Reduce padding
-  }
-  .mat-form-field-flex {
-    font-size: 0.875rem; // Reduce font size
-  }
-  .mat-date-range-input {
-    input {
-      height: 1.5rem; // Reduce input height
-      padding: 0.25rem 0.5rem; // Reduce padding inside inputs
+/* Table Container */
+.table-container {
+  margin-top: 1.5rem;
+}
+
+/* Card Grid */
+.row.g-3 {
+  --bs-gutter-x: 1.5rem;
+  --bs-gutter-y: 1.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.5rem;
+    
+    .btn {
+      width: 100%;
     }
   }
+  
+  .container-fluid {
+    padding: 0.5rem;
+  }
+  
+  .row.g-3 {
+    --bs-gutter-x: 1rem;
+    --bs-gutter-y: 1rem;
+  }
+  
+  .search-nic {
+    width: 100%;
+  }
 }
 
-.search-nic {
-  width: 225px; /* Set width independently */
+@media (max-width: 576px) {
+  .col-md-4 {
+    margin-bottom: 1rem;
+  }
+  
+  .form-group label {
+    font-size: 0.875rem;
+  }
+  
+  .btn {
+    font-size: 0.875rem;
+    padding: 0.5rem 1rem;
+  }
+  
+  .table {
+    font-size: 0.875rem;
+  }
+  
+  .card-title {
+    font-size: 1.125rem;
+  }
 }
 
-.d-flex > div {
-  display: flex;
-  align-items: center;
+/* Modern Card Hover Effects */
+.filter-card {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
 }
 
-.me-2 {
-  margin-right: 0.5rem; /* Space between the date range picker and search box */
-}
-
-.w-100 {
-  width: 100%; /* Ensure date range picker takes full width of its container */
+/* Focus States */
+.form-control:focus,
+.form-select:focus {
+  border-color: #6c63ff;
+  box-shadow: 0 0 0 0.2rem rgba(108, 99, 255, 0.25);
 }
 
 

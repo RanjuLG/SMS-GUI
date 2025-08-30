@@ -1,42 +1,161 @@
 :host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-layout {
   display: flex;
-  height: 100vh; /* Ensures layout stretches to the full viewport height */
+  height: 100vh;
+  background-color: var(--secondary-bg);
+  transition: background-color 0.3s ease;
 }
 
-.main-layout {
-  display: flex;
-  width: 100%;
+// Sidebar Styles
+.sidebar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 250px;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  transform: translateX(-250px);
+
+  &.sidebar-expanded {
+    transform: translateX(0);
+  }
+
+  @media (min-width: 992px) {
+    position: relative;
+    transform: translateX(0);
+    width: 80px;
+
+    &.sidebar-expanded {
+      width: 250px;
+    }
+  }
 }
 
-.sidebar-container {
-  flex-shrink: 0; /* Ensures sidebar does not shrink when the layout is resized */
-  height: 100%; /* Make the sidebar container stretch to full height */
-}
-
-.content-container {
-  flex-grow: 1; /* Ensures content container expands to take up remaining space */
+// Main Content Styles
+.main-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  margin-left: 0;
+
+  @media (min-width: 992px) {
+    margin-left: 80px;
+
+    &.content-expanded {
+      margin-left: 0;
+    }
+  }
 }
 
-.content {
-  flex-grow: 1; /* Ensures the content grows to take up all available space */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background to distinguish content area */
-  overflow-y: auto; /* Enables scrolling for the content */
+// Topbar Styles
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px 0 var(--shadow), 0 1px 2px 0 var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-.footer {
-  background-color: #f8f9fa;
+// Page Content Styles
+.page-content {
+  flex: 1;
+  padding: 1.5rem;
+  overflow-y: auto;
+  background: var(--primary-bg);
+  min-height: calc(100vh - 140px);
+  transition: background-color 0.3s ease;
+
+  .container-fluid {
+    max-width: 1400px;
+  }
+}
+
+// Footer Styles
+.app-footer {
+  margin-top: auto;
+  background: var(--navbar-bg);
+  border-top: 1px solid var(--border-color);
   padding: 1rem 0;
-  width: 100%; /* Full width */
-  font-size: small;
-  color: #4360ac;
-  z-index: 0; /* Lowest z-index */
-  position: relative; /* Remains within the flow at the bottom */
+  font-size: 0.875rem;
+  color: var(--secondary-text);
+  z-index: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-a {
-  color: #0843d8;
-  text-decoration: none !important;
+// Responsive Design
+@media (max-width: 991.98px) {
+  .sidebar-wrapper {
+    &.sidebar-expanded {
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+
+  .page-content {
+    padding: 1rem;
+  }
+}
+
+// Dark mode support removed - now handled by CSS variables
+// @media (prefers-color-scheme: dark) removed
+
+// Smooth transitions
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+// Utilities
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+// Custom scrollbar
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-text);
 }

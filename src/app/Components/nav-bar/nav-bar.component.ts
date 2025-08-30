@@ -1,7 +1,8 @@
-import { ChangeDetectorRef, Component } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive,RouterOutlet } from '@angular/router';
+import { ChangeDetectorRef, Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Location } from '@angular/common';
 import { AuthService } from '../../Services/auth.service';
+import { ThemeService } from '../../Services/theme.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { ExtendedCustomerDto } from '../customer-form/customer-form.component';
@@ -9,25 +10,42 @@ import { ExtendedItemDto } from '../item-form/item-form.component';
 import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive, CommonModule,RouterOutlet],
+  imports: [RouterLink, CommonModule],
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })
-export class NavBarComponent {
-  // Add state to track if the sidebar is expanded
-  isSidebarExpanded: boolean = false;
+export class NavBarComponent implements OnInit, OnDestroy {
+  @Input() sidebarExpanded: boolean = true;
+  @Output() sidebarToggle = new EventEmitter<boolean>();
+
+  currentTheme: 'light' | 'dark' = 'light';
+  private themeSubscription?: Subscription;
 
   constructor(
     private location: Location,
     private router: Router,
     private authService: AuthService,
+    private themeService: ThemeService,
     private modalService: NgbModal,
     private cdr: ChangeDetectorRef
   ) {}
+
+  ngOnInit() {
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+      this.cdr.markForCheck();
+    });
+  }
+
+  ngOnDestroy() {
+    this.themeSubscription?.unsubscribe();
+  }
 
   // Methods to navigate
   goBack() {
@@ -70,16 +88,21 @@ export class NavBarComponent {
 
   // Toggle sidebar expansion
   toggleSidebar() {
-    this.isSidebarExpanded = !this.isSidebarExpanded;
+    const newState = !this.sidebarExpanded;
+    this.sidebarToggle.emit(newState);
   }
 
-  // Collapse the sidebar when the mouse leaves
-  collapseSidebar() {
-    this.isSidebarExpanded = false;
-  }
-
-  // Placeholder method for theme toggle
+  // Toggle theme
   toggleTheme() {
-    console.log('Theme toggled');
+    this.themeService.toggleTheme();
+  }
+
+  // Get current user info (you can implement this based on your auth service)
+  getCurrentUser() {
+    return {
+      name: 'Current User',
+      email: 'user@example.com',
+      avatar: 'nav-bar/user-logo.png'
+    };
   }
 }

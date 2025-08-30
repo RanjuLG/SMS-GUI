@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild,TemplateRef  } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild, TemplateRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
@@ -8,15 +8,17 @@ import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
 import { CustomerDto } from './customer.model';
 import { DateService } from '../../Services/date-service.service';
-import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+
+// Import shared components
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { CardComponent } from '../../shared/components/card/card.component';
+import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
 
 export interface ExtendedCustomerDto extends CustomerDto {
   selected?: boolean;
@@ -26,16 +28,16 @@ export interface ExtendedCustomerDto extends CustomerDto {
   selector: 'app-customer-form',
   standalone: true,
   imports: [
-    FormsModule, 
-    CommonModule, 
-    NgxPaginationModule, 
-    ReactiveFormsModule, 
-    JsonPipe,
+    FormsModule,
+    CommonModule,
+    NgxPaginationModule,
+    ReactiveFormsModule,
     MatDatepickerModule,
-    MatHint,
-    MatFormFieldModule, // Import Material Form Field Module
-    MatInputModule, 
-    RouterLink
+    MatFormFieldModule,
+    MatInputModule,
+    PageHeaderComponent,
+    CardComponent,
+    DataTableComponent
   ],
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.scss'],
@@ -50,33 +52,89 @@ export class CustomerFormComponent implements OnInit {
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
-  // Declare selectedCustomer property
+  to = new Date(this._currentDate);
+  isLoading = false;
   selectedCustomer: ExtendedCustomerDto | null = null;
+
   @ViewChild('datePicker') datePicker!: ElementRef;
-  @ViewChild('nicModal') nicModal!: TemplateRef<any>; // Reference to NIC modal
+  @ViewChild('nicModal') nicModal!: TemplateRef<any>;
+
+  // Table configuration for the existing DataTableComponent
+  tableColumns: TableColumn[] = [
+    {
+      key: 'createdAt',
+      label: 'Joining Date',
+      type: 'date',
+      sortable: true
+    },
+    {
+      key: 'customerName',
+      label: 'Customer Name',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerAddress',
+      label: 'Address',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerNIC',
+      label: 'NIC',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerContactNo',
+      label: 'Phone',
+      type: 'text',
+      sortable: true
+    }
+  ];
+
+  tableActions: TableAction[] = [
+    {
+      key: 'view',
+      label: 'View NIC',
+      icon: 'ri-eye-line',
+      color: 'info'
+    },
+    {
+      key: 'edit',
+      label: 'Edit',
+      icon: 'ri-edit-box-line',
+      color: 'warning'
+    },
+    {
+      key: 'delete',
+      label: 'Delete',
+      icon: 'ri-delete-bin-line',
+      color: 'danger'
+    }
+  ];
+
   constructor(
-    private modalService: NgbModal, 
-    private apiService: ApiService, 
+    private modalService: NgbModal,
+    private apiService: ApiService,
     private dateService: DateService,
-    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
     this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadCustomers();
-    
-   
+
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
       switchMap((nic: string) => {
         if (!nic) {
-          return this.apiService.getCustomers(this.from,this.to); // Return all customers if NIC is empty
+          return this.apiService.getCustomers(this.from, this.to);
         }
         return this.apiService.getCustomerByNIC(nic).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
+          catchError(() => of([]))
         );
       })
     ).subscribe({
@@ -94,16 +152,16 @@ export class CustomerFormComponent implements OnInit {
             selected: false
           }] : [];
         }
-        this.cdr.markForCheck(); // Trigger change detection
+        this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Failed to fetch customer', error);
       }
     });
   }
-  
 
   loadCustomers(): void {
+    this.isLoading = true;
     this.apiService.getCustomers(this.from, this.to).subscribe({
       next: (customers: ExtendedCustomerDto[]) => {
         this.customers = customers.map(customer => ({
@@ -111,13 +169,41 @@ export class CustomerFormComponent implements OnInit {
           createdAt: this.dateService.formatDateTime(customer.createdAt),
           selected: false
         }));
-        this.cdr.markForCheck(); // Trigger change detection
-        //console.log("this.customers: ",this.customers)
+        this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Failed to load customers', error);
+        this.isLoading = false;
+        this.cdr.markForCheck();
       }
     });
+  }
+
+  // Handle table actions (view, edit, delete)
+  handleTableAction(event: { action: string, item: ExtendedCustomerDto }): void {
+    const { action, item } = event;
+    
+    switch (action) {
+      case 'view':
+        this.viewNICPhoto(item);
+        break;
+      case 'edit':
+        this.editCustomer(item);
+        break;
+      case 'delete':
+        this.removeCustomer(item);
+        break;
+    }
+  }
+
+  // Handle selection changes from data table
+  onSelectionChange(selectedItems: ExtendedCustomerDto[]): void {
+    // Update selected state in customers array
+    this.customers.forEach(customer => {
+      customer.selected = selectedItems.some(selected => selected.customerId === customer.customerId);
+    });
+    this.cdr.markForCheck();
   }
 
   formatDate(dateString: string): string {
@@ -138,8 +224,7 @@ export class CustomerFormComponent implements OnInit {
         const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
         modalRef.componentInstance.customer = { ...customer };
         modalRef.componentInstance.saveCustomer.subscribe((updatedCustomer: ExtendedCustomerDto) => {
-          // Update the local customers array or reload customers from API
-          this.loadCustomers(); // Reload customers after editing
+          this.loadCustomers();
           Swal.fire('Updated!', 'Customer has been updated.', 'success');
         });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -147,7 +232,6 @@ export class CustomerFormComponent implements OnInit {
       }
     });
   }
-  
 
   removeCustomer(customer: ExtendedCustomerDto): void {
     Swal.fire({
@@ -162,8 +246,8 @@ export class CustomerFormComponent implements OnInit {
       if (result.isConfirmed) {
         this.apiService.deleteCustomer(customer.customerId).subscribe({
           next: () => {
-            this.loadCustomers(); // Reload customers after deletion
-            this.cdr.markForCheck(); // Trigger change detection
+            this.loadCustomers();
+            this.cdr.markForCheck();
             Swal.fire('Deleted!', 'Customer has been deleted.', 'success');
           },
           error: (error) => {
@@ -196,8 +280,8 @@ export class CustomerFormComponent implements OnInit {
       if (result.isConfirmed) {
         this.apiService.deleteMultipleCustomers(selectedCustomerIds).subscribe({
           next: () => {
-            this.loadCustomers(); // Reload customers after deleting selected customers
-            this.cdr.markForCheck(); // Trigger change detection
+            this.loadCustomers();
+            this.cdr.markForCheck();
             Swal.fire('Deleted!', 'Selected customers have been deleted.', 'success');
           },
           error: (error) => {
@@ -214,14 +298,14 @@ export class CustomerFormComponent implements OnInit {
   selectAll(event: Event): void {
     const checkbox = event.target as HTMLInputElement;
     this.customers.forEach(customer => customer.selected = checkbox.checked);
-    this.cdr.markForCheck(); // Trigger change detection
+    this.cdr.markForCheck();
   }
 
   openAddCustomerModal(): void {
     const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
     modalRef.componentInstance.saveCustomer.subscribe((customer: ExtendedCustomerDto) => {
-      this.loadCustomers(); // Reload customers after adding a new customer
-      this.cdr.markForCheck(); // Trigger change detection
+      this.loadCustomers();
+      this.cdr.markForCheck();
       Swal.fire('Added!', 'Customer has been added.', 'success');
     });
   }
@@ -234,9 +318,9 @@ export class CustomerFormComponent implements OnInit {
         return customerDate >= new Date(startDate) && customerDate <= new Date(endDate);
       });
     } else {
-      this.loadCustomers(); // Load all customers if no date range selected
+      this.loadCustomers();
     }
-    this.cdr.markForCheck(); // Trigger change detection
+    this.cdr.markForCheck();
   }
 
   getStartIndex(): number {
@@ -247,12 +331,11 @@ export class CustomerFormComponent implements OnInit {
     const endIndex = this.page * this.itemsPerPage;
     return endIndex > this.customers.length ? this.customers.length : endIndex;
   }
+
   onStartDateChange(event: any): void {
     if (event && event.value) {
-      // Create a new UTC date for 'from'
       const fromDate = new Date(event.value);
       this.from = new Date(Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0));
-      
       console.log("this.from (UTC): ", this.from);
       this.loadCustomers();
     } else {
@@ -260,25 +343,22 @@ export class CustomerFormComponent implements OnInit {
     }
     this.cdr.markForCheck();
   }
-  
+
   onDateRangeChange(event: any): void {
     if (event && event.value) {
-      // Create a new UTC date for 'to', and set it to the start of the next day at midnight (12:00 AM)
       const toDate = new Date(event.value);
-      
-      // Set 'to' to the next day at 12:00 AM UTC
       this.to = new Date(Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0));
-      
-      console.log("this.to (UTC): ", this.to);  // This should log the correct 12:00 AM time
+      console.log("this.to (UTC): ", this.to);
       this.loadCustomers();
     } else {
       console.error('End date event or value is null');
     }
     this.cdr.markForCheck();
   }
+
   viewNICPhoto(customer: ExtendedCustomerDto): void {
-    this.selectedCustomer = customer; // Set the selected customer
+    this.selectedCustomer = customer;
     console.log("NIC Photo Path:", this.selectedCustomer?.nicPhotoPath);
-    this.modalService.open(this.nicModal, { size: 'lg' }); // Open modal
+    this.modalService.open(this.nicModal, { size: 'lg' });
   }
 }
