@@ -253,19 +253,6 @@
       }
     }
 
-    // Collapsed state
-    &:not(.expanded) {
-      .nav-link {
-        justify-content: center;
-        padding: 0.875rem;
-
-        .nav-label,
-        .nav-arrow {
-          display: none;
-        }
-      }
-    }
-
     // Submenu
     .nav-submenu {
       list-style: none;
@@ -311,6 +298,19 @@
             white-space: nowrap;
           }
         }
+      }
+    }
+  }
+
+  // Collapsed state styles for the entire sidebar
+  &:not(.expanded) {
+    .nav-link {
+      justify-content: center;
+      padding: 0.875rem;
+
+      .nav-label,
+      .nav-arrow {
+        display: none;
       }
     }
   }
