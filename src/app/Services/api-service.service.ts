@@ -563,21 +563,27 @@ getUsers(page: number = 1, pageSize: number = 10, search?: string, sortBy?: stri
     params = params.set('Role', role);
   }
 
-  return this.http.get<any>(`${this.configService.apiUrl}/api/account/users`, { params })
-  .pipe(catchError(this.handleError));
+  return this.http.get<any>(`${this.configService.apiUrl}/api/account/users`, { 
+    headers: this.getHttpHeaders(),
+    params: params 
+  })
+  .pipe(catchError(this.handleError.bind(this)));
 }
 
 updateUser(userId: string,UserDto:UserDTO){
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.put(`${this.configService.apiUrl}/api/account/user/${userId}`,UserDto);
-
+  return this.http.put(`${this.configService.apiUrl}/api/account/user/${userId}`,UserDto, {
+    headers: this.getHttpHeaders()
+  }).pipe(catchError(this.handleError.bind(this)));
 }
 
 deleteUsers(userIds: string[]){
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.delete(`${this.configService.apiUrl}/api/account/users/delete-multiple`,{body: userIds})
-  .pipe(catchError(this.handleError));
-
+  return this.http.delete(`${this.configService.apiUrl}/api/account/users/delete-multiple`,{
+    headers: this.getHttpHeaders(),
+    body: userIds
+  })
+  .pipe(catchError(this.handleError.bind(this)));
 }
 
 // Services for Karatage, LoanPeriod, and Pricing operations

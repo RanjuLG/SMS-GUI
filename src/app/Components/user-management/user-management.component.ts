@@ -104,9 +104,20 @@ export class UserManagementComponent implements OnInit {
 
   loadUserDetails(): void {
     this.loading = true;
+    console.log("Starting to load user details...");
+    
     this.apiService.getUsers().subscribe({
-      next: (users: any[]) => {
-        this.users = users.map(user => ({
+      next: (response: any) => {
+        console.log("Raw API Response: ", response);
+        console.log("Response type: ", typeof response);
+        console.log("Response keys: ", Object.keys(response || {}));
+        
+        // Extract users from the data property of the response
+        const users = response.data || [];
+        console.log("Extracted users array: ", users);
+        console.log("Users array length: ", users.length);
+        
+        this.users = users.map((user: any) => ({
           ...user,
           selected: false,
           roles: Array.isArray(user.roles) ? user.roles : user.roles ? [user.roles] : [],
@@ -114,11 +125,15 @@ export class UserManagementComponent implements OnInit {
             ? (user.roles.length > 0 ? user.roles[0] : 'No role')
             : user.roles || 'No role'
         }));
+        
         this.loading = false;
-        console.log("Users loaded: ", this.users);
+        console.log("Final processed users: ", this.users);
+        console.log("Component users array length: ", this.users.length);
       },
       error: (error) => {
         console.error('Error fetching user details:', error);
+        console.error('Error status:', error.status);
+        console.error('Error message:', error.message);
         this.loading = false;
       }
     });
