@@ -67,7 +67,7 @@ export class KaratValueComponent implements OnInit {
 
     // Filter pricings based on karat value
     this.apiService.getAllPricings().subscribe((data) => {
-        this.pricings = data.filter((pricing) => pricing.karat?.karatValue === searchValue);
+        this.pricings = data.filter((pricing: any) => pricing.karat?.karatValue === searchValue);
         this.cdr.markForCheck();
     });
 }
