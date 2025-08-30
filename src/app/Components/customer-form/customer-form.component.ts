@@ -4,7 +4,6 @@ import { AddCustomerComponent } from '../helpers/customer/add-customer/add-custo
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
 import { CustomerDto } from './customer.model';
 import { DateService } from '../../Services/date-service.service';
@@ -17,7 +16,6 @@ import { MatInputModule } from '@angular/material/input';
 
 // Import shared components
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
-import { CardComponent } from '../../shared/components/card/card.component';
 import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
 
 export interface ExtendedCustomerDto extends CustomerDto {
@@ -30,13 +28,11 @@ export interface ExtendedCustomerDto extends CustomerDto {
   imports: [
     FormsModule,
     CommonModule,
-    NgxPaginationModule,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
     PageHeaderComponent,
-    CardComponent,
     DataTableComponent
   ],
   templateUrl: './customer-form.component.html',
@@ -46,8 +42,8 @@ export interface ExtendedCustomerDto extends CustomerDto {
 export class CustomerFormComponent implements OnInit {
   customers: ExtendedCustomerDto[] = [];
   page: number = 1;
-  itemsPerPage: number = 10;
-  itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  itemsPerPage: number = 20; // Increased default page size to show more customers
+  itemsPerPageOptions: number[] = [10, 20, 50, 100]; // Updated options for better pagination
   searchControl = new FormControl();
   pagination: any = null;
   loading: boolean = false;
@@ -67,20 +63,14 @@ export class CustomerFormComponent implements OnInit {
   // Table configuration for the existing DataTableComponent
   tableColumns: TableColumn[] = [
     {
-      key: 'createdAt',
-      label: 'Joining Date',
-      type: 'date',
+      key: 'customerId',
+      label: 'ID',
+      type: 'text',
       sortable: true
     },
     {
       key: 'customerName',
       label: 'Customer Name',
-      type: 'text',
-      sortable: true
-    },
-    {
-      key: 'customerAddress',
-      label: 'Address',
       type: 'text',
       sortable: true
     },
@@ -94,6 +84,18 @@ export class CustomerFormComponent implements OnInit {
       key: 'customerContactNo',
       label: 'Phone',
       type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerAddress',
+      label: 'Address',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'createdAt',
+      label: 'Joining Date',
+      type: 'date',
       sortable: true
     }
   ];
@@ -127,40 +129,76 @@ export class CustomerFormComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.from.setDate(this.from.getDate() - 30);
+    // Set a very wide date range to show all customers by default
+    // Set from date to a very early date (e.g., 10 years ago)
+    this.from = new Date();
+    this.from.setFullYear(this.from.getFullYear() - 10);
+    
+    // Set to date to tomorrow to include all current records
+    this.to = new Date();
     this.to.setDate(this.to.getDate() + 1);
+    
+    // Load all customers with pagination
     this.loadCustomers();
 
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((nic: string) => {
-        if (!nic) {
-          return this.apiService.getCustomers(this.from, this.to);
+      switchMap((searchTerm: string) => {
+        this.searchTerm = searchTerm || '';
+        this.page = 1; // Reset to first page when searching
+        if (!searchTerm) {
+          // If no search term, load all customers with pagination
+          return this.apiService.getCustomers(
+            this.from, 
+            this.to, 
+            this.page, 
+            this.itemsPerPage, 
+            this.searchTerm, 
+            this.sortBy, 
+            this.sortOrder
+          );
         }
-        return this.apiService.getCustomerByNIC(nic).pipe(
+        // If there's a search term, search by NIC
+        return this.apiService.getCustomerByNIC(searchTerm).pipe(
           catchError(() => of([]))
         );
       })
     ).subscribe({
-      next: (result: CustomerDto[] | CustomerDto) => {
-        if (Array.isArray(result)) {
+      next: (result: any) => {
+        if (result && result.data && Array.isArray(result.data)) {
+          // Handle paginated response
+          this.customers = result.data.map((customer: CustomerDto) => ({
+            ...customer,
+            createdAt: this.dateService.formatDateTime(customer.createdAt),
+            selected: false
+          }));
+          this.pagination = result.pagination;
+        } else if (Array.isArray(result)) {
+          // Handle direct array response
           this.customers = result.map(customer => ({
             ...customer,
             createdAt: this.dateService.formatDateTime(customer.createdAt),
             selected: false
           }));
-        } else {
-          this.customers = result ? [{
+          this.pagination = null;
+        } else if (result) {
+          // Handle single customer response
+          this.customers = [{
             ...result,
             createdAt: this.dateService.formatDateTime(result.createdAt),
             selected: false
-          }] : [];
+          }];
+          this.pagination = null;
+        } else {
+          this.customers = [];
+          this.pagination = null;
         }
         this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Failed to fetch customer', error);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -356,8 +394,8 @@ export class CustomerFormComponent implements OnInit {
 
   // New pagination and search event handlers
   onSearch(searchTerm: string): void {
-    this.searchTerm = searchTerm;
-    this.page = 1;
+    this.searchTerm = searchTerm || '';
+    this.page = 1; // Reset to first page when searching
     this.loadCustomers();
   }
 

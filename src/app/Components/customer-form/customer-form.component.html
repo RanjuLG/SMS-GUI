@@ -1,7 +1,7 @@
 <!-- Customer Management with Modern Components -->
 <app-page-header 
   title="Customer Management"
-  subtitle="Manage your customers, view details, and maintain customer records">
+  subtitle="Manage all your customers with pagination, search, and filtering capabilities">
   
   <div slot="actions" class="header-actions">
     <button type="button" class="btn btn-primary" (click)="openAddCustomerModal()">
@@ -14,9 +14,9 @@
 </app-page-header>
 
 <div class="container-fluid">
-  <!-- Enhanced Data Table with Server-side Pagination -->
+  <!-- Enhanced Data Table with Server-side Pagination - Shows All Customers by Default -->
   <app-data-table
-    title="Customers"
+    title="All Customers"
     [data]="customers"
     [columns]="tableColumns"
     [actions]="tableActions"

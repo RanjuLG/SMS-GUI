@@ -38,7 +38,16 @@ export class ApiService {
     });
     
     if (token) {
+      // Validate token format before using it
+      if (!this.isValidJwtFormat(token)) {
+        console.error('Invalid JWT format detected in API service, cleaning up');
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        throw new Error('Invalid token format');
+      }
+      
       headers = headers.set('Authorization', `Bearer ${token}`);
+      console.log('Added Authorization header with token:', token.substring(0, 50) + '...');
     }
     
     return headers;
@@ -55,10 +64,31 @@ export class ApiService {
     });
     
     if (token) {
+      // Validate token format before using it
+      if (!this.isValidJwtFormat(token)) {
+        console.error('Invalid JWT format detected in API service, cleaning up');
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+        throw new Error('Invalid token format');
+      }
+      
       headers = headers.set('Authorization', `Bearer ${token}`);
     }
     
     return headers;
+  }
+
+  /**
+   * Validates if a string is in proper JWT format
+   */
+  private isValidJwtFormat(token: string): boolean {
+    if (!token || typeof token !== 'string') {
+      return false;
+    }
+    
+    // JWT should have exactly 2 dots (3 parts)
+    const parts = token.split('.');
+    return parts.length === 3 && parts.every(part => part.length > 0);
   }
 
   /**

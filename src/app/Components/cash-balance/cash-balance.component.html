@@ -14,90 +14,17 @@
                     </div>
                 </div>
                 <div class="card-body">
-
-    
-                        <div class="col-md-1" >
-                            <label for="itemsPerPage" class="form-label"></label>
-                            <select id="itemsPerPage" class="form-select" [(ngModel)]="itemsPerPage">
-                                <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}
-                                </option>
-                            </select>
-                        </div>
-       
-                    <div class="table-responsive table-card mt-3 mb-1">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr class="bg-light text-muted">
-                                    <th scope="col" style="width: 50px;">
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" id="checkAll"
-                                                (change)="selectAllBalances($event)">
-                                        </div>
-                                    </th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col">Rs. 5000</th>
-                                    <th scope="col">Rs. 2000</th>
-                                    <th scope="col">Rs. 1000</th>
-                                    <th scope="col">Rs. 500</th>
-                                    <th scope="col">Rs. 100</th>
-                                    <th scope="col">Rs. 50</th>
-                                    <th scope="col">Rs. 20</th>
-                                    <th scope="col">Rs. 10</th>
-                                    <th scope="col">Rs. 5</th>
-                                    <th scope="col">Rs. 2</th>
-                                    <th scope="col">Rs. 1</th>
-                                    <th scope="col">Total Amount</th>
-                                    <th scope="col"></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    *ngFor="let balance of balances | paginate: { itemsPerPage: itemsPerPage, currentPage: page }; let i = index">
-                                    <td>
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox"
-                                                [(ngModel)]="balance.selected">
-                                        </div>
-                                    </td>
-                                    <td>{{ balance.date }}</td>
-                                    <td>{{ balance.notes[5000] }}</td>
-                                    <td>{{ balance.notes[2000] }}</td>
-                                    <td>{{ balance.notes[1000] }}</td>
-                                    <td>{{ balance.notes[500] }}</td>
-                                    <td>{{ balance.notes[100] }}</td>
-                                    <td>{{ balance.notes[50] }}</td>
-                                    <td>{{ balance.notes[20] }}</td>
-                                    <td>{{ balance.notes[10] }}</td>
-                                    <td>{{ balance.notes[5] }}</td>
-                                    <td>{{ balance.notes[2] }}</td>
-                                    <td>{{ balance.notes[1] }}</td>
-                                    <td>{{ balance.totalAmount }}</td>
-                                    <td>
-                                        <div class="d-flex gap-2">
-                                            <div class="edit">
-                                                <button class="btn btn-sm btn-warning edit-item-btn"
-                                                    (click)="editBalance(i)">
-                                                    <i class="ri-edit-box-line align-bottom me-1"></i>
-                                                </button>
-                                            </div>
-                                            <div class="remove">
-                                                <button class="btn btn-sm btn-danger remove-item-btn"
-                                                    (click)="deleteBalance(i)">
-                                                    <i class="ri-delete-bin-line align-bottom me-1"></i>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="entries-info">
-                            Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ balances.length }} entries
-                        </span>
-                        <pagination-controls (pageChange)="page = $event"></pagination-controls>
-                    </div>
+                    <app-data-table
+                        [data]="processedBalances"
+                        [columns]="tableColumns"
+                        [actions]="[
+                            { key: 'edit', label: 'Edit', icon: 'ri-edit-box-line', color: 'warning' },
+                            { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
+                        ]"
+                        [selectable]="true"
+                        (action)="onTableAction($event)"
+                        title="Cash Balance">
+                    </app-data-table>
                 </div><!-- end card body -->
             </div><!-- end card -->
         </div><!-- end col -->

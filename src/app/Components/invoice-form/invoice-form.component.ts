@@ -5,7 +5,6 @@ import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
 import { InvoiceDto } from './invoice.model';
 import { DateService } from '../../Services/date-service.service';
@@ -15,10 +14,13 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import {RouterLink} from '@angular/router'
+import {RouterLink} from '@angular/router';
+import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 
-export interface ExtendedInvoiceDto extends InvoiceDto {
+export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
   selected?: boolean;
+  invoiceType?: string;
+  loanPeriod?: string | number;
 }
 
 @Component({
@@ -27,7 +29,7 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
   imports: [
     FormsModule, 
     CommonModule, 
-    NgxPaginationModule,
+    DataTableComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatHint,
@@ -41,9 +43,13 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
 })
 export class InvoiceFormComponent implements OnInit {
   invoices: ExtendedInvoiceDto[] = [];
-  page: number = 1;
-  invoicesPerPage: number = 10;
-  invoicesPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  tableColumns = [
+    { key: 'invoiceNo', label: 'Invoice No.' },
+    { key: 'invoiceType', label: 'Invoice Type' },
+    { key: 'customerNIC', label: 'Customer NIC' },
+    { key: 'loanPeriod', label: 'Loan Period (months)' },
+    { key: 'dateGenerated', label: 'Date' }
+  ];
   searchNICControl = new FormControl();
   searchInvoiceNoControl = new FormControl();
   private readonly _currentDate = new Date();
@@ -83,7 +89,9 @@ export class InvoiceFormComponent implements OnInit {
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
           selected: false,
           customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo
+          invoiceNo: invoice.invoiceNo,
+          invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
+          loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
         }));
         this.cdr.markForCheck(); // Trigger change detection
       },
@@ -110,7 +118,9 @@ export class InvoiceFormComponent implements OnInit {
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
           selected: false,
           customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo
+          invoiceNo: invoice.invoiceNo,
+          invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
+          loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
         }));
         this.cdr.markForCheck(); // Trigger change detection
       },
@@ -128,7 +138,9 @@ export class InvoiceFormComponent implements OnInit {
           dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
           selected: false,
           customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo
+          invoiceNo: invoice.invoiceNo,
+          invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
+          loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
         }));
   
         console.log("invoices: ", this.invoices);
@@ -255,13 +267,18 @@ export class InvoiceFormComponent implements OnInit {
     });
   }
 
-  getStartIndex(): number {
-    return (this.page - 1) * this.invoicesPerPage + 1;
-  }
-
-  getEndIndex(): number {
-    const endIndex = this.page * this.invoicesPerPage;
-    return endIndex > this.invoices.length ? this.invoices.length : endIndex;
+  onTableAction(event: { action: string, item: any }) {
+    switch(event.action) {
+      case 'view':
+        this.viewInvoice(event.item.invoiceId, event.item.invoiceTypeId);
+        break;
+      case 'edit':
+        this.editInvoice(event.item.invoiceId);
+        break;
+      case 'delete':
+        this.deleteInvoice(event.item.invoiceId);
+        break;
+    }
   }
 
   viewInvoiceTemplate() {

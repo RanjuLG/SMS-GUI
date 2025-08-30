@@ -17,6 +17,20 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router, private configService: ConfigService) { }
 
+  /**
+   * Validates if a string is in proper JWT format
+   * JWT should have exactly 3 parts separated by dots
+   */
+  private isValidJwtFormat(token: string): boolean {
+    if (!token || typeof token !== 'string') {
+      return false;
+    }
+    
+    // JWT should have exactly 2 dots (3 parts)
+    const parts = token.split('.');
+    return parts.length === 3 && parts.every(part => part.length > 0);
+  }
+
   login(username: string, password: string): Observable<any> {
     console.log("this.authUrl: ", this.authUrl);
 
@@ -27,12 +41,29 @@ export class AuthService {
       }
     }).pipe(
       tap((response: any) => {
+        console.log('Login response:', response);
+        
+        // Validate the response has a token
+        if (!response || !response.token) {
+          console.error('No token received in login response');
+          throw new Error('Invalid login response - no token received');
+        }
+        
+        // Validate token format
+        if (!this.isValidJwtFormat(response.token)) {
+          console.error('Received invalid JWT format from server');
+          throw new Error('Invalid token format received from server');
+        }
+        
+        console.log('Storing token:', response.token.substring(0, 50) + '...');
+        
         // Store the token and username in localStorage
         localStorage.setItem('token', response.token);
         localStorage.setItem('username', username);
 
         // Decode the token and update the current user
         const decodedToken = this.jwtHelper.decodeToken(response.token);
+        console.log('Decoded token:', decodedToken);
         this.currentUserSubject.next(decodedToken);
 
         // Emit login status to notify other components
@@ -56,9 +87,22 @@ export class AuthService {
 
   logout() {
     localStorage.removeItem('token');
+    localStorage.removeItem('username');
     this.currentUserSubject.next(null);
     this.authStatus.emit(false);
     this.router.navigate(['/auth/sign-in']);  // Notify components of logout status
+  }
+
+  /**
+   * Clear all authentication data and redirect to login
+   * Used when token is corrupted or invalid
+   */
+  clearAuthenticationData(): void {
+    console.log('Clearing corrupted authentication data');
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    this.currentUserSubject.next(null);
+    this.authStatus.emit(false);
   }
 
   register(username: string, email: string, password: string, role: string): Observable<any> {
@@ -82,16 +126,41 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     const token = localStorage.getItem('token');
-    return !!token && !this.jwtHelper.isTokenExpired(token);
+    if (!token || !this.isValidJwtFormat(token)) {
+      // Clean up invalid token
+      if (token) {
+        console.error('Invalid token format detected in isLoggedIn check, cleaning up');
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+      }
+      return false;
+    }
+    
+    try {
+      return !this.jwtHelper.isTokenExpired(token);
+    } catch (error) {
+      console.error('Error checking token expiration:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      return false;
+    }
   }
 
   get currentUserRole(): string | null {
     const token = localStorage.getItem('token');
-    if (token) {
+    if (!token || !this.isValidJwtFormat(token)) {
+      return null;
+    }
+    
+    try {
       const decodedToken = this.jwtHelper.decodeToken(token);
       return decodedToken?.role || decodedToken['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] || null;
+    } catch (error) {
+      console.error('Error decoding token:', error);
+      localStorage.removeItem('token');
+      localStorage.removeItem('username');
+      return null;
     }
-    return null;
   }
 
 }

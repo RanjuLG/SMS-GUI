@@ -1,87 +1,56 @@
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-lg-12">
-      <div class="card shadow-sm">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <h4 class="card-title mb-0">Manage Transactions</h4>
-        </div>
-        <div class="card-body">
-          <div class="row mb-3 align-items-center">
-            <div class="col-md-8 d-flex align-items-center">
-              <mat-form-field class="small-date-range me-2">
-                <mat-label>Select a date range</mat-label>
-                <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
-                  <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
-                  <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
-                </mat-date-range-input>
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-date-range-picker #picker></mat-date-range-picker>
-              </mat-form-field>
-              <input type="text" class="form-control search-nic" id="searchResultList" placeholder="Search by Customer NIC..."
-                [formControl]="searchControl">
-            </div>
-          </div>
-          <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table table-hover">
-              <thead>
-                <tr class="bg-light text-muted">
-                  <th scope="col">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="checkAll"
-                        (change)="toggleAllSelections($event)">
-                    </div>
-                  </th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Customer Name</th>
-                  <th scope="col">Customer NIC</th>
-                  <th scope="col">Sub Total (Rs.)</th>
-                  <th scope="col">Interest Rate (%)</th>
-                  <th scope="col">Total Amount (Rs.)</th>
-                  <!--<th scope="col"></th> -->
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let transaction of transactions | paginate: { itemsPerPage: transactionsPerPage, currentPage: page }; let i = index">
-                  <td>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" [(ngModel)]="transaction.selected">
-                    </div>
-                  </td>
-                  <td>
-                    <ng-container *ngIf="editingIndex === i; else displayDate">
-                      <input class="form-control" [(ngModel)]="transaction.createdAt" type="date">
-                    </ng-container>
-                    <ng-template #displayDate>{{ transaction.createdAt }}</ng-template>
-                  </td>
-                  <td>{{ transaction.customer.customerName }}</td>
-                  <td>{{ transaction.customer.customerNIC }}</td>
-                  <td>{{ transaction.subTotal }}</td>
-                  <td>{{ transaction.interestRate }}</td>
-                  <td>{{ transaction.totalAmount }}</td>
-                   <!--<td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-danger" (click)="deleteTransaction(transaction.transactionId)">
-                        <i class="ri-delete-bin-line align-bottom me-1"></i>
-                      </button>
-                    </div>
-                  </td> -->
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <select id="itemsPerPage" class="form-select" [(ngModel)]="transactionsPerPage">
-              <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
-            </select>
-            <span class="entries-info">
-              Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ transactions.length }} entries
-            </span>
-            <pagination-controls (pageChange)="page = $event"></pagination-controls>
-          </div>
+<!-- Transaction History with Modern Components -->
+<app-page-header 
+  title="Transaction History"
+  subtitle="View and manage all customer transactions with advanced filtering">
+</app-page-header>
 
+<div class="container-fluid">
+  <!-- Date Range and Search Controls -->
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <mat-form-field class="w-100">
+            <mat-label>Select a date range</mat-label>
+            <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
+              <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
+              <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
+            </mat-date-range-input>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker></mat-date-range-picker>
+          </mat-form-field>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label for="searchNIC" class="form-label">Search by Customer NIC</label>
+            <input 
+              type="text" 
+              class="form-control" 
+              id="searchNIC" 
+              placeholder="Enter Customer NIC..."
+              [formControl]="searchControl">
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Enhanced Data Table with Modern Pagination -->
+  <app-data-table
+    title="Transaction Records"
+    [data]="transactions"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [searchable]="true"
+    [selectable]="true"
+    [showActions]="true"
+    [showAddButton]="false"
+    [pageSize]="transactionsPerPage"
+    [pageSizeOptions]="transactionsPerPageOptions"
+    [loading]="loading"
+    [serverSidePagination]="false"
+    (search)="onSearch($event)"
+    (action)="handleTableAction($event)"
+    (selectionChange)="onSelectionChange($event)">
+  </app-data-table>
 </div>

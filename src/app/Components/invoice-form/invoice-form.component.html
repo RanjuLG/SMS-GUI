@@ -47,68 +47,17 @@
               </button>
             </div>
           </div>
-          <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table table-hover">
-              <thead>
-                <tr class="bg-light text-muted">
-                  <th scope="col">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" id="checkAll"
-                        (change)="toggleAllSelections($event)">
-                    </div>
-                  </th>
-                  <th scope="col">Invoice No.</th>
-                  <th scope="col">Invoice Type</th>
-                  <th scope="col">Customer NIC</th>
-                  <th scope="col">Loan Period (months)</th>
-                 <!-- <th scope="col">Payment Status</th> -->
-                  <th scope="col">Date</th>
-                  <th scope="col"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let invoice of invoices | paginate: { itemsPerPage: invoicesPerPage, currentPage: page }; let i = index">
-                  <td>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" [(ngModel)]="invoice.selected">
-                    </div>
-                  </td>
-                  <td>{{ invoice.invoiceNo }}</td>
-                  <td>{{ getInvoiceType(invoice.invoiceTypeId) }}</td>
-                  <td>{{ invoice.customerNIC }}</td>
-                  <td>{{ invoice.loanPeriod? invoice.loanPeriod:'N/A' }}</td>
-                 <!--<td>{{ invoice.paymentStatus ? 'Paid' : 'Unpaid' }}</td> --> 
-                  <td>{{ invoice.dateGenerated }}</td>
-                  <td>
-                    <div class="d-flex gap-2">
-                      <button class="btn btn-sm btn-info"
-                        (click)="viewInvoice(invoice.invoiceId,invoice.invoiceTypeId)">
-                        <i class="ri-eye-line align-bottom me-1"></i>
-                      </button>
-                      <!--
-                      <button class="btn btn-sm btn-warning" (click)="editInvoice(invoice.invoiceId)">
-                        <i class="ri-edit-box-line align-bottom me-1"></i>
-                      </button>
-                      -->
-                      <button class="btn btn-sm btn-danger" (click)="deleteInvoice(invoice.invoiceId)">
-                        <i class="ri-delete-bin-line align-bottom me-1"></i>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <select id="itemsPerPage" class="form-select" [(ngModel)]="invoicesPerPage">
-              <option *ngFor="let option of invoicesPerPageOptions" [value]="option">{{ option }}</option>
-            </select>
-            <span class="entries-info">
-              Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ invoices.length }} entries
-            </span>
-            <pagination-controls (pageChange)="page = $event"></pagination-controls>
-          </div>
+          <app-data-table
+            [data]="invoices"
+            [columns]="tableColumns"
+            [actions]="[
+              { key: 'view', label: 'View', icon: 'ri-eye-line', color: 'info' },
+              { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
+            ]"
+            [selectable]="true"
+            (action)="onTableAction($event)"
+            searchPlaceholder="Search invoices...">
+          </app-data-table>
         </div>
       </div>
     </div>

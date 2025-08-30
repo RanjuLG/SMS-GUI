@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../../../Services/api-service.service'; 
 import { DateService } from '../../../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -16,13 +15,14 @@ import { MatInputModule } from '@angular/material/input';
 import {TransactionReportDto,TransactionType } from '../../../reports/reports.model';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-initial-transaction-history',
   standalone: true,
   imports: [CommonModule, 
     FormsModule, 
-    NgxPaginationModule,
+    DataTableComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatHint,
@@ -40,22 +40,25 @@ export class InitialTransactionHistoryComponent {
  
   transactions: TransactionReportDto[] = [];
   loanIssuetransactions: TransactionReportDto[] = [];
-  transactionsPerPageOptions: number[] = [1,2,5,10];
-/// Separate items per page for each table
-transactionsPerPage: number = 5;
-loanTransactionsPerPage: number = 5;
-
-
-loanPage:number = 1;
+  
+  tableColumns = [
+    { key: 'createdAt', label: 'Date' },
+    { key: 'invoiceNo', label: 'Invoice No' },
+    { key: 'customerName', label: 'Customer Name' },
+    { key: 'customerNIC', label: 'Customer NIC' },
+    { key: 'subTotal', label: 'Principle Amount' },
+    { key: 'interestAmount', label: 'Interest Amount' },
+    { key: 'totalAmount', label: 'Total Amount' }
+  ];
   
   searchControl = new FormControl();
   transactionIds?: number[];
   transactionIds_delete?: number[];
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
-    // Add these properties to hold the calculated sums
-    totalTransactionAmount: number = 0;
-    totalLoanIssuanceAmount: number = 0;
+  // Add these properties to hold the calculated sums
+  totalTransactionAmount: number = 0;
+  totalLoanIssuanceAmount: number = 0;
 
   constructor(
     private modalService: NgbModal, 
@@ -89,6 +92,9 @@ ngOnChanges(changes: SimpleChanges): void {
         this.transactions = transactions.map(transaction => ({
           ...transaction,
           createdAt: new Date(transaction.createdAt).toISOString(),  // Convert Date to string
+          customerName: transaction.customer.customerName,
+          customerNIC: transaction.customer.customerNIC,
+          invoiceNo: transaction.invoice.invoiceNo
         }));
   
         // Filter and add only Loan Issuance transactions
@@ -177,16 +183,6 @@ calculateTotalAmount(transactions: TransactionReportDto[]): number {
   }
 
 // Pagination Index Helpers
-getLoanStartIndex(): number {
-  return (this.loanPage - 1) * this.loanTransactionsPerPage + 1;
-  
-  
-}
-
-getLoanEndIndex(): number {
-  return Math.min(this.loanPage * this.loanTransactionsPerPage, this.loanIssuetransactions.length);
-}
-
 exportToExcel(): void {
   console.log("export trans: ",this.loanIssuetransactions)
   // Extract year and month from the 'from' date

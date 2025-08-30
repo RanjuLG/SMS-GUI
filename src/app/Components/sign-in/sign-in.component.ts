@@ -47,13 +47,17 @@ export class SignInComponent implements OnInit {
 
     this.authService.login(username, password).subscribe({
       next: () => {
+        console.log('Login successful, checking token...');
+        const token = localStorage.getItem('token');
+        console.log('Token after login:', token ? token.substring(0, 50) + '...' : 'No token found');
+        
         Swal.fire('Login Successful', 'You have logged in successfully.', 'success');
         
         // Check user role and navigate accordingly
         const userRole = this.authService.currentUserRole;
         console.log('User role after login:', userRole);
         
-        if (userRole === 'Admin' || userRole === 'Cashier') {
+        if (userRole === 'Admin' || userRole === 'Cashier' || userRole === 'SuperAdmin') {
           // User has valid role, navigate to overview
           this.router.navigate(['/overview']);
         } else {

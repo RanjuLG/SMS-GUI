@@ -23,45 +23,15 @@
 
         </div>
         <div class="card-body">
-          <div class="table-responsive table-card mt-3 mb-1">
-            <table class="table table-hover">
-              <thead>
-                <tr class="bg-light text-muted">
-                  <th scope="col">Date</th>
-                  <th scope="col">Invoice No</th>
-                  <th scope="col">Customer NIC</th>
-                  <th scope="col">Principle Amount</th>
-                  <th scope="col">Interest Amount</th>
-                  <th scope="col">Total Amount (Rs.)</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  *ngFor="let transaction of loanIssuetransactions | paginate: { itemsPerPage: transactionsPerPage, currentPage: loanPage }">
-                  <td>{{ transaction.createdAt | date }}</td>
-                  <td>{{ transaction.invoice.invoiceNo }}</td>
-                  <td>{{ transaction.customer.customerNIC }}</td>
-                  <td>{{ transaction.subTotal }}</td>
-                  <td>{{ transaction.interestAmount }}</td>
-                  <td>{{ transaction.totalAmount }}</td>
-                </tr>
-              </tbody>
-            </table>
-            <!-- Display "No Data Available" if the array is empty -->
-            <div *ngIf="loanIssuetransactions.length === 0" class="alert alert-warning">
-              No disbursement transactions found for the selected month.
-            </div>
-          </div>
-
-          <!-- Pagination Controls -->
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <select class="form-select" [(ngModel)]="transactionsPerPage">
-              <option *ngFor="let option of transactionsPerPageOptions" [value]="option">{{ option }}</option>
-            </select>
-            <span class="entries-info">
-              Showing {{ getLoanStartIndex() }} to {{ getLoanEndIndex() }} of {{ loanIssuetransactions.length }} entries
-            </span>
-            <pagination-controls (pageChange)="loanPage = $event"></pagination-controls>
+          <app-data-table
+            [data]="loanIssuetransactions"
+            [columns]="tableColumns"
+            title="Loan Disbursement Transactions">
+          </app-data-table>
+          
+          <!-- Display "No Data Available" if the array is empty -->
+          <div *ngIf="loanIssuetransactions.length === 0" class="alert alert-warning">
+            No disbursement transactions found for the selected month.
           </div>
         </div>
       </div>

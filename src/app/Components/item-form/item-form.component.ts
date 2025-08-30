@@ -4,7 +4,6 @@ import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ItemDto } from './item.model';
 import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
@@ -12,10 +11,10 @@ import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { RouterLink } from '@angular/router';
+import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
@@ -29,14 +28,12 @@ export interface ExtendedItemDto extends ItemDto {
   imports: [
     FormsModule, 
     CommonModule, 
-    NgxPaginationModule, 
     ReactiveFormsModule,
     MatDatepickerModule,
-    MatHint,
     MatFormFieldModule,
     MatInputModule,
-    RouterLink
-
+    RouterLink,
+    DataTableComponent
   ],
   templateUrl: './item-form.component.html',
   styleUrls: ['./item-form.component.scss'],
@@ -45,14 +42,30 @@ export interface ExtendedItemDto extends ItemDto {
 
 export class ItemFormComponent implements OnInit {
   items: ExtendedItemDto[] = [];
-  page: number = 1;
-  itemsPerPage: number = 10;
-  itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   searchControl = new FormControl();
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
+  to = new Date(this._currentDate);
+
+  // Table configuration
+  tableColumns = [
+    { key: 'createdAt', label: 'Added Date', sortable: true, type: 'text' as const },
+    { key: 'itemId', label: 'Item Number', sortable: true, type: 'text' as const },
+    { key: 'itemDescription', label: 'Description', sortable: true, type: 'text' as const },
+    { key: 'itemRemarks', label: 'Remarks', sortable: true, type: 'text' as const },
+    { key: 'itemCaratage', label: 'Karat', sortable: true, type: 'text' as const },
+    { key: 'itemWeight', label: 'Net Wt (g)', sortable: true, type: 'text' as const },
+    { key: 'itemGoldWeight', label: 'Gold Wt (g)', sortable: true, type: 'text' as const },
+    { key: 'itemValue', label: 'Value', sortable: true, type: 'currency' as const },
+    { key: 'status', label: 'Status', sortable: true, type: 'badge' as const },
+    { key: 'customerNIC', label: 'Customer NIC', sortable: true, type: 'text' as const }
+  ];
+
+  tableActions = [
+    { key: 'edit', label: 'Edit', icon: 'ri-edit-box-line', color: 'warning' },
+    { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
+  ];
 
   constructor(
     private modalService: NgbModal,
@@ -84,7 +97,9 @@ export class ItemFormComponent implements OnInit {
           ...item,
           createdAt: this.dateService.formatDateTime(item.createdAt),
           selected: false,
-          customerNIC: item.customerNIC // Ensure this property is available in the response
+          customerNIC: item.customerNIC, // Ensure this property is available in the response
+          // Map status to badge text for the DataTable
+          status: this.getStatusText(item.status)
         }));
         this.cdr.markForCheck(); // Trigger change detection
       },
@@ -103,7 +118,9 @@ export class ItemFormComponent implements OnInit {
           ...item,
           createdAt: this.dateService.formatDateTime(item.createdAt),
           selected: false,
-          customerNIC: item.customerNIC // Ensure this property is available in the response
+          customerNIC: item.customerNIC, // Ensure this property is available in the response
+          // Map status to badge text for the DataTable
+          status: this.getStatusText(item.status)
         })) as ExtendedItemDto[]; // Type assertion to ExtendedItemDto[]
   
         this.cdr.markForCheck(); // Trigger change detection
@@ -215,13 +232,46 @@ export class ItemFormComponent implements OnInit {
     });
   }
 
-  getStartIndex(): number {
-    return (this.page - 1) * this.itemsPerPage + 1;
+  onTableAction(event: { action: string, item: any }) {
+    switch (event.action) {
+      case 'edit':
+        this.editItem(event.item);
+        break;
+      case 'delete':
+        this.removeItem(event.item);
+        break;
+    }
   }
 
-  getEndIndex(): number {
-    const endIndex = this.page * this.itemsPerPage;
-    return endIndex > this.items.length ? this.items.length : endIndex;
+  onSelectionChange(selectedItems: any[]) {
+    // This is handled automatically by the data table
+  }
+
+  getBadgeClass(status: number): string {
+    switch (status) {
+      case 1: return 'bg-success';  // In Stock - green
+      case 2: return 'bg-info';     // Redeemed - blue  
+      case 3: return 'bg-danger';   // Defaulted - red
+      default: return 'bg-secondary'; // Unknown - gray
+    }
+  }
+
+  getStatusText(status: number): string {
+    switch (status) {
+      case 1: return 'In Stock';
+      case 2: return 'Redeemed';
+      case 3: return 'Defaulted';
+      default: return 'Unknown Status';
+    }
+  }
+
+  getStatusClass(status: number): string {
+    switch (status) {
+      case 1: return 'status-label status-in-stock';
+      case 2: return 'status-label status-redeemed';
+      case 3: return 'status-label status-defaulted';
+      default: return 'status-label status-unknown';
+    }
   }
 
   onStartDateChange(event: any): void {
