@@ -29,5 +29,13 @@ export class ConfigService {
     // Return the invoice settings if available, otherwise return an empty object or provide a fallback value
     return this.config?.invoice_settings ?? {};
   }
+
+  get healthEndpoints(): any {
+    return this.config?.api_endpoints?.health ?? {};
+  }
+
+  get apiEndpoints(): any {
+    return this.config?.api_endpoints ?? {};
+  }
   
 }

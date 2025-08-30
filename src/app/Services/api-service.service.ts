@@ -2,7 +2,7 @@ import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config-service.service'
 import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/customer.model';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
 import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
@@ -14,6 +14,19 @@ import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
 import { Overview, ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
 import { NotificationService } from './notification.service';
+import { 
+  SystemHealth,
+  DatabaseHealth,
+  ServiceHealth,
+  BackupStatus,
+  StorageUsage,
+  SystemMetrics,
+  ApplicationLogs,
+  SecurityStatus,
+  SystemHealthOverview,
+  HealthPing
+} from '../Components/overview/system-health.model';
+import { timeout } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -751,6 +764,187 @@ getReportByCustomer(customerNIC: any): Observable<ReportByCustomer> {
 getOverview():Observable<Overview> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.http.get<Overview>(`${this.configService.apiUrl}/api/reports/overview`);
+}
+
+// System Health Monitoring Endpoints
+
+/**
+ * Get overall system health status
+ */
+getSystemHealth(): Observable<SystemHealth> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.system || '/api/health/system';
+  return this.http.get<SystemHealth>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('System health endpoint failed:', error);
+      return throwError(() => new Error('Health service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get database health and connection status
+ */
+getDatabaseHealth(): Observable<DatabaseHealth> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.database || '/api/health/database';
+  return this.http.get<DatabaseHealth>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('Database health endpoint failed:', error);
+      return throwError(() => new Error('Database health service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get API services health status
+ */
+getServiceHealth(): Observable<ServiceHealth> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.services || '/api/health/services';
+  return this.http.get<ServiceHealth>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('Services health endpoint failed:', error);
+      return throwError(() => new Error('Services health service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get backup status and schedule information
+ */
+getBackupStatus(): Observable<BackupStatus> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.backup || '/api/health/backup';
+  return this.http.get<BackupStatus>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('Backup status endpoint failed:', error);
+      return throwError(() => new Error('Backup status service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get storage usage statistics
+ */
+getStorageUsage(): Observable<StorageUsage> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.storage || '/api/health/storage';
+  return this.http.get<StorageUsage>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('Storage usage endpoint failed:', error);
+      return throwError(() => new Error('Storage usage service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get system metrics (CPU, Memory, Network)
+ */
+getSystemMetrics(): Observable<SystemMetrics> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.metrics || '/api/health/metrics';
+  return this.http.get<SystemMetrics>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('System metrics endpoint failed:', error);
+      return throwError(() => new Error('System metrics service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get application logs summary
+ */
+getApplicationLogs(): Observable<ApplicationLogs> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.logs || '/api/health/logs';
+  return this.http.get<ApplicationLogs>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('Application logs endpoint failed:', error);
+      return throwError(() => new Error('Application logs service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get security status and vulnerability information
+ */
+getSecurityStatus(): Observable<SecurityStatus> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.security || '/api/health/security';
+  return this.http.get<SecurityStatus>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(10000),
+    catchError((error) => {
+      console.error('Security status endpoint failed:', error);
+      return throwError(() => new Error('Security status service unavailable'));
+    })
+  );
+}
+
+/**
+ * Get comprehensive system health overview
+ */
+getSystemHealthOverview(): Observable<SystemHealthOverview> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.overview || '/api/health/overview';
+  return this.http.get<SystemHealthOverview>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    catchError((error) => {
+      console.warn('System health overview endpoint not available:', error);
+      return of(null as any);
+    })
+  );
+}
+
+/**
+ * Simple health ping endpoint
+ */
+getHealthPing(): Observable<HealthPing> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.healthEndpoints?.ping || '/api/health/ping';
+  return this.http.get<HealthPing>(`${this.configService.apiUrl}${endpoint}`, {
+    headers: this.getHttpHeaders()
+  }).pipe(
+    timeout(5000),
+    catchError((error) => {
+      console.error('Health ping endpoint failed:', error);
+      return throwError(() => new Error('Health ping service unavailable'));
+    })
+  );
 }
 
 }

@@ -5,8 +5,17 @@ import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/creat
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../Services/api-service.service';
 import { Overview } from '../reports/reports.model';
+import { 
+  SystemHealthOverview, 
+  DatabaseHealth, 
+  ServiceHealth, 
+  BackupStatus, 
+  StorageUsage 
+} from './system-health.model';
 declare var bootstrap: any;
 import { AuthService } from '../../Services/auth.service';
+import { forkJoin, interval, of } from 'rxjs';
+import { startWith, switchMap, tap, catchError } from 'rxjs/operators';
 
 // Import shared components
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -31,9 +40,25 @@ export class OverviewComponent implements OnInit, AfterViewInit {
   totalRevenue: number = 0;
   inventoryCount: number = 0;
   customerCount: number = 0;
+  totalTransactions: number = 0;
+  totalOutstanding: number = 0;
+  settledLoans: number = 0;
   userName: string = '';
   greeting: string = '';
   currentDate: string = '';
+  isLoading: boolean = true;
+  
+  // System Health Properties
+  systemHealth: SystemHealthOverview | null = null;
+  databaseHealth: DatabaseHealth | null = null;
+  servicesHealth: ServiceHealth | null = null;
+  backupStatus: BackupStatus | null = null;
+  storageUsage: StorageUsage | null = null;
+  isHealthLoading: boolean = true;
+  healthError: string | null = null;
+  
+  // Make Math available in template
+  Math = Math;
 
   constructor(
     private modalService: NgbModal,
@@ -74,9 +99,16 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.greet();
     this.updateDate();
     this.loadDashboardData();
+    this.loadSystemHealth();
 
     // Default to last 31 days and set the 31D button as active
     this.updateChartData('7D', 'btn-7D');
+
+    // Set up auto-refresh for health data every 1 hour
+    interval(3600000).pipe(
+      startWith(0),
+      switchMap(() => this.loadSystemHealthData())
+    ).subscribe();
   }
 
   openCreateInvoiceModal() {
@@ -154,18 +186,148 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   // Load dashboard data from API
   loadDashboardData(): void {
+    this.isLoading = true;
     this.apiService.getOverview().subscribe({
       next: (data: Overview) => {
-        // Update the widget values from the API response
-        this.totalLoans = data.totalActiveLoans ?? 0;
+        console.log('Overview data received:', data);
+        // Map the API response to component properties
+        this.totalLoans = data.activeLoans ?? 0;
         this.totalInvoices = data.totalInvoices ?? 0;
-        this.totalRevenue = data.revenueGenerated ?? 0;
-        this.inventoryCount = data.inventoryCount ?? 0;
-        this.customerCount = data.customerCount ?? 0;
+        this.totalRevenue = data.totalTransactionAmount ?? 0;
+        this.inventoryCount = data.totalItems ?? 0;
+        this.customerCount = data.totalCustomers ?? 0;
+        this.totalTransactions = data.totalTransactions ?? 0;
+        this.totalOutstanding = data.totalOutstandingAmount ?? 0;
+        this.settledLoans = data.settledLoans ?? 0;
+        this.isLoading = false;
       },
       error: (err) => {
         console.error('Error fetching widget data:', err);
+        // Set default values in case of error
+        this.totalLoans = 0;
+        this.totalInvoices = 0;
+        this.totalRevenue = 0;
+        this.inventoryCount = 0;
+        this.customerCount = 0;
+        this.totalTransactions = 0;
+        this.totalOutstanding = 0;
+        this.settledLoans = 0;
+        this.isLoading = false;
       }
     });
+  }
+
+  // Load system health data
+  loadSystemHealth(): void {
+    this.loadSystemHealthData().subscribe({
+      next: () => console.log('Health data loaded successfully'),
+      error: (error) => console.log('Health monitoring not available:', error)
+    });
+  }
+
+  // Load system health data with observables
+  loadSystemHealthData() {
+    this.isHealthLoading = true;
+    this.healthError = null;
+
+    return forkJoin({
+      database: this.apiService.getDatabaseHealth(),
+      services: this.apiService.getServiceHealth(),
+      backup: this.apiService.getBackupStatus(),
+      storage: this.apiService.getStorageUsage(),
+      ping: this.apiService.getHealthPing()
+    }).pipe(
+      tap((healthData) => {
+        this.databaseHealth = healthData.database;
+        this.servicesHealth = healthData.services;
+        this.backupStatus = healthData.backup;
+        this.storageUsage = healthData.storage;
+        this.isHealthLoading = false;
+        console.log('Health ping:', healthData.ping);
+      }),
+      catchError((error) => {
+        console.error('Error loading health data:', error);
+        this.healthError = 'Failed to load health data';
+        this.isHealthLoading = false;
+        return of(null);
+      })
+    );
+  }
+
+  // Get database status class for styling
+  getDatabaseStatusClass(): string {
+    if (!this.databaseHealth) return 'bg-secondary';
+    switch (this.databaseHealth.status) {
+      case 'connected': return 'bg-success pulse';
+      case 'error': return 'bg-danger pulse';
+      case 'disconnected': return 'bg-warning pulse';
+      default: return 'bg-secondary';
+    }
+  }
+
+  // Get services status class for styling
+  getServicesStatusClass(): string {
+    if (!this.servicesHealth) return 'bg-secondary';
+    switch (this.servicesHealth.status) {
+      case 'healthy': return 'bg-success pulse';
+      case 'degraded': return 'bg-warning pulse';
+      case 'unhealthy': return 'bg-danger pulse';
+      default: return 'bg-secondary';
+    }
+  }
+
+  // Get backup status class for styling
+  getBackupStatusClass(): string {
+    if (!this.backupStatus) return 'bg-secondary';
+    switch (this.backupStatus.status) {
+      case 'success': return 'bg-success pulse';
+      case 'running': return 'bg-info pulse';
+      case 'failed': return 'bg-danger pulse';
+      case 'error': return 'bg-danger pulse';
+      case 'no-backup': return 'bg-warning pulse';
+      default: return 'bg-secondary';
+    }
+  }
+
+  // Get storage status class for styling
+  getStorageStatusClass(): string {
+    if (!this.storageUsage) return 'bg-secondary';
+    const dbStatus = this.storageUsage.database.status;
+    switch (dbStatus) {
+      case 'normal': return 'bg-info pulse';
+      case 'warning': return 'bg-warning pulse';
+      case 'critical': return 'bg-danger pulse';
+      default: return 'bg-secondary';
+    }
+  }
+
+  // Format uptime for display
+  formatUptime(uptimeSeconds: number): string {
+    const days = Math.floor(uptimeSeconds / 86400);
+    const hours = Math.floor((uptimeSeconds % 86400) / 3600);
+    const minutes = Math.floor((uptimeSeconds % 3600) / 60);
+    
+    if (days > 0) {
+      return `${days}d ${hours}h`;
+    } else if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    } else {
+      return `${minutes}m`;
+    }
+  }
+
+  // Format time ago for backup
+  formatTimeAgo(timestamp: string): string {
+    const now = new Date();
+    const time = new Date(timestamp);
+    const diffMs = now.getTime() - time.getTime();
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+
+    if (diffHours > 0) {
+      return `${diffHours}h ago`;
+    } else {
+      return `${diffMinutes}m ago`;
+    }
   }
 }

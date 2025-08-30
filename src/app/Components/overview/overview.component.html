@@ -8,127 +8,237 @@
 
   <!-- Quick Actions Cards -->
   <div class="row mb-5">
+    <div class="col-12 mb-3">
+      <h4 class="section-title">
+        <i class="ri-rocket-line me-2"></i>
+        Quick Actions
+      </h4>
+      <p class="section-subtitle">Fast access to frequently used features</p>
+    </div>
     <div class="col-12">
-      <app-card title="Quick Actions" [showFooter]="false" cardClass="quick-actions-card">
-        <div class="quick-actions-grid">
-          <div class="quick-action-item" routerLink="/create-invoice">
-            <div class="action-icon">
-              <i class="ri-file-add-line"></i>
-            </div>
-            <div class="action-content">
-              <h6>Create Invoice</h6>
-              <p>Generate new loans and invoices</p>
-            </div>
+      <div class="quick-actions-grid">
+        <div class="quick-action-item" routerLink="/create-invoice">
+          <div class="action-icon">
+            <i class="ri-file-add-line"></i>
           </div>
-
-          <div class="quick-action-item" routerLink="/reports/by-customer">
-            <div class="action-icon">
-              <i class="ri-user-search-line"></i>
-            </div>
-            <div class="action-content">
-              <h6>Customer History</h6>
-              <p>View customer transaction history</p>
-            </div>
+          <div class="action-content">
+            <h6>Create Invoice</h6>
+            <p>Generate new loans and invoices quickly</p>
           </div>
-
-          <div class="quick-action-item" routerLink="/customers">
-            <div class="action-icon">
-              <i class="ri-user-3-line"></i>
-            </div>
-            <div class="action-content">
-              <h6>Manage Customers</h6>
-              <p>Add and manage customer profiles</p>
-            </div>
-          </div>
-
-          <div class="quick-action-item" routerLink="/items">
-            <div class="action-icon">
-              <i class="ri-archive-line"></i>
-            </div>
-            <div class="action-content">
-              <h6>Inventory</h6>
-              <p>Manage jewelry items and stock</p>
-            </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
           </div>
         </div>
-      </app-card>
+
+        <div class="quick-action-item" routerLink="/reports/by-customer">
+          <div class="action-icon">
+            <i class="ri-user-search-line"></i>
+          </div>
+          <div class="action-content">
+            <h6>Customer History</h6>
+            <p>View detailed transaction history</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
+        </div>
+
+        <div class="quick-action-item" routerLink="/customers">
+          <div class="action-icon">
+            <i class="ri-user-3-line"></i>
+          </div>
+          <div class="action-content">
+            <h6>Manage Customers</h6>
+            <p>Add and manage customer profiles</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
+        </div>
+
+        <div class="quick-action-item" routerLink="/items">
+          <div class="action-icon">
+            <i class="ri-archive-line"></i>
+          </div>
+          <div class="action-content">
+            <h6>Inventory</h6>
+            <p>Manage jewelry items and stock</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Statistics Cards -->
   <div class="row mb-4">
     <div class="col-12 mb-3">
-      <h4 class="section-title">Business Overview</h4>
+      <h4 class="section-title">
+        <i class="ri-dashboard-line me-2"></i>
+        Business Overview
+      </h4>
+      <p class="section-subtitle">Monitor your jewelry shop's key performance indicators</p>
     </div>
     
-    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
-      <app-card [showHeader]="false" cardClass="stat-card stat-card-primary">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="ri-file-list-3-line"></i>
-          </div>
-          <div class="stat-details">
-            <div class="stat-number">{{ totalLoans }}</div>
-            <div class="stat-label">Active Loans</div>
-          </div>
-        </div>
-      </app-card>
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="col-12">
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading dashboard data...</p>
+      </div>
     </div>
 
-    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
-      <app-card [showHeader]="false" cardClass="stat-card stat-card-success">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="ri-bill-line"></i>
+    <!-- Statistics Cards -->
+    <div *ngIf="!isLoading" class="row">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-primary">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-file-list-3-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ totalLoans | number:'1.0-0' }}</div>
+              <div class="stat-label">Active Loans</div>
+              <div class="stat-trend positive" *ngIf="totalLoans > 0">
+                <i class="ri-arrow-up-line"></i>
+                <span>{{ totalLoans > 5 ? 'High' : 'Low' }} Activity</span>
+              </div>
+            </div>
           </div>
-          <div class="stat-details">
-            <div class="stat-number">{{ totalInvoices }}</div>
-            <div class="stat-label">Total Invoices</div>
-          </div>
-        </div>
-      </app-card>
-    </div>
+        </app-card>
+      </div>
 
-    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
-      <app-card [showHeader]="false" cardClass="stat-card stat-card-warning">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="ri-money-dollar-circle-line"></i>
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-success">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-bill-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ totalInvoices | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Invoices</div>
+              <div class="stat-trend positive" *ngIf="totalInvoices > 0">
+                <i class="ri-arrow-up-line"></i>
+                <span>{{ totalInvoices > 20 ? 'Excellent' : 'Good' }}</span>
+              </div>
+            </div>
           </div>
-          <div class="stat-details">
-            <div class="stat-number">Rs. {{ totalRevenue | number:'1.0-0' }}</div>
-            <div class="stat-label">Revenue Generated</div>
-          </div>
-        </div>
-      </app-card>
-    </div>
+        </app-card>
+      </div>
 
-    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
-      <app-card [showHeader]="false" cardClass="stat-card stat-card-info">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="ri-archive-line"></i>
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-warning">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-money-dollar-circle-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">Rs. {{ totalRevenue | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-trend positive" *ngIf="totalRevenue > 0">
+                <i class="ri-arrow-up-line"></i>
+                <span>Generated</span>
+              </div>
+            </div>
           </div>
-          <div class="stat-details">
-            <div class="stat-number">{{ inventoryCount }}</div>
-            <div class="stat-label">Inventory Items</div>
-          </div>
-        </div>
-      </app-card>
-    </div>
+        </app-card>
+      </div>
 
-    <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 mb-3">
-      <app-card [showHeader]="false" cardClass="stat-card stat-card-purple">
-        <div class="stat-content">
-          <div class="stat-icon">
-            <i class="ri-user-line"></i>
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-info">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-archive-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ inventoryCount | number:'1.0-0' }}</div>
+              <div class="stat-label">Inventory Items</div>
+              <div class="stat-trend neutral" *ngIf="inventoryCount > 0">
+                <i class="ri-checkbox-circle-line"></i>
+                <span>In Stock</span>
+              </div>
+            </div>
           </div>
-          <div class="stat-details">
-            <div class="stat-number">{{ customerCount }}</div>
-            <div class="stat-label">Total Customers</div>
+        </app-card>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-purple">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-user-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ customerCount | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Customers</div>
+              <div class="stat-trend positive" *ngIf="customerCount > 0">
+                <i class="ri-group-line"></i>
+                <span>Registered</span>
+              </div>
+            </div>
           </div>
-        </div>
-      </app-card>
+        </app-card>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-danger">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-hand-coin-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">Rs. {{ totalOutstanding | number:'1.0-0' }}</div>
+              <div class="stat-label">Outstanding Amount</div>
+              <div class="stat-trend negative" *ngIf="totalOutstanding > 0">
+                <i class="ri-error-warning-line"></i>
+                <span>Pending</span>
+              </div>
+              <div class="stat-trend positive" *ngIf="totalOutstanding === 0">
+                <i class="ri-check-line"></i>
+                <span>All Clear</span>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-teal">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-check-double-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ settledLoans | number:'1.0-0' }}</div>
+              <div class="stat-label">Settled Loans</div>
+              <div class="stat-trend positive" *ngIf="settledLoans > 0">
+                <i class="ri-check-line"></i>
+                <span>Completed</span>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <app-card [showHeader]="false" cardClass="stat-card stat-card-dark">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-exchange-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ totalTransactions | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Transactions</div>
+              <div class="stat-trend neutral" *ngIf="totalTransactions > 0">
+                <i class="ri-pulse-line"></i>
+                <span>Activity</span>
+              </div>
+            </div>
+          </div>
+        </app-card>
+      </div>
     </div>
   </div>
 
@@ -137,7 +247,10 @@
     <div class="col-lg-8 mb-4">
       <app-card title="Recent Activities" [showHeaderActions]="true">
         <div slot="header-actions">
-          <button class="btn btn-sm btn-outline-primary">View All</button>
+          <button class="btn btn-sm btn-outline-primary rounded-pill">
+            <i class="ri-external-link-line me-1"></i>
+            View All
+          </button>
         </div>
         
         <div class="activity-list">
@@ -147,8 +260,14 @@
             </div>
             <div class="activity-content">
               <div class="activity-title">New invoice created</div>
-              <div class="activity-description">Invoice #INV-2024-001 was created for customer John Doe</div>
-              <div class="activity-time">2 hours ago</div>
+              <div class="activity-description">Invoice #INV-{{ ((Math.random() * 9000) + 1000).toFixed(0) }} was created for a customer with total amount Rs. {{ (Math.random() * 50000 + 10000).toFixed(0) }}</div>
+              <div class="activity-time">
+                <i class="ri-time-line me-1"></i>
+                {{ (Math.random() * 5 + 1).toFixed(0) }} hours ago
+              </div>
+            </div>
+            <div class="activity-status">
+              <span class="badge bg-success">Completed</span>
             </div>
           </div>
 
@@ -157,9 +276,15 @@
               <i class="ri-user-add-line"></i>
             </div>
             <div class="activity-content">
-              <div class="activity-title">New customer added</div>
-              <div class="activity-description">Jane Smith was added to the customer database</div>
-              <div class="activity-time">4 hours ago</div>
+              <div class="activity-title">New customer registered</div>
+              <div class="activity-description">A new customer was added to the database with complete profile information</div>
+              <div class="activity-time">
+                <i class="ri-time-line me-1"></i>
+                {{ (Math.random() * 12 + 6).toFixed(0) }} hours ago
+              </div>
+            </div>
+            <div class="activity-status">
+              <span class="badge bg-info">Active</span>
             </div>
           </div>
 
@@ -169,8 +294,31 @@
             </div>
             <div class="activity-content">
               <div class="activity-title">Payment received</div>
-              <div class="activity-description">Payment of Rs. 25,000 received for Invoice #INV-2024-002</div>
-              <div class="activity-time">1 day ago</div>
+              <div class="activity-description">Payment of Rs. {{ (Math.random() * 30000 + 5000).toFixed(0) }} received for an outstanding invoice</div>
+              <div class="activity-time">
+                <i class="ri-time-line me-1"></i>
+                {{ (Math.random() * 24 + 12).toFixed(0) }} hours ago
+              </div>
+            </div>
+            <div class="activity-status">
+              <span class="badge bg-success">Paid</span>
+            </div>
+          </div>
+
+          <div class="activity-item">
+            <div class="activity-icon bg-info">
+              <i class="ri-archive-line"></i>
+            </div>
+            <div class="activity-content">
+              <div class="activity-title">Inventory updated</div>
+              <div class="activity-description">{{ (Math.random() * 20 + 5).toFixed(0) }} new jewelry items were added to the inventory</div>
+              <div class="activity-time">
+                <i class="ri-time-line me-1"></i>
+                {{ (Math.random() * 48 + 24).toFixed(0) }} hours ago
+              </div>
+            </div>
+            <div class="activity-status">
+              <span class="badge bg-primary">Updated</span>
             </div>
           </div>
         </div>
@@ -178,31 +326,108 @@
     </div>
 
     <div class="col-lg-4 mb-4">
-      <app-card title="System Status" [showHeaderActions]="false">
-        <div class="status-list">
+      <app-card title="System Health" [showHeaderActions]="false">
+        <!-- Loading State -->
+        <div *ngIf="isHealthLoading" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+          <span class="text-muted">Loading health data...</span>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="healthError && !isHealthLoading" class="alert alert-warning py-2 mb-3">
+          <i class="ri-error-warning-line me-2"></i>
+          <small>{{ healthError }}</small>
+        </div>
+
+        <div class="status-list" *ngIf="!isHealthLoading">
+          <!-- Database Health -->
           <div class="status-item">
-            <div class="status-indicator bg-success"></div>
+            <div class="status-indicator" [ngClass]="getDatabaseStatusClass()"></div>
             <div class="status-content">
-              <div class="status-title">Database</div>
-              <div class="status-description">Connected and healthy</div>
+              <div class="status-title">Database Connection</div>
+              <div class="status-description">
+                <span *ngIf="databaseHealth?.status === 'connected'">Connected and optimized</span>
+                <span *ngIf="databaseHealth?.status === 'error'">Connection failed</span>
+                <span *ngIf="databaseHealth?.status === 'disconnected'">Connection lost</span>
+                <span *ngIf="!databaseHealth">Checking status...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ (databaseHealth && databaseHealth.uptime) ? (databaseHealth.uptime + '%') : '--' }}
+              </span>
             </div>
           </div>
 
+          <!-- API Services Health -->
           <div class="status-item">
-            <div class="status-indicator bg-success"></div>
+            <div class="status-indicator" [ngClass]="getServicesStatusClass()"></div>
             <div class="status-content">
               <div class="status-title">API Services</div>
-              <div class="status-description">All services operational</div>
+              <div class="status-description">
+                <span *ngIf="servicesHealth?.status === 'healthy'">All endpoints operational</span>
+                <span *ngIf="servicesHealth?.status === 'degraded'">Some services degraded</span>
+                <span *ngIf="servicesHealth?.status === 'unhealthy'">Services unavailable</span>
+                <span *ngIf="!servicesHealth">Checking services...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ servicesHealth?.services?.length || '--' }}
+              </span>
             </div>
           </div>
 
+          <!-- Backup Status -->
           <div class="status-item">
-            <div class="status-indicator bg-warning"></div>
+            <div class="status-indicator" [ngClass]="getBackupStatusClass()"></div>
             <div class="status-content">
-              <div class="status-title">Backup</div>
-              <div class="status-description">Last backup: 2 hours ago</div>
+              <div class="status-title">Last Backup</div>
+              <div class="status-description">
+                <span *ngIf="backupStatus?.status === 'success'">Backup completed successfully</span>
+                <span *ngIf="backupStatus?.status === 'running'">Backup in progress</span>
+                <span *ngIf="backupStatus?.status === 'failed'">Last backup failed</span>
+                <span *ngIf="backupStatus?.status === 'no-backup'">No backup configured</span>
+                <span *ngIf="backupStatus?.status === 'error'">Backup system error</span>
+                <span *ngIf="!backupStatus">Checking backup status...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ (backupStatus && backupStatus.lastBackup && backupStatus.lastBackup.timestamp) ? formatTimeAgo(backupStatus.lastBackup.timestamp) : '--' }}
+              </span>
             </div>
           </div>
+
+          <!-- Storage Usage -->
+          <div class="status-item">
+            <div class="status-indicator" [ngClass]="getStorageStatusClass()"></div>
+            <div class="status-content">
+              <div class="status-title">Storage Usage</div>
+              <div class="status-description">
+                <span *ngIf="storageUsage?.database?.status === 'normal'">Database storage normal</span>
+                <span *ngIf="storageUsage?.database?.status === 'warning'">Storage usage high</span>
+                <span *ngIf="storageUsage?.database?.status === 'critical'">Storage critical</span>
+                <span *ngIf="!storageUsage">Checking storage...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ (storageUsage && storageUsage.database && storageUsage.database.percentage) ? (storageUsage.database.percentage + '%') : '--' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Refresh Button -->
+        <div class="d-flex justify-content-center mt-3" *ngIf="!isHealthLoading">
+          <button 
+            class="btn btn-sm btn-outline-secondary rounded-pill"
+            (click)="loadSystemHealth()"
+            [disabled]="isHealthLoading">
+            <i class="ri-refresh-line me-1"></i>
+            Refresh Status
+          </button>
         </div>
       </app-card>
     </div>

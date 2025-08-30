@@ -103,8 +103,20 @@ export interface ReportByCustomer {
 
 
 export interface Overview {
-  totalActiveLoans?: number;
+  totalCustomers?: number;
+  totalItems?: number;
+  totalTransactions?: number;
   totalInvoices?: number;
+  totalTransactionAmount?: number;
+  totalOutstandingAmount?: number;
+  activeLoans?: number;
+  settledLoans?: number;
+  monthlyTransactions?: any[];
+  transactionsByType?: any[];
+  topCustomers?: any[];
+  
+  // Legacy properties for backward compatibility
+  totalActiveLoans?: number;
   revenueGenerated?: number;
   inventoryCount?: number;
   customerCount?: number;

@@ -90,6 +90,19 @@
 			"base": "/api/reports",
 			"getByCustomer": "/api/reports/customer/{customerNIC}",
 			"getOverview": "/api/reports/overview"
+		},
+		"health": {
+			"base": "/api/health",
+			"system": "/api/health/system",
+			"database": "/api/health/database",
+			"services": "/api/health/services",
+			"backup": "/api/health/backup",
+			"storage": "/api/health/storage",
+			"metrics": "/api/health/metrics",
+			"logs": "/api/health/logs",
+			"security": "/api/health/security",
+			"overview": "/api/health/overview",
+			"ping": "/api/health/ping"
 		}
 	}
 }
