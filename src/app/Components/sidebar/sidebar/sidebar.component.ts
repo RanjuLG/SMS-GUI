@@ -161,15 +161,6 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   }
 
-  navigateAndToggle(route: string, menuLabel: string): void {
-    // Navigate to the route
-    this.router.navigate([route]);
-    // Toggle the submenu if expanded
-    if (this.expanded) {
-      this.toggleMenu(menuLabel);
-    }
-  }
-
   isMenuExpanded(menuLabel: string): boolean {
     return this.expandedMenus.has(menuLabel);
   }

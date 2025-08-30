@@ -4,15 +4,17 @@
   subtitle="Manage customer invoices, create new invoices, and track payment status">
   
   <div slot="actions" class="header-actions">
-    <button type="button" class="btn btn-primary" routerLink="/create-invoice">
-      <i class="ri-add-line align-bottom me-1"></i> Create Invoice
-    </button>
-    <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedInvoices()">
-      <i class="ri-delete-bin-2-line"></i> Delete Selected
-    </button>
-    <button type="button" class="btn btn-info ms-2" (click)="viewInvoiceTemplate()">
-      <i class="ri-eye-line align-bottom me-1"></i> View Template
-    </button>
+    <div class="d-flex gap-2" role="group" aria-label="Invoice actions">
+      <button type="button" class="btn btn-primary" routerLink="/create-invoice" title="Create new invoice">
+        <i class="ri-add-line align-bottom me-1"></i> Create Invoice
+      </button>
+      <button type="button" class="btn btn-info" (click)="viewInvoiceTemplate()" title="View invoice template">
+        <i class="ri-eye-line align-bottom me-1"></i> View Template
+      </button>
+      <button type="button" class="btn btn-danger" (click)="deleteSelectedInvoices()" title="Delete selected invoices">
+        <i class="ri-delete-bin-2-line me-1"></i> Delete Selected
+      </button>
+    </div>
   </div>
 </app-page-header>
 

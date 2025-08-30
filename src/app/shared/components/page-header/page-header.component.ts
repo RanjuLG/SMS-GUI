@@ -9,11 +9,11 @@ import { CommonModule } from '@angular/common';
     <div class="page-header">
       <div class="container-fluid py-4">
         <div class="row align-items-center">
-          <div class="col-md-8">
+          <div class="col-lg-8 col-md-7 col-sm-12">
             <h1 class="h4 mb-1">{{ title }}</h1>
             <p class="subtitle mb-0" *ngIf="subtitle">{{ subtitle }}</p>
           </div>
-          <div class="col-md-4 text-end" *ngIf="showActions">
+          <div class="col-lg-4 col-md-5 col-sm-12 d-flex justify-content-end mt-sm-3 mt-md-0" *ngIf="showActions">
             <ng-content select="[slot=actions]"></ng-content>
           </div>
         </div>
@@ -39,6 +39,19 @@ import { CommonModule } from '@angular/common';
       color: var(--secondary-text);
       font-size: 0.875rem;
       margin: 0;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .page-header .container-fluid {
+        padding-left: 1rem;
+        padding-right: 1rem;
+      }
+      
+      .page-header .py-4 {
+        padding-top: 1.5rem !important;
+        padding-bottom: 1.5rem !important;
+      }
     }
 
     /* FORCE STANDARD BOOTSTRAP BUTTON STYLING - Override global theme */
@@ -110,6 +123,28 @@ import { CommonModule } from '@angular/common';
       color: #fff !important;
       box-shadow: none !important;
       transform: none !important;
+    }
+
+    /* Button spacing and arrangement */
+    ::ng-deep .gap-2 {
+      gap: 0.5rem !important;
+    }
+
+    ::ng-deep .d-flex {
+      display: flex !important;
+    }
+
+    /* Mobile responsive button layout */
+    @media (max-width: 768px) {
+      ::ng-deep .gap-2 {
+        flex-direction: column;
+        gap: 0.5rem !important;
+        width: 100%;
+      }
+
+      ::ng-deep .gap-2 .btn {
+        width: 100%;
+      }
     }
   `]
 })
