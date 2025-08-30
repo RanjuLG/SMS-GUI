@@ -129,36 +129,14 @@
   }
 }
 
-/* Button Styling */
+/* Button Styling - Simplified for consistency with PageHeader */
 .btn {
   border-radius: var(--pricing-border-radius-sm);
   font-weight: 500;
   font-size: 0.9rem;
   padding: 0.75rem 1.5rem;
-  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
   border: none;
   position: relative;
-  overflow: hidden;
-  
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s;
-  }
-  
-  &:hover::before {
-    left: 100%;
-  }
-  
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-  }
   
   i {
     margin-right: 0.5rem;
@@ -168,41 +146,21 @@
 .btn-primary {
   background: var(--pricing-primary-gradient);
   color: white;
-  
-  &:hover {
-    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
-    color: white;
-  }
 }
 
 .btn-success {
   background: var(--pricing-success-gradient);
   color: white;
-  
-  &:hover {
-    background: linear-gradient(135deg, #4a9428 0%, #96d4bd 100%);
-    color: white;
-  }
 }
 
 .btn-info {
   background: var(--pricing-info-gradient);
   color: white;
-  
-  &:hover {
-    background: linear-gradient(135deg, #3d8bec 0%, #00d9ec 100%);
-    color: white;
-  }
 }
 
 .btn-danger {
   background: var(--pricing-danger-gradient);
   color: white;
-  
-  &:hover {
-    background: linear-gradient(135deg, #de81e9 0%, #e34a5a 100%);
-    color: white;
-  }
 }
 
 /* Header Actions */

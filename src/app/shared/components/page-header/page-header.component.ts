@@ -10,7 +10,7 @@ import { CommonModule } from '@angular/common';
       <div class="container-fluid py-4">
         <div class="row align-items-center">
           <div class="col-md-8">
-            <h1 class="h3 mb-1">{{ title }}</h1>
+            <h1 class="h4 mb-1">{{ title }}</h1>
             <p class="subtitle mb-0" *ngIf="subtitle">{{ subtitle }}</p>
           </div>
           <div class="col-md-4 text-end" *ngIf="showActions">
@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
       transition: background-color 0.3s ease, border-color 0.3s ease;
     }
 
-    .h3 {
+    .h4 {
       font-weight: 600;
       color: var(--primary-text);
       margin: 0;
@@ -37,7 +37,7 @@ import { CommonModule } from '@angular/common';
 
     .subtitle {
       color: var(--secondary-text);
-      font-size: 0.95rem;
+      font-size: 0.875rem;
       margin: 0;
     }
 
