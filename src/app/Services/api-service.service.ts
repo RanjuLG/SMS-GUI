@@ -78,16 +78,33 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 }
 
 
-  getCustomers(from: Date, to: Date): Observable<CustomerDto[]> {
+  getCustomers(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     // Convert dates to ISO strings
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
   
-    // Construct the URL with query parameters
-    const url = `${this.configService.apiUrl}/api/customers?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`;
+    // Build query parameters
+    let params = new HttpParams()
+      .set('From', fromStr)
+      .set('To', toStr)
+      .set('Page', page.toString())
+      .set('PageSize', pageSize.toString());
+    
+    if (search) {
+      params = params.set('Search', search);
+    }
+    if (sortBy) {
+      params = params.set('SortBy', sortBy);
+    }
+    if (sortOrder) {
+      params = params.set('SortOrder', sortOrder);
+    }
   
-    return this.http.get<CustomerDto[]>(url);
+    // Construct the URL with query parameters
+    const url = `${this.configService.apiUrl}/api/customers`;
+  
+    return this.http.get<any>(url, { params });
   }
   
 
@@ -136,13 +153,33 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
     return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto);
   }
 
-  getItems(from: Date, to: Date): Observable<ItemDto[]> {
+  getItems(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
 
-    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`);
+    // Build query parameters
+    let params = new HttpParams()
+      .set('From', fromStr)
+      .set('To', toStr)
+      .set('Page', page.toString())
+      .set('PageSize', pageSize.toString());
+    
+    if (search) {
+      params = params.set('Search', search);
+    }
+    if (sortBy) {
+      params = params.set('SortBy', sortBy);
+    }
+    if (sortOrder) {
+      params = params.set('SortOrder', sortOrder);
+    }
+    if (customerNIC) {
+      params = params.set('CustomerNIC', customerNIC);
+    }
+
+    return this.http.get<any>(`${this.configService.apiUrl}/api/items`, { params });
   }
 
   getItemById(itemId: number): Observable<ItemDto> {
@@ -182,13 +219,39 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
     return this.http.put(`${this.configService.apiUrl}/api/invoices/${invoiceId}`, invoiceDto);
   }
 
-  getInvoices(from: Date, to: Date): Observable<InvoiceDto[]> {
+  getInvoices(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string, status?: number, invoiceTypeId?: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
 
-    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`);
+    // Build query parameters
+    let params = new HttpParams()
+      .set('From', fromStr)
+      .set('To', toStr)
+      .set('Page', page.toString())
+      .set('PageSize', pageSize.toString());
+    
+    if (search) {
+      params = params.set('Search', search);
+    }
+    if (sortBy) {
+      params = params.set('SortBy', sortBy);
+    }
+    if (sortOrder) {
+      params = params.set('SortOrder', sortOrder);
+    }
+    if (customerNIC) {
+      params = params.set('CustomerNIC', customerNIC);
+    }
+    if (status !== undefined) {
+      params = params.set('Status', status.toString());
+    }
+    if (invoiceTypeId !== undefined) {
+      params = params.set('InvoiceTypeId', invoiceTypeId.toString());
+    }
+
+    return this.http.get<any>(`${this.configService.apiUrl}/api/invoices`, { params });
   }
 
   getInvoiceById(invoiceId: number): Observable<InvoiceDto_> {
@@ -230,11 +293,41 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 }
 
 
-getTransactions(from: Date, to: Date): Observable<TransactionReportDto[]> {
+getTransactions(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string, transactionType?: number, minAmount?: number, maxAmount?: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   const fromStr = from.toISOString();
-    const toStr = to.toISOString();
-  return this.http.get<TransactionReportDto[]>(`${this.configService.apiUrl}/api/transactions?From=${encodeURIComponent(fromStr)}&To=${encodeURIComponent(toStr)}`)
+  const toStr = to.toISOString();
+
+  // Build query parameters
+  let params = new HttpParams()
+    .set('From', fromStr)
+    .set('To', toStr)
+    .set('Page', page.toString())
+    .set('PageSize', pageSize.toString());
+  
+  if (search) {
+    params = params.set('Search', search);
+  }
+  if (sortBy) {
+    params = params.set('SortBy', sortBy);
+  }
+  if (sortOrder) {
+    params = params.set('SortOrder', sortOrder);
+  }
+  if (customerNIC) {
+    params = params.set('CustomerNIC', customerNIC);
+  }
+  if (transactionType !== undefined) {
+    params = params.set('TransactionType', transactionType.toString());
+  }
+  if (minAmount !== undefined) {
+    params = params.set('MinAmount', minAmount.toString());
+  }
+  if (maxAmount !== undefined) {
+    params = params.set('MaxAmount', maxAmount.toString());
+  }
+
+  return this.http.get<any>(`${this.configService.apiUrl}/api/transactions`, { params })
     .pipe(catchError(this.handleError));
 }
 
@@ -291,9 +384,28 @@ getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transac
 }
 
 //users
-getUsers(){
+getUsers(page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, role?: string): Observable<any>{
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<User[]>(`${this.configService.apiUrl}/api/account/users`)
+  
+  // Build query parameters
+  let params = new HttpParams()
+    .set('Page', page.toString())
+    .set('PageSize', pageSize.toString());
+  
+  if (search) {
+    params = params.set('Search', search);
+  }
+  if (sortBy) {
+    params = params.set('SortBy', sortBy);
+  }
+  if (sortOrder) {
+    params = params.set('SortOrder', sortOrder);
+  }
+  if (role) {
+    params = params.set('Role', role);
+  }
+
+  return this.http.get<any>(`${this.configService.apiUrl}/api/account/users`, { params })
   .pipe(catchError(this.handleError));
 }
 
@@ -314,9 +426,25 @@ deleteUsers(userIds: string[]){
 
 // Karatage Operations
 
-getAllKarats(): Observable<Karat[]> {
+getAllKarats(page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Karat[]>(`${this.configService.apiUrl}/api/karatage/karats`);
+  
+  // Build query parameters
+  let params = new HttpParams()
+    .set('Page', page.toString())
+    .set('PageSize', pageSize.toString());
+  
+  if (search) {
+    params = params.set('Search', search);
+  }
+  if (sortBy) {
+    params = params.set('SortBy', sortBy);
+  }
+  if (sortOrder) {
+    params = params.set('SortOrder', sortOrder);
+  }
+
+  return this.http.get<any>(`${this.configService.apiUrl}/api/karatage/karats`, { params });
 }
 
 getKaratById(karatId: number): Observable<Karat> {
@@ -341,9 +469,25 @@ deleteKarat(karatId: number): Observable<any> {
 
 // LoanPeriod Operations
 
-getAllLoanPeriods(): Observable<LoanPeriod[]> {
+getAllLoanPeriods(page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<LoanPeriod[]>(`${this.configService.apiUrl}/api/karatage/loanperiods`);
+  
+  // Build query parameters
+  let params = new HttpParams()
+    .set('Page', page.toString())
+    .set('PageSize', pageSize.toString());
+  
+  if (search) {
+    params = params.set('Search', search);
+  }
+  if (sortBy) {
+    params = params.set('SortBy', sortBy);
+  }
+  if (sortOrder) {
+    params = params.set('SortOrder', sortOrder);
+  }
+
+  return this.http.get<any>(`${this.configService.apiUrl}/api/karatage/loanperiods`, { params });
 }
 
 getLoanPeriodById(loanPeriodId: number): Observable<LoanPeriod> {
@@ -368,9 +512,37 @@ deleteLoanPeriod(loanPeriodId: number): Observable<any> {
 
 // Pricing Operations
 
-getAllPricings(): Observable<Pricing[]> {
+getAllPricings(page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, karatId?: number, loanPeriodId?: number, minPrice?: number, maxPrice?: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings`);
+  
+  // Build query parameters
+  let params = new HttpParams()
+    .set('Page', page.toString())
+    .set('PageSize', pageSize.toString());
+  
+  if (search) {
+    params = params.set('Search', search);
+  }
+  if (sortBy) {
+    params = params.set('SortBy', sortBy);
+  }
+  if (sortOrder) {
+    params = params.set('SortOrder', sortOrder);
+  }
+  if (karatId !== undefined) {
+    params = params.set('KaratId', karatId.toString());
+  }
+  if (loanPeriodId !== undefined) {
+    params = params.set('LoanPeriodId', loanPeriodId.toString());
+  }
+  if (minPrice !== undefined) {
+    params = params.set('MinPrice', minPrice.toString());
+  }
+  if (maxPrice !== undefined) {
+    params = params.set('MaxPrice', maxPrice.toString());
+  }
+
+  return this.http.get<any>(`${this.configService.apiUrl}/api/karatage/pricings`, { params });
 }
 
 getPricingById(pricingId: number): Observable<Pricing> {

@@ -49,6 +49,11 @@ export class CustomerFormComponent implements OnInit {
   itemsPerPage: number = 10;
   itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
   searchControl = new FormControl();
+  pagination: any = null;
+  loading: boolean = false;
+  searchTerm: string = '';
+  sortBy: string = 'createdAt';
+  sortOrder: string = 'desc';
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
@@ -161,20 +166,30 @@ export class CustomerFormComponent implements OnInit {
   }
 
   loadCustomers(): void {
-    this.isLoading = true;
-    this.apiService.getCustomers(this.from, this.to).subscribe({
-      next: (customers: ExtendedCustomerDto[]) => {
-        this.customers = customers.map(customer => ({
+    this.loading = true;
+    this.apiService.getCustomers(
+      this.from, 
+      this.to, 
+      this.page, 
+      this.itemsPerPage, 
+      this.searchTerm, 
+      this.sortBy, 
+      this.sortOrder
+    ).subscribe({
+      next: (response: any) => {
+        // Handle paginated response
+        this.customers = response.data?.map((customer: CustomerDto) => ({
           ...customer,
           createdAt: this.dateService.formatDateTime(customer.createdAt),
           selected: false
-        }));
-        this.isLoading = false;
+        })) || [];
+        this.pagination = response.pagination;
+        this.loading = false;
         this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Failed to load customers', error);
-        this.isLoading = false;
+        this.loading = false;
         this.cdr.markForCheck();
       }
     });
@@ -324,12 +339,43 @@ export class CustomerFormComponent implements OnInit {
   }
 
   getStartIndex(): number {
+    if (this.pagination) {
+      return (this.pagination.currentPage - 1) * this.pagination.pageSize + 1;
+    }
     return (this.page - 1) * this.itemsPerPage + 1;
   }
 
   getEndIndex(): number {
+    if (this.pagination) {
+      const endIndex = this.pagination.currentPage * this.pagination.pageSize;
+      return endIndex > this.pagination.totalItems ? this.pagination.totalItems : endIndex;
+    }
     const endIndex = this.page * this.itemsPerPage;
     return endIndex > this.customers.length ? this.customers.length : endIndex;
+  }
+
+  // New pagination and search event handlers
+  onSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.page = 1;
+    this.loadCustomers();
+  }
+
+  onPageChange(page: number): void {
+    this.page = page;
+    this.loadCustomers();
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    this.itemsPerPage = pageSize;
+    this.page = 1;
+    this.loadCustomers();
+  }
+
+  onSortChange(sortConfig: { sortBy: string, sortOrder: string }): void {
+    this.sortBy = sortConfig.sortBy;
+    this.sortOrder = sortConfig.sortOrder;
+    this.loadCustomers();
   }
 
   onStartDateChange(event: any): void {

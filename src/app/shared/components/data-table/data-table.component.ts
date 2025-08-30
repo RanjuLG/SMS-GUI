@@ -173,12 +173,17 @@ export class DataTableComponent {
   @Input() showAddButton: boolean = true;
   @Input() pageSize: number = 10;
   @Input() pageSizeOptions: number[] = [5, 10, 15, 20, 50];
+  @Input() loading: boolean = false;
+  @Input() pagination: any = null; // Pagination info from API response
+  @Input() serverSidePagination: boolean = false; // Enable server-side pagination
 
   @Output() search = new EventEmitter<string>();
   @Output() add = new EventEmitter<void>();
   @Output() action = new EventEmitter<{action: string, item: any}>();
   @Output() selectionChange = new EventEmitter<any[]>();
   @Output() pageSizeChange = new EventEmitter<number>();
+  @Output() pageChange = new EventEmitter<number>();
+  @Output() sortChange = new EventEmitter<{sortBy: string, sortOrder: string}>();
 
   searchTerm: string = '';
   sortColumn: string = '';
@@ -186,6 +191,11 @@ export class DataTableComponent {
   currentPage: number = 1;
 
   get filteredData() {
+    // Use server-side pagination if enabled
+    if (this.serverSidePagination) {
+      return this.data;
+    }
+
     let filtered = [...this.data];
     
     if (this.searchTerm) {
@@ -211,8 +221,27 @@ export class DataTableComponent {
   }
 
   get paginatedData() {
+    // Use server-side pagination if enabled
+    if (this.serverSidePagination) {
+      return this.data;
+    }
+
     const start = (this.currentPage - 1) * this.pageSize;
     return this.filteredData.slice(start, start + this.pageSize);
+  }
+
+  get totalPages(): number {
+    if (this.serverSidePagination && this.pagination) {
+      return this.pagination.totalPages;
+    }
+    return Math.ceil(this.filteredData.length / this.pageSize);
+  }
+
+  get totalItems(): number {
+    if (this.serverSidePagination && this.pagination) {
+      return this.pagination.totalItems;
+    }
+    return this.filteredData.length;
   }
 
   get allSelected() {
@@ -225,8 +254,12 @@ export class DataTableComponent {
 
   onSearch(term: string) {
     this.searchTerm = term;
-    this.currentPage = 1;
-    this.search.emit(term);
+    if (this.serverSidePagination) {
+      this.currentPage = 1;
+      this.search.emit(term);
+    } else {
+      this.currentPage = 1;
+    }
   }
 
   onAdd() {
@@ -244,6 +277,10 @@ export class DataTableComponent {
       this.sortColumn = column;
       this.sortDirection = 'asc';
     }
+
+    if (this.serverSidePagination) {
+      this.sortChange.emit({ sortBy: this.sortColumn, sortOrder: this.sortDirection });
+    }
   }
 
   toggleSelection(item: any) {
@@ -259,12 +296,19 @@ export class DataTableComponent {
 
   onPageChange(page: number) {
     this.currentPage = page;
+    if (this.serverSidePagination) {
+      this.pageChange.emit(page);
+    }
   }
 
   updatePageSize(size: number) {
     this.pageSize = size;
     this.currentPage = 1;
-    this.pageSizeChange.emit(size);
+    if (this.serverSidePagination) {
+      this.pageSizeChange.emit(size);
+    } else {
+      this.pageSizeChange.emit(size);
+    }
   }
 
   getNestedValue(obj: any, path: string): any {

@@ -3,5 +3,93 @@
 	"invoice_settings": {
 		"width": 229,
 		"height": 180
+	},
+	"api_endpoints": {
+		"authentication": {
+			"login": "/api/account/login",
+			"register": "/api/account/register"
+		},
+		"customers": {
+			"base": "/api/customers",
+			"create": "/api/customers",
+			"getAll": "/api/customers?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}",
+			"getById": "/api/customers/{customerId}/customer",
+			"update": "/api/customers/{customerId}/customer",
+			"delete": "/api/customers/{customerId}/customer",
+			"deleteMultiple": "/api/customers/delete-multiple",
+			"getByIds": "/api/customers/byIds",
+			"getByNIC": "/api/customers/byNIC"
+		},
+		"items": {
+			"base": "/api/items",
+			"create": "/api/items",
+			"getAll": "/api/items?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&CustomerNIC={customerNIC}",
+			"getById": "/api/items/{itemId}/item",
+			"update": "/api/items/{itemId}/item",
+			"delete": "/api/items/{itemId}/item",
+			"deleteMultiple": "/api/items/delete-multiple",
+			"getByCustomerNIC": "/api/items/customer/{nic}"
+		},
+		"transactions": {
+			"base": "/api/transactions",
+			"create": "/api/transactions",
+			"getAll": "/api/transactions?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&CustomerNIC={customerNIC}&TransactionType={transactionType}&MinAmount={minAmount}&MaxAmount={maxAmount}",
+			"getById": "/api/transactions/{transactionId}",
+			"getByIds": "/api/transactions/byIds",
+			"delete": "/api/transactions/{transactionId}",
+			"deleteMultiple": "/api/transactions/delete-multiple",
+			"getByCustomerNIC": "/api/transactions/customer/{nic}"
+		},
+		"invoices": {
+			"base": "/api/invoices",
+			"create": "/api/invoices/{initialInvoiceNumber}/{installmentNumber}",
+			"getAll": "/api/invoices?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&CustomerNIC={customerNIC}&Status={status}&InvoiceTypeId={invoiceTypeId}",
+			"getById": "/api/invoices/{invoiceId}",
+			"update": "/api/invoices/{invoiceId}",
+			"delete": "/api/invoices/{invoiceId}",
+			"deleteMultiple": "/api/invoices/delete-multiple",
+			"getByCustomerNIC": "/api/invoices/customer/{nic}",
+			"getByInvoiceNo": "/api/invoices/invoiceNo/{invoiceNo}",
+			"getLoanInfoByInitialInvoiceNo": "/api/invoices/InitialInvoice/{invoiceNo}"
+		},
+		"users": {
+			"base": "/api/account/users",
+			"getAll": "/api/account/users?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&Role={role}",
+			"update": "/api/account/user/{userId}",
+			"deleteMultiple": "/api/account/users/delete-multiple"
+		},
+		"karatage": {
+			"karats": {
+				"base": "/api/karatage/karats",
+				"getAll": "/api/karatage/karats?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}",
+				"getById": "/api/karatage/karats/{karatId}",
+				"create": "/api/karatage/karats",
+				"update": "/api/karatage/karats/{karatId}",
+				"delete": "/api/karatage/karats/{karatId}"
+			},
+			"loanPeriods": {
+				"base": "/api/karatage/loanperiods",
+				"getAll": "/api/karatage/loanperiods?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}",
+				"getById": "/api/karatage/loanperiods/{loanPeriodId}",
+				"create": "/api/karatage/loanperiods",
+				"update": "/api/karatage/loanperiods/{loanPeriodId}",
+				"delete": "/api/karatage/loanperiods/{loanPeriodId}"
+			},
+			"pricings": {
+				"base": "/api/karatage/pricings",
+				"getAll": "/api/karatage/pricings?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&KaratId={karatId}&LoanPeriodId={loanPeriodId}&MinPrice={minPrice}&MaxPrice={maxPrice}",
+				"getById": "/api/karatage/pricings/{pricingId}",
+				"create": "/api/karatage/pricings",
+				"createBatch": "/api/karatage/pricings/batch",
+				"update": "/api/karatage/pricings/{pricingId}",
+				"delete": "/api/karatage/pricings/{pricingId}",
+				"getByKaratAndLoanPeriod": "/api/karatage/pricings/karat/{karatId}/loanperiod/{loanPeriodId}"
+			}
+		},
+		"reports": {
+			"base": "/api/reports",
+			"getByCustomer": "/api/reports/customer/{customerNIC}",
+			"getOverview": "/api/reports/overview"
+		}
 	}
 }
