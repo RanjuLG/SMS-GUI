@@ -1,4 +1,4 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config-service.service'
 import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/customer.model';
@@ -13,20 +13,81 @@ import { AuthService } from './auth.service';
 import { CreateUserDTO, User, UserDTO } from '../Components/user-management/user.model';
 import { Pricing, LoanPeriod,Karat, EditPricing, CreatePricing, PricingBatchDTO } from '../Components/pricing/karat-value.model';
 import { Overview, ReportByCustomer, TransactionReportDto } from '../Components/reports/reports.model';
+import { NotificationService } from './notification.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
 
-  constructor(private http: HttpClient, private configService: ConfigService,private authService: AuthService) { }
+  constructor(
+    private http: HttpClient, 
+    private configService: ConfigService, 
+    private authService: AuthService,
+    private notificationService: NotificationService
+  ) { }
   
+  /**
+   * Get standard HTTP headers for authenticated requests
+   */
+  private getHttpHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    });
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    return headers;
+  }
+
+  /**
+   * Get HTTP headers for multipart/form-data requests (file uploads)
+   */
+  private getMultipartHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    let headers = new HttpHeaders({
+      'Accept': 'application/json'
+      // Don't set Content-Type for multipart - browser will set it automatically with boundary
+    });
+    
+    if (token) {
+      headers = headers.set('Authorization', `Bearer ${token}`);
+    }
+    
+    return headers;
+  }
+
+  /**
+   * Enhanced error handling with authentication context
+   */
   private handleError(error: any): Observable<never> {
     console.error('API call failed:', error);
+    
+    if (error.status === 401) {
+      console.log('Unauthorized - handling appropriately');
+      
+      // Check if the error message indicates insufficient permissions vs invalid token
+      const errorMessage = error.error?.message || error.message || '';
+      if (errorMessage.toLowerCase().includes('permission') || 
+          errorMessage.toLowerCase().includes('access denied') ||
+          errorMessage.toLowerCase().includes('insufficient')) {
+        this.notificationService.showUnauthorizedPopup();
+      } else {
+        // Token is invalid or expired
+        this.authService.logout();
+      }
+    }
+    
     return throwError(() => new Error(error.message || 'Server Error'));
   }
 
-
+  /**
+   * Check if user is logged in and handle authentication
+   */
   private checkLoggedIn(): boolean {
     if (!this.authService.isLoggedIn) {
       console.error('User is not logged in');
@@ -53,8 +114,12 @@ createCustomer(customerDto: CreateCustomerDto, nicPhotoFile: File | null): Obser
     formData.append('nicPhoto', nicPhotoFile);
   }
 
-  // Make a POST request with the FormData
-  return this.http.post(`${this.configService.apiUrl}/api/customers`, formData);
+  // Make a POST request with proper headers for multipart data
+  return this.http.post(`${this.configService.apiUrl}/api/customers`, formData, {
+    headers: this.getMultipartHeaders()
+  }).pipe(
+    catchError(this.handleError.bind(this))
+  );
 }
 
 updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile: File | null): Observable<any> {
@@ -71,15 +136,19 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   } else {
     formData.append('nicPhoto', '');  // Add an empty string or skip this
   }
-  
 
-  // Make a PUT request with the FormData
-  return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, formData);
+  // Make a PUT request with proper headers for multipart data
+  return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, formData, {
+    headers: this.getMultipartHeaders()
+  }).pipe(
+    catchError(this.handleError.bind(this))
+  );
 }
 
 
   getCustomers(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+    
     // Convert dates to ISO strings
     const fromStr = from.toISOString();
     const toStr = to.toISOString();
@@ -100,34 +169,54 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
     if (sortOrder) {
       params = params.set('SortOrder', sortOrder);
     }
-  
-    // Construct the URL with query parameters
-    const url = `${this.configService.apiUrl}/api/customers`;
-  
-    return this.http.get<any>(url, { params });
+    
+    return this.http.get(`${this.configService.apiUrl}/api/customers`, {
+      headers: this.getHttpHeaders(),
+      params: params
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
-  
 
   getCustomerById(customerId: number): Observable<CustomerDto> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<CustomerDto>(`${this.configService.apiUrl}/api/customers/${customerId}/customer`);
+    
+    return this.http.get<CustomerDto>(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   deleteCustomer(customerId: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.delete(`${this.configService.apiUrl}/api/customers/${customerId}/customer`);
+    
+    return this.http.delete(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   deleteMultipleCustomers(customerIds: number[]): Observable<any>{
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-    return this.http.delete(`${this.configService.apiUrl}/api/customers/delete-multiple`, { body: customerIds });
-
+    return this.http.delete(`${this.configService.apiUrl}/api/customers/delete-multiple`, { 
+      headers: this.getHttpHeaders(),
+      body: customerIds 
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getCustomersByIds(customerIds: number[]): Observable<CustomerDto[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.post<CustomerDto[]>(`${this.configService.apiUrl}/api/customers/byIds`, customerIds);
+    
+    return this.http.post<CustomerDto[]>(`${this.configService.apiUrl}/api/customers/byIds`, customerIds, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getCustomerByNIC(customerNIC: string): Observable<CustomerDto> {
@@ -145,12 +234,22 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 
   createItem(itemDto: CreateItemDto): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.post(`${this.configService.apiUrl}/api/items`, itemDto);
+    
+    return this.http.post(`${this.configService.apiUrl}/api/items`, itemDto, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   updateItem(itemId: number, itemDto: CreateItemDto): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto);
+    
+    return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getItems(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string): Observable<any> {
@@ -179,28 +278,53 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
       params = params.set('CustomerNIC', customerNIC);
     }
 
-    return this.http.get<any>(`${this.configService.apiUrl}/api/items`, { params });
+    return this.http.get<any>(`${this.configService.apiUrl}/api/items`, { 
+      headers: this.getHttpHeaders(),
+      params: params 
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   getItemById(itemId: number): Observable<ItemDto> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<ItemDto>(`${this.configService.apiUrl}/api/items/${itemId}/item`);
+    
+    return this.http.get<ItemDto>(`${this.configService.apiUrl}/api/items/${itemId}/item`, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   deleteItem(itemId: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.delete(`${this.configService.apiUrl}/api/items/${itemId}/item`);
+    
+    return this.http.delete(`${this.configService.apiUrl}/api/items/${itemId}/item`, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   deleteMultipleItems(itemIds: number[]): Observable<any>{
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-    return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { body: itemIds });
-
+    return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { 
+      headers: this.getHttpHeaders(),
+      body: itemIds 
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
+
   getItemsByCustomerNIC(nic: string): Observable<ItemDto[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`);
+    
+    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
 
@@ -211,7 +335,11 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   
     const url = `${this.configService.apiUrl}/api/invoices/${initialInvoiceNumber}/${installmentNumber}`; 
   
-    return this.http.post(url, invoiceDto);
+    return this.http.post(url, invoiceDto, {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
   updateInvoice(invoiceId: number, invoiceDto: CreateInvoiceDto): Observable<any> {

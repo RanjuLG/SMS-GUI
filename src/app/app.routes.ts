@@ -24,10 +24,12 @@ import { ReportByCustomerComponent } from './Components/helpers/reports/report-b
 import { SettlementInvoiceTemplateComponent } from './Components/helpers/invoices/settlement-invoice-template/settlement-invoice-template.component';
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { IncomeReportComponent } from './Components/helpers/reports/income-report/income-report.component';
+import { ProfileComponent } from './Components/profile/profile.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
     { path: 'overview', component: OverviewComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'profile', component: ProfileComponent }, // Safe route for logged-in users without full permissions
     { path: 'customers', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'items',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
@@ -50,5 +52,4 @@ export const routes: Routes = [
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/transactions',component: IncomeReportComponent, canActivate: [AuthGuard], data: { role: 'Admin' }},
     {path:'create-invoice',component: DashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-
 ];

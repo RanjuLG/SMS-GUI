@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, catchError, throwError } from 'rxjs';
 import { ConfigService } from './config-service.service';
 
 @Injectable({
@@ -20,7 +20,12 @@ export class AuthService {
   login(username: string, password: string): Observable<any> {
     console.log("this.authUrl: ", this.authUrl);
 
-    return this.http.post(`${this.authUrl}/login`, { username, password }).pipe(
+    return this.http.post(`${this.authUrl}/login`, { username, password }, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    }).pipe(
       tap((response: any) => {
         // Store the token and username in localStorage
         localStorage.setItem('token', response.token);
@@ -32,6 +37,10 @@ export class AuthService {
 
         // Emit login status to notify other components
         this.authStatus.emit(true);
+      }),
+      catchError((error: any) => {
+        console.error('Login failed:', error);
+        return throwError(() => error);
       })
     );
   }
@@ -56,6 +65,18 @@ export class AuthService {
     const token = localStorage.getItem('token');
     return this.http.post(`${this.authUrl}/register?token=${token}`,
       { username, email, password, roles: [role] },
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': token ? `Bearer ${token}` : ''
+        }
+      }
+    ).pipe(
+      catchError((error: any) => {
+        console.error('Registration failed:', error);
+        return throwError(() => error);
+      })
     );
   }
 
