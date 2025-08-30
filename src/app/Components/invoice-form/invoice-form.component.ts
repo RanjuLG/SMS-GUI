@@ -11,7 +11,6 @@ import { DateService } from '../../Services/date-service.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import {RouterLink} from '@angular/router';
@@ -33,7 +32,6 @@ export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
     DataTableComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
-    MatHint,
     MatFormFieldModule,
     MatInputModule,
     RouterLink,

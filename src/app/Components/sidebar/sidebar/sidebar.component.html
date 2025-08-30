@@ -28,7 +28,22 @@
 
                 <!-- Menu item with children -->
                 <div *ngIf="item.children" class="nav-group">
-                    <button class="nav-link nav-toggle" 
+                    <!-- If parent has a route, make it clickable -->
+                    <a *ngIf="item.route" 
+                       [routerLink]="item.route" 
+                       routerLinkActive="active"
+                       class="nav-link nav-toggle" 
+                       [attr.title]="!expanded ? item.label : null">
+                        <i [class]="item.icon + ' nav-icon'"></i>
+                        <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+                        <i *ngIf="expanded" 
+                           [class]="isMenuExpanded(item.label) ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'" 
+                           class="nav-arrow"
+                           (click)="$event.preventDefault(); $event.stopPropagation(); toggleMenu(item.label)"></i>
+                    </a>
+                    <!-- If parent has no route, use button -->
+                    <button *ngIf="!item.route"
+                            class="nav-link nav-toggle" 
                             (click)="expanded ? toggleMenu(item.label) : expandSidebar()"
                             [attr.title]="!expanded ? item.label : null">
                         <i [class]="item.icon + ' nav-icon'"></i>
