@@ -1,7 +1,7 @@
 /* Professional Invoice Styling */
 .invoice-container {
   background-color: #ffffff;
-  padding: 30px;
+  padding: 20px; // Reduced padding
   margin: 0 auto;
   max-width: 210mm; // A4 width
   min-height: 297mm; // A4 height
@@ -9,7 +9,7 @@
   border-radius: 8px;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #2c3e50;
-  line-height: 1.6;
+  line-height: 1.4; // Reduced line height
   position: relative;
 }
 
@@ -17,7 +17,7 @@
 #printable-template {
   width: 210mm;
   min-height: 297mm;
-  padding: 15mm;
+  padding: 12mm; // Reduced padding
   margin: 0;
   box-sizing: border-box;
   page-break-after: always;
