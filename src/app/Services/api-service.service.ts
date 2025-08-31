@@ -140,6 +140,16 @@ export class ApiService {
     return true;
   }
 
+  /**
+   * Convert Date to local ISO string format for backend
+   * Backend expects local time, not UTC
+   */
+  private toLocalISOString(date: Date): string {
+    const offset = date.getTimezoneOffset() * 60000; // offset in milliseconds
+    const localDate = new Date(date.getTime() - offset);
+    return localDate.toISOString();
+  }
+
 //Customers
 createCustomer(customerDto: CreateCustomerDto, nicPhotoFile: File | null): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
@@ -192,9 +202,9 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   getCustomers(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    // Convert dates to ISO strings
-    const fromStr = from.toISOString();
-    const toStr = to.toISOString();
+    // Convert dates to local ISO strings (backend expects local time)
+    const fromStr = this.toLocalISOString(from);
+    const toStr = this.toLocalISOString(to);
   
     // Build query parameters
     let params = new HttpParams()
@@ -298,8 +308,9 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   getItems(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    const fromStr = from.toISOString();
-    const toStr = to.toISOString();
+    // Convert dates to local ISO strings (backend expects local time)
+    const fromStr = this.toLocalISOString(from);
+    const toStr = this.toLocalISOString(to);
 
     // Build query parameters
     let params = new HttpParams()
@@ -393,8 +404,9 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   getInvoices(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string, status?: number, invoiceTypeId?: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-    const fromStr = from.toISOString();
-    const toStr = to.toISOString();
+    // Convert dates to local ISO strings (backend expects local time)
+    const fromStr = this.toLocalISOString(from);
+    const toStr = this.toLocalISOString(to);
 
     // Build query parameters
     let params = new HttpParams()
@@ -466,8 +478,9 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 
 getTransactions(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string, transactionType?: number, minAmount?: number, maxAmount?: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  const fromStr = from.toISOString();
-  const toStr = to.toISOString();
+  // Convert dates to local ISO strings (backend expects local time)
+  const fromStr = this.toLocalISOString(from);
+  const toStr = this.toLocalISOString(to);
 
   // Build query parameters
   let params = new HttpParams()

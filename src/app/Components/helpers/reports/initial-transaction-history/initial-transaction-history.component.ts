@@ -150,11 +150,11 @@ calculateTotalAmount(transactions: TransactionReportDto[]): number {
   
   onStartDateChange(event: any): void {
     if (event && event.value) {
-      // Create a new UTC date for 'from'
+      // Since backend expects local time, use local date (not UTC)
       const fromDate = new Date(event.value);
-      this.from = new Date(Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0));
+      this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
       
-      console.log("this.from (UTC): ", this.from);
+      console.log("this.from (Local): ", this.from);
      
     } else {
       console.error('Start date event or value is null');
@@ -168,11 +168,12 @@ calculateTotalAmount(transactions: TransactionReportDto[]): number {
     {
       const {end } = event.value;
       
+        // Since backend expects local time, use local date (not UTC)
         const toDate = new Date(event.value);
-        this.to = new Date(Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 0, 0, 0));
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 0, 0, 0);
         this.to.setDate(this.to.getDate() + 1);
         
-        console.log("this.to: ", this.to);
+        console.log("this.to (Local): ", this.to);
         this.loadTransactions();
   
     } 

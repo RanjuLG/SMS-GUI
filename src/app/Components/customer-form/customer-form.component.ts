@@ -418,9 +418,10 @@ export class CustomerFormComponent implements OnInit {
 
   onStartDateChange(event: any): void {
     if (event && event.value) {
+      // Since backend expects local time, use local date (not UTC)
       const fromDate = new Date(event.value);
-      this.from = new Date(Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0));
-      console.log("this.from (UTC): ", this.from);
+      this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+      console.log("this.from (Local): ", this.from);
       this.loadCustomers();
     } else {
       console.error('Start date event or value is null');
@@ -430,9 +431,10 @@ export class CustomerFormComponent implements OnInit {
 
   onDateRangeChange(event: any): void {
     if (event && event.value) {
+      // Since backend expects local time, use local date (not UTC)
       const toDate = new Date(event.value);
-      this.to = new Date(Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0));
-      console.log("this.to (UTC): ", this.to);
+      this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      console.log("this.to (Local): ", this.to);
       this.loadCustomers();
     } else {
       console.error('End date event or value is null');
