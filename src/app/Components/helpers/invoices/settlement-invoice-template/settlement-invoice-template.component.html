@@ -1,89 +1,133 @@
 <div class="invoice-container" id="printable-template">
-  <div class="invoice-header d-flex justify-content-between align-items-center pb-3">
-    <!-- Left Section (Date, Invoice No) -->
-    <div>
-      <p class="text-muted mb-1">Date</p>
-      <p class="text-muted mb-1">{{ dateGenerated }}</p>
-      <p class="text-muted mb-1">Invoice No</p>
-      <p class="text-muted mb-1">{{ settlementInvoice?.invoiceNo }}</p>
+    <!-- Professional Header Section -->
+    <div class="invoice-header">
+        <div class="row align-items-center">
+            <!-- Left Section - Invoice Details -->
+            <div class="col-md-3">
+                <div class="invoice-details">
+                    <div class="detail-row">
+                        <span class="label">Date:</span>
+                        <span class="value">{{ dateGenerated }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Invoice No:</span>
+                        <span class="value">{{ settlementInvoice?.invoiceNo }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Center Section - Company Branding -->
+            <div class="col-md-6 text-center">
+                <div class="company-branding">
+                    <img src="GoldCashLogo-receipt.png" alt="Gold Cash Logo" class="company-logo mb-2">
+                    <h3 class="company-name">Gold Cash (Pvt) Ltd.</h3>
+                    <p class="company-tagline">Premium Gold Financing Solutions</p>
+                </div>
+            </div>
+
+            <!-- Right Section - Company Contact -->
+            <div class="col-md-3 text-end">
+                <div class="company-contact">
+                    <div class="contact-row">
+                        <span class="contact-label">Reg No:</span>
+                        <span class="contact-value">987654</span>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-label">Email:</span>
+                        <span class="contact-value">goldcash&#64;gmail.com</span>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-label">Phone:</span>
+                        <span class="contact-value">+(94) 81 222 1234</span>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-value">Muruthalawa, Sri Lanka</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Center Section (Logo, Company Info) -->
-    <div class="text-center">
-      <img src="GoldCashLogo-receipt.png" alt="Company Logo" class="company-logo">
-      <h4 class="fw-semibold text-uppercase">Gold Cash (Pvt) Ltd.</h4>
+    <div class="section-divider"></div>
+
+    <!-- Customer and Transaction Summary Section -->
+    <div class="content-section">
+        <div class="row">
+            <!-- Customer Information -->
+            <div class="col-md-6">
+                <div class="info-card">
+                    <h5 class="section-title">Customer Information</h5>
+                    <div class="customer-details">
+                        <div class="customer-row">
+                            <span class="customer-label">Name:</span>
+                            <span class="customer-value">{{ customer?.customerName }}</span>
+                        </div>
+                        <div class="customer-row">
+                            <span class="customer-label">Address:</span>
+                            <span class="customer-value">{{ customer?.customerAddress }}</span>
+                        </div>
+                        <div class="customer-row">
+                            <span class="customer-label">NIC:</span>
+                            <span class="customer-value">{{ customer?.customerNIC }}</span>
+                        </div>
+                        <div class="customer-row">
+                            <span class="customer-label">Phone:</span>
+                            <span class="customer-value">{{ customer?.customerContactNo }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        
+            <!-- Transaction Summary -->
+            <div class="col-md-6">
+                <div class="summary-card">
+                    <h5 class="section-title">Settlement Summary</h5>
+                    <div class="summary-table">
+                        <div class="summary-row">
+                            <span class="summary-label">Sub Total (Rs):</span>
+                            <span class="summary-value">{{ transaction?.subTotal | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Interest Rate (%):</span>
+                            <span class="summary-value">{{ transaction?.interestRate }}</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Total Amount (Rs):</span>
+                            <span class="summary-value total-amount">{{ transaction?.totalAmount | number:'1.2-2' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- Right Section (Company Details) -->
-    <div class="text-end">
-      <p class="mb-1 text-muted">Reg No: 987654</p>
-      <p class="mb-1 text-muted">Email: goldcash&#64;gmail.com</p>
-      <p class="mb-1 text-muted">Phone: +(94) 81 222 1234</p>
-      <p class="text-muted">Muruthalawa, Sri Lanka</p>
-    </div>
-  </div>
+    <div class="section-divider"></div>
 
-  <hr>
-
-  <!-- Customer Information and Items -->
-  <div class="invoice-body row g-4">
-    <!-- Left: Customer Information -->
-    <div class="col-md-6">
-      <p class="fw-semibold text-muted">Customer Information</p>
-      <p class="text-muted">{{ customer?.customerName }}</p>
-      <p class="text-muted">{{ customer?.customerAddress }}</p>
-      <p class="text-muted">NIC: {{ customer?.customerNIC }}</p>
-      <p class="text-muted">Phone: {{ customer?.customerContactNo }}</p>
+    <!-- Footer Section -->
+    <div class="invoice-footer">
+        <div class="disclaimer-section">
+            <p class="disclaimer-text">
+                <strong>Settlement Acknowledgment:</strong> I confirm that the pledged gold articles have been returned to me in satisfactory condition, and I release Gold Cash (Pvt) Ltd. from any further liability related to this transaction. The loan has been fully settled and the pawn agreement is hereby completed.
+            </p>
+        </div>
+        
+        <div class="signatures-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p class="signature-label">Manager's Signature</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p class="signature-label">Customer's Signature</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    <!-- Right: Items List -->
-    <div class="col-md-6">
-      <div class="invoice-summary-box p-3 border">
-      <!-- Invoice Totals and Summary -->
-      <div class="invoice-summary d-flex justify-center">
-        <table class="table table-borderless" style="width: 300px;">
-          <tbody>
-            <tr>
-              <td class="text-muted">Sub Total (Rs)</td>
-              <td class="text-end text-muted">{{ transaction?.subTotal | number:'1.2-2' }}</td>
-            </tr>
-            <tr>
-              <td class="text-muted">Interest (%)</td>
-              <td class="text-end text-muted">{{ transaction?.interestRate }}</td>
-            </tr>
-            <tr class="border-top border-top-dashed fs-5">
-              <td class="text-dark text-muted fw-semibold">Total Amount (Rs)</td>
-              <td class="text-end text-muted fw-semibold">{{ transaction?.totalAmount | number:'1.2-2' }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    </div>
-  </div>
-  <hr>
-
-  <!-- Disclaimer and Signatures -->
-  <div class="invoice-footer text-center">
-    <p class="text-muted">Disclaimer: I confirm that the pledged gold articles have been returned
-       to me in satisfactory condition, and I release Gold Cash (Pvt) Ltd. from any further liability related to this transaction.</p>
-    <div class="row text-center">
-      <!--
-      <div class="col-md-4">
-        <hr>
-        <p>Cashier's Signature</p>
-      </div>
-      -->
-      <div class="col-md-6">
-        <hr>
-        <p>Manager's Signature</p>
-      </div>
-      <div class="col-md-6">
-        <hr>
-        <p>Customer's Signature</p>
-      </div>
-    </div>
-  </div>
 </div>
 
 

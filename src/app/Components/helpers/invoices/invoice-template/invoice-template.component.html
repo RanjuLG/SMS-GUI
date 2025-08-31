@@ -1,105 +1,163 @@
 <div class="invoice-container" id="printable-template">
-    <div class="invoice-header d-flex justify-content-between align-items-center pb-3">
-        <!-- Left Section (Date, Invoice No) -->
-        <div>
-            <p class="mb-1 text-muted">Date</p>
-            <p class="mb-1 text-muted">{{ dateGenerated }}</p>
-            <p class="mb-1 text-muted">Invoice No</p>
-            <p class="mb-1 text-muted">{{ invoice?.invoiceNo }}</p>
-        </div>
-
-        <!-- Center Section (Logo, Company Info) -->
-        <div class="text-center">
-            <img src="GoldCashLogo-receipt.png" alt="Company Logo" class="company-logo">
-            <h4 class="fw-semibold text-uppercase">Gold Cash (Pvt) Ltd.</h4>
-        </div>
-
-        <!-- Right Section (Company Details) -->
-        <div class="text-end">
-            <p class="mb-1 text-muted">Reg No: 987654</p>
-            <p class="mb-1 text-muted">Email: goldcash&#64;gmail.com</p>
-            <p class="mb-1 text-muted">Phone: +(94) 81 222 1234</p>
-            <p class="text-muted">Muruthalawa, Sri Lanka</p>
-        </div>
-    </div>
-
-    <hr>
-
-    <div class="row">
-        <div class="col-md-6">
-            <!-- Customer Information (left) -->
-            <p class="fw-semibold text-muted">Customer Information</p>
-            <p class="text-muted">{{ customer?.customerName }}</p>
-            <p class="text-muted">{{ customer?.customerAddress }}</p>
-            <p class="text-muted">NIC: {{ customer?.customerNIC }}</p>
-            <p class="text-muted">Phone: {{ customer?.customerContactNo }}</p>
-        </div>
-    
-        <div class="col-md-6">
-            <!-- Invoice Summary (right) -->
-            <div class="invoice-summary-box p-3 border">
-                <div class="d-flex justify-content-between mb-2">
-                    <p class="text-muted mb-0">Sub Total (Rs):</p>
-                    <p class="text-end text-muted mb-0">{{ transaction?.subTotal | number:'1.2-2' }}</p>
-                </div>
-                <div class="d-flex justify-content-between mb-2">
-                    <p class="text-muted mb-0">Interest (%):</p>
-                    <p class="text-end text-muted mb-0">{{ transaction?.interestRate }}</p>
-                </div>
-                <div class="d-flex justify-content-between">
-                    <p class="fw-semibold text-muted mb-0">Total Amount (Rs):</p>
-                    <p class="text-end fw-semibold text-muted mb-0">{{ transaction?.totalAmount | number:'1.2-2' }}</p>
+    <!-- Professional Header Section -->
+    <div class="invoice-header">
+        <div class="row align-items-center">
+            <!-- Left Section - Invoice Details -->
+            <div class="col-md-3">
+                <div class="invoice-details">
+                    <div class="detail-row">
+                        <span class="label">Date:</span>
+                        <span class="value">{{ dateGenerated }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="label">Invoice No:</span>
+                        <span class="value">{{ invoice?.invoiceNo }}</span>
+                    </div>
                 </div>
             </div>
-            
+
+            <!-- Center Section - Company Branding -->
+            <div class="col-md-6 text-center">
+                <div class="company-branding">
+                    <img src="GoldCashLogo-receipt.png" alt="Gold Cash Logo" class="company-logo mb-2">
+                    <h3 class="company-name">Gold Cash (Pvt) Ltd.</h3>
+                    <p class="company-tagline">Premium Gold Financing Solutions</p>
+                </div>
+            </div>
+
+            <!-- Right Section - Company Contact -->
+            <div class="col-md-3 text-end">
+                <div class="company-contact">
+                    <div class="contact-row">
+                        <span class="contact-label">Reg No:</span>
+                        <span class="contact-value">987654</span>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-label">Email:</span>
+                        <span class="contact-value">goldcash&#64;gmail.com</span>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-label">Phone:</span>
+                        <span class="contact-value">+(94) 81 222 1234</span>
+                    </div>
+                    <div class="contact-row">
+                        <span class="contact-value">Muruthalawa, Sri Lanka</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    
 
-    <hr>
+    <div class="section-divider"></div>
 
-    <!-- Items Table (Full Horizontal Space) -->
-    <div class="invoice-body">
-        <table class="table table-bordered w-100">
-            <thead class="table">
-                <tr>
-                    <th class="fw-semibold text-muted">#</th>
-                    <th class="fw-semibold text-muted">Item No.</th>
-                    <th class="fw-semibold text-muted">Description</th>
-                    <th class="fw-semibold text-muted">Remarks</th>
-                    <th class="fw-semibold text-muted">Net Wt (g)</th>
-                    <th class="fw-semibold text-muted">Gold Wt (g)</th>
-                    <th class="fw-semibold text-muted">Karat (K)</th>
-                    <th class="text-end fw-semibold text-muted">Value (Rs)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let item of items; let i = index">
-                    <td>{{ i + 1 }}</td>
-                    <td>{{ item?.itemId }}</td>
-                    <td>{{ item?.itemDescription }}</td>
-                    <td>{{ item?.itemRemarks }}</td>
-                    <td>{{ item?.itemWeight }}</td>
-                    <td>{{ item?.itemGoldWeight }}</td>
-                    <td>{{ getCaratRange(item?.itemCaratage ?? 0) }}</td>
-                    <td class="text-end">{{ item?.itemValue }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <!-- Disclaimer and Signatures -->
-    <div class="invoice-footer text-center">
-        <p class="text-muted">Disclaimer: I hereby pledge and transfer to Gold
-            Cash (Pvt) Ltd. the gold articles listed above, which are owned by me. I declare that the details provided
-            are accurate and agree that the terms and conditions outlined shall form part of this pawn contract.</p>
-        <div class="row text-center">
+    <!-- Customer and Transaction Summary Section -->
+    <div class="content-section">
+        <div class="row">
+            <!-- Customer Information -->
             <div class="col-md-6">
-                <hr>
-                <p class="text-muted">Manager's Signature</p>
+                <div class="info-card">
+                    <h5 class="section-title">Customer Information</h5>
+                    <div class="customer-details">
+                        <div class="customer-row">
+                            <span class="customer-label">Name:</span>
+                            <span class="customer-value">{{ customer?.customerName }}</span>
+                        </div>
+                        <div class="customer-row">
+                            <span class="customer-label">Address:</span>
+                            <span class="customer-value">{{ customer?.customerAddress }}</span>
+                        </div>
+                        <div class="customer-row">
+                            <span class="customer-label">NIC:</span>
+                            <span class="customer-value">{{ customer?.customerNIC }}</span>
+                        </div>
+                        <div class="customer-row">
+                            <span class="customer-label">Phone:</span>
+                            <span class="customer-value">{{ customer?.customerContactNo }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
+        
+            <!-- Transaction Summary -->
             <div class="col-md-6">
-                <hr>
-                <p class="text-muted">Customer's Signature</p>
+                <div class="summary-card">
+                    <h5 class="section-title">Transaction Summary</h5>
+                    <div class="summary-table">
+                        <div class="summary-row">
+                            <span class="summary-label">Sub Total (Rs):</span>
+                            <span class="summary-value">{{ transaction?.subTotal | number:'1.2-2' }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span class="summary-label">Interest Rate (%):</span>
+                            <span class="summary-value">{{ transaction?.interestRate }}</span>
+                        </div>
+                        <div class="summary-row total-row">
+                            <span class="summary-label">Total Amount (Rs):</span>
+                            <span class="summary-value total-amount">{{ transaction?.totalAmount | number:'1.2-2' }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="section-divider"></div>
+
+    <!-- Items Table Section -->
+    <div class="items-section">
+        <h5 class="section-title">Pledged Items Details</h5>
+        <div class="table-responsive">
+            <table class="items-table">
+                <thead>
+                    <tr>
+                        <th class="text-center">#</th>
+                        <th>Item No.</th>
+                        <th>Description</th>
+                        <th>Remarks</th>
+                        <th class="text-center">Net Wt (g)</th>
+                        <th class="text-center">Gold Wt (g)</th>
+                        <th class="text-center">Karat (K)</th>
+                        <th class="text-end">Value (Rs)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let item of items; let i = index" class="item-row">
+                        <td class="text-center">{{ i + 1 }}</td>
+                        <td class="item-id">{{ item?.itemId }}</td>
+                        <td class="item-description">{{ item?.itemDescription }}</td>
+                        <td class="item-remarks">{{ item?.itemRemarks }}</td>
+                        <td class="text-center">{{ item?.itemWeight }}</td>
+                        <td class="text-center">{{ item?.itemGoldWeight }}</td>
+                        <td class="text-center">{{ getCaratRange(item?.itemCaratage ?? 0) }}</td>
+                        <td class="text-end item-value">{{ item?.itemValue }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="section-divider"></div>
+    <!-- Footer Section -->
+    <div class="invoice-footer">
+        <div class="disclaimer-section">
+            <p class="disclaimer-text">
+                <strong>Disclaimer:</strong> I hereby pledge and transfer to Gold Cash (Pvt) Ltd. the gold articles listed above, which are owned by me. I declare that the details provided are accurate and agree that the terms and conditions outlined shall form part of this pawn contract.
+            </p>
+        </div>
+        
+        <div class="signatures-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p class="signature-label">Manager's Signature</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="signature-box">
+                        <div class="signature-line"></div>
+                        <p class="signature-label">Customer's Signature</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
