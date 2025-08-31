@@ -263,4 +263,42 @@ export class SettlementInvoiceTemplateComponent implements OnInit {
       }, 300);
     }
   }
+
+  getCurrentDateTime(): string {
+    const now = new Date();
+    const date = now.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+    const time = now.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false
+    });
+    return `${date} ${time}`;
+  }
+
+  getFormattedDateTime(dateString: string | undefined): string {
+    if (!dateString) return '';
+    
+    try {
+      const date = new Date(dateString);
+      const formattedDate = date.toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      });
+      const formattedTime = date.toLocaleTimeString('en-GB', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: false
+      });
+      return `${formattedDate} ${formattedTime}`;
+    } catch (error) {
+      return dateString; // Return original string if parsing fails
+    }
+  }
 }
