@@ -145,9 +145,9 @@ export class ApiService {
    * Backend expects local time, not UTC
    */
   private toLocalISOString(date: Date): string {
-    const offset = date.getTimezoneOffset() * 60000; // offset in milliseconds
-    const localDate = new Date(date.getTime() - offset);
-    return localDate.toISOString();
+    // Simply return the date as ISO string - no timezone adjustment needed
+    // The date object already represents the correct local date/time
+    return date.toISOString();
   }
 
 //Customers

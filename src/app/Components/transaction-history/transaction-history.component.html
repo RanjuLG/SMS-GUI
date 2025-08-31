@@ -10,15 +10,16 @@
     <div class="card-body">
       <div class="row align-items-center">
         <div class="col-md-6">
-          <mat-form-field class="w-100">
-            <mat-label>Select a date range</mat-label>
-            <mat-date-range-input [max]="maxDate" [rangePicker]="picker">
-              <input matStartDate matInput placeholder="Start date" (dateChange)="onStartDateChange($event)" />
-              <input matEndDate matInput placeholder="End date" (dateChange)="onDateRangeChange($event)" />
-            </mat-date-range-input>
-            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-            <mat-date-range-picker #picker></mat-date-range-picker>
-          </mat-form-field>
+          <div class="form-group">
+            <label class="form-label">Select Date Range</label>
+            <app-modern-date-range-picker
+              (dateRangeSelected)="onDateRangeSelected($event)"
+              (startDateChange)="onStartDateChange($event)"
+              (endDateChange)="onDateRangeChange($event)"
+              placeholder="Select date range"
+              class="w-100">
+            </app-modern-date-range-picker>
+          </div>
         </div>
         <div class="col-md-6">
           <div class="form-group">

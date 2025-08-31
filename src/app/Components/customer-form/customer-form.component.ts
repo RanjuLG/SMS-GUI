@@ -10,9 +10,6 @@ import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 
 // Import shared components
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -29,9 +26,6 @@ export interface ExtendedCustomerDto extends CustomerDto {
     FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
     PageHeaderComponent,
     DataTableComponent
   ],

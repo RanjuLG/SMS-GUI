@@ -1,13 +1,14 @@
 import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { SimpleModernCalendarComponent } from '../../../Components/helpers/simple-modern-calendar/simple-modern-calendar.component';
+import { ModernDateRangePickerComponent } from '../../../Components/helpers/modern-date-range-picker/modern-date-range-picker.component';
 
 export interface SearchField {
   key: string;
@@ -26,13 +27,14 @@ export interface SearchField {
     CommonModule,
     FormsModule,
     ReactiveFormsModule,
-    MatDatepickerModule,
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
     MatButtonModule,
     MatIconModule,
-    MatExpansionModule
+    MatExpansionModule,
+    SimpleModernCalendarComponent,
+    ModernDateRangePickerComponent
   ],
   template: `
     <div class="advanced-search-container">
@@ -73,30 +75,23 @@ export interface SearchField {
               </mat-form-field>
 
               <!-- Date Input -->
-              <mat-form-field *ngIf="field.type === 'date'" appearance="outline" class="w-100">
-                <mat-label>{{ field.label }}</mat-label>
-                <input matInput 
-                       [matDatepicker]="picker"
-                       [formControlName]="field.key">
-                <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker></mat-datepicker>
-              </mat-form-field>
+              <div *ngIf="field.type === 'date'" class="w-100">
+                <label class="form-label">{{ field.label }}</label>
+                <app-simple-modern-calendar
+                  [value]="searchForm.get(field.key)?.value"
+                  (dateChange)="onDateFieldChange(field.key, $event)"
+                  class="w-100">
+                </app-simple-modern-calendar>
+              </div>
 
               <!-- Date Range -->
               <div *ngIf="field.type === 'dateRange'" class="w-100">
-                <mat-form-field appearance="outline" class="w-100">
-                  <mat-label>{{ field.label }}</mat-label>
-                  <mat-date-range-input [rangePicker]="rangePicker">
-                    <input matStartDate 
-                           [formControlName]="field.key + 'From'"
-                           placeholder="Start date">
-                    <input matEndDate 
-                           [formControlName]="field.key + 'To'"
-                           placeholder="End date">
-                  </mat-date-range-input>
-                  <mat-datepicker-toggle matSuffix [for]="rangePicker"></mat-datepicker-toggle>
-                  <mat-date-range-picker #rangePicker></mat-date-range-picker>
-                </mat-form-field>
+                <label class="form-label">{{ field.label }}</label>
+                <app-modern-date-range-picker
+                  [value]="getDateRangeValue(field.key)"
+                  (dateRangeSelected)="onDateRangeFieldChange(field.key, $event)"
+                  class="w-100">
+                </app-modern-date-range-picker>
               </div>
 
               <!-- Select Dropdown -->
@@ -256,5 +251,38 @@ export class AdvancedSearchComponent implements OnInit {
       default:
         return 'col-md-4';
     }
+  }
+
+  onDateFieldChange(fieldKey: string, event: any): void {
+    if (this.searchForm && this.searchForm.get(fieldKey)) {
+      // Handle both string and event object
+      const dateValue = typeof event === 'string' ? event : event?.target?.value || event?.value || event;
+      this.searchForm.get(fieldKey)?.setValue(dateValue);
+    }
+  }
+
+  onDateRangeFieldChange(fieldKey: string, range: any): void {
+    if (this.searchForm && range) {
+      const fromControl = this.searchForm.get(fieldKey + 'From');
+      const toControl = this.searchForm.get(fieldKey + 'To');
+      
+      if (fromControl && toControl && range.start && range.end) {
+        fromControl.setValue(range.start);
+        toControl.setValue(range.end);
+      }
+    }
+  }
+
+  getDateRangeValue(fieldKey: string): {start: string, end: string} | null {
+    if (!this.searchForm) return null;
+    
+    const fromValue = this.searchForm.get(fieldKey + 'From')?.value;
+    const toValue = this.searchForm.get(fieldKey + 'To')?.value;
+    
+    if (fromValue && toValue) {
+      return { start: fromValue, end: toValue };
+    }
+    
+    return null;
   }
 }

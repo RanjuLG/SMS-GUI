@@ -10,12 +10,9 @@ import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
@@ -30,12 +27,9 @@ export interface ExtendedItemDto extends ItemDto {
     FormsModule, 
     CommonModule, 
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
-    RouterLink,
     DataTableComponent,
-    PageHeaderComponent
+    PageHeaderComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './item-form.component.html',
   styleUrls: ['./item-form.component.scss'],
@@ -49,6 +43,10 @@ export class ItemFormComponent implements OnInit {
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
   to = new Date(this._currentDate);
+
+  get maxDateString(): string {
+    return this.maxDate.toISOString().split('T')[0];
+  }
 
   // Table configuration
   tableColumns = [
@@ -276,40 +274,80 @@ export class ItemFormComponent implements OnInit {
     }
   }
 
-  onStartDateChange(event: any): void {
-    if (event && event.value) {
-      // Since backend expects local time, use local date (not UTC)
-      const fromDate = new Date(event.value);
-      this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        this.from = new Date(dateString);
+      }
       
       console.log("this.from (Local): ", this.from);
       this.loadItems();
     } else {
-      console.error('Start date event or value is null');
+      console.error('Start date string is null or empty');
     }
     this.cdr.markForCheck();
   }
   
-  onDateRangeChange(event: any): void {
-    if (event && event.value) {
-      // Since backend expects local time, use local date (not UTC)
-      const toDate = new Date(event.value);
-      
-      // Set 'to' to the next day at 12:00 AM local time
-      this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        const toDate = new Date(dateString);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      }
       
       console.log("this.to (Local): ", this.to);  // This should log the correct 12:00 AM time
       this.loadItems();
     } else {
-      console.error('End date event or value is null');
+      console.error('End date string is null or empty');
     }
     this.cdr.markForCheck();
   }
-  
-  
-  
 
-  
-  
+  onDateRangeSelected(range: any): void {
+    if (range && range.start && range.end) {
+      // Parse the date strings as local dates
+      const fromParts = range.start.split('-');
+      const toParts = range.end.split('-');
+      
+      if (fromParts.length === 3) {
+        const year = parseInt(fromParts[0]);
+        const month = parseInt(fromParts[1]) - 1; // Month is 0-based
+        const day = parseInt(fromParts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        this.from = new Date(range.start);
+      }
+      
+      if (toParts.length === 3) {
+        const year = parseInt(toParts[0]);
+        const month = parseInt(toParts[1]) - 1; // Month is 0-based
+        const day = parseInt(toParts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        const toDate = new Date(range.end);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      }
+      
+      console.log("Date range selected - from:", this.from, "to:", this.to);
+      this.loadItems();
+    } else {
+      console.error('Date range is incomplete');
+    }
+    this.cdr.markForCheck();
+  }
   
 }

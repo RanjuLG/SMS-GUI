@@ -8,14 +8,12 @@ import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { TransactionReportDto } from '../reports/reports.model';
 
 // Import shared components
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
 
 export interface ExtendedTrasactionDto extends TransactionReportDto {
@@ -29,11 +27,9 @@ export interface ExtendedTrasactionDto extends TransactionReportDto {
     CommonModule, 
     FormsModule, 
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
     PageHeaderComponent,
-    DataTableComponent
+    DataTableComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './transaction-history.component.html',
   styleUrls: ['./transaction-history.component.scss'],
@@ -316,27 +312,76 @@ export class TransactionHistoryComponent implements OnInit {
   }
 
   
-  onStartDateChange(event: any): void{
-    this.from = new Date(event.value)
-    console.log("this.from: ", this.from);
-
-
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        this.from = new Date(dateString);
+      }
+      console.log("this.from: ", this.from);
+    } else {
+      console.error('Start date string is null or empty');
+    }
+    this.cdr.markForCheck();
   }
-  onDateRangeChange(event: any): void {
-   
-    if (event && event.value) 
-    {
-      const {end } = event.value;
-      
-        this.to = new Date(event.value);
+
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        this.to = new Date(dateString);
         this.to.setDate(this.to.getDate() + 1);
-        
-        console.log("this.to: ", this.to);
-        this.loadTransactions();
-  
-    } 
-    else {
-      console.error('Event or event value is null');
+      }
+      
+      console.log("this.to: ", this.to);
+      this.loadTransactions();
+    } else {
+      console.error('End date string is null or empty');
+    }
+    this.cdr.markForCheck();
+  }
+
+  onDateRangeSelected(range: any): void {
+    if (range && range.start && range.end) {
+      // Parse start date as local date
+      const startParts = range.start.split('-');
+      if (startParts.length === 3) {
+        const year = parseInt(startParts[0]);
+        const month = parseInt(startParts[1]) - 1; // Month is 0-based
+        const day = parseInt(startParts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        this.from = new Date(range.start);
+      }
+      
+      // Parse end date as local date
+      const endParts = range.end.split('-');
+      if (endParts.length === 3) {
+        const year = parseInt(endParts[0]);
+        const month = parseInt(endParts[1]) - 1; // Month is 0-based
+        const day = parseInt(endParts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        this.to = new Date(range.end);
+        this.to.setDate(this.to.getDate() + 1);
+      }
+      
+      console.log("Date range selected - from:", this.from, "to:", this.to);
+      this.loadTransactions();
+    } else {
+      console.error('Date range is incomplete');
     }
     this.cdr.markForCheck();
   }

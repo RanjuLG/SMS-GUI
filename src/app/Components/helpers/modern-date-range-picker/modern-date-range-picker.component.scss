@@ -1,0 +1,196 @@
+/* Modern Date Range Picker Component Styles */
+.modern-date-range-wrapper {
+  position: relative;
+  width: 100%;
+
+  .date-range-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .modern-date-range-input {
+      background-color: var(--card-bg) !important;
+      border: 2px solid var(--border-color) !important;
+      border-radius: 0.75rem !important;
+      color: var(--primary-text) !important;
+      padding: 1rem 4rem 1rem 1rem !important;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+      cursor: pointer;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--brand-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(var(--brand-primary-rgb), 0.25);
+      }
+      
+      &:hover:not(:disabled) {
+        border-color: var(--brand-primary) !important;
+      }
+      
+      &::placeholder {
+        color: var(--secondary-text) !important;
+      }
+      
+      &:disabled {
+        background-color: var(--tertiary-bg) !important;
+        color: var(--secondary-text) !important;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+    }
+
+    .calendar-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary-text);
+      font-size: 1.25rem;
+      pointer-events: none;
+      transition: color 0.3s ease;
+      z-index: 2;
+      
+      &.disabled {
+        opacity: 0.5;
+      }
+    }
+
+    .range-separator {
+      position: absolute;
+      right: 2.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary-text);
+      font-size: 0.875rem;
+      pointer-events: none;
+      opacity: 0.6;
+      z-index: 1;
+    }
+  }
+
+  &:hover .calendar-icon:not(.disabled) {
+    color: var(--brand-primary);
+  }
+}
+
+/* Dark Theme Specific Styles */
+.dark-theme {
+  .modern-date-range-input {
+    background-color: var(--secondary-bg) !important;
+  }
+}
+
+/* Flatpickr Theme Overrides for Date Range */
+:global {
+  /* Fix CSS access issues with static positioning */
+  .flatpickr-calendar {
+    z-index: 9999 !important;
+    position: absolute !important;
+  }
+
+  .flatpickr-calendar.static {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    margin-top: 0.5rem !important;
+  }
+
+  .flatpickr-calendar.dark-theme {
+    background: var(--card-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    box-shadow: 0 8px 32px var(--shadow) !important;
+  }
+
+  .flatpickr-calendar.dark-theme .flatpickr-months {
+    background: var(--secondary-bg) !important;
+  }
+
+  .flatpickr-calendar.dark-theme .flatpickr-month {
+    color: var(--primary-text) !important;
+  }
+
+  .flatpickr-calendar.dark-theme .flatpickr-weekday {
+    color: var(--secondary-text) !important;
+  }
+
+  .flatpickr-calendar.dark-theme .flatpickr-day {
+    color: var(--primary-text) !important;
+    
+    &:hover {
+      background: var(--tertiary-bg) !important;
+    }
+    
+    &.selected,
+    &.startRange,
+    &.endRange {
+      background: var(--brand-primary) !important;
+      color: white !important;
+    }
+    
+    &.inRange {
+      background: rgba(var(--brand-primary-rgb), 0.2) !important;
+      color: var(--primary-text) !important;
+    }
+  }
+
+  /* Light theme enhancements */
+  .flatpickr-calendar:not(.dark-theme) {
+    background: var(--card-bg) !important;
+    border: 2px solid var(--border-color) !important;
+    border-radius: 0.75rem !important;
+    box-shadow: 0 8px 32px var(--shadow) !important;
+  }
+
+  .flatpickr-calendar:not(.dark-theme) .flatpickr-day {
+    &.selected,
+    &.startRange,
+    &.endRange {
+      background: var(--brand-primary) !important;
+    }
+    
+    &.inRange {
+      background: rgba(var(--brand-primary-rgb), 0.2) !important;
+    }
+  }
+
+  /* Animation */
+  .flatpickr-calendar {
+    &.animate.open {
+      animation: flatpickrSlideIn 0.3s ease-out;
+    }
+  }
+
+  @keyframes flatpickrSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+}
+
+/* Size variants */
+.modern-date-range-wrapper {
+  &.size-sm .modern-date-range-input {
+    padding: 0.5rem 3.5rem 0.5rem 0.75rem !important;
+    font-size: 0.875rem;
+  }
+  
+  &.size-lg .modern-date-range-input {
+    padding: 1.25rem 4.5rem 1.25rem 1.25rem !important;
+    font-size: 1.125rem;
+  }
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .modern-date-range-wrapper .modern-date-range-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.875rem 3.5rem 0.875rem 0.875rem !important;
+  }
+}

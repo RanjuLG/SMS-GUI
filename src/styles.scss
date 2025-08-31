@@ -1,5 +1,8 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Import Flatpickr CSS */
+@import 'flatpickr/dist/flatpickr.min.css';
+
 /* Theme Variables */
 :root {
   /* Light Theme Colors */
@@ -869,4 +872,36 @@ body {
 .table-hover > tbody > tr:hover {
   --bs-table-hover-bg: var(--hover-bg) !important;
   color: var(--primary-text) !important;
+}
+
+/* Flatpickr Security Fix - Prevent CSS Rules Access Errors */
+.flatpickr-calendar {
+  z-index: 9999 !important;
+  position: fixed !important;
+  overflow: visible !important;
+}
+
+.flatpickr-calendar.static {
+  position: absolute !important;
+}
+
+/* Additional Flatpickr positioning fixes */
+.flatpickr-wrapper {
+  position: relative !important;
+}
+
+/* Ensure calendar doesn't get clipped */
+body {
+  overflow-x: visible !important;
+}
+
+.container-fluid,
+.container {
+  overflow: visible !important;
+}
+
+/* Prevent calendar positioning errors in modals and dropdowns */
+.modal .flatpickr-calendar,
+.dropdown .flatpickr-calendar {
+  z-index: 99999 !important;
 }

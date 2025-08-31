@@ -10,12 +10,10 @@ import { InvoiceDto } from './invoice.model';
 import { DateService } from '../../Services/date-service.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import {RouterLink} from '@angular/router';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
 export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
   selected?: boolean;
@@ -31,11 +29,9 @@ export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
     CommonModule, 
     DataTableComponent,
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatFormFieldModule,
-    MatInputModule,
     RouterLink,
-    PageHeaderComponent
+    PageHeaderComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],
@@ -55,7 +51,11 @@ export class InvoiceFormComponent implements OnInit {
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
+  to = new Date(this._currentDate);
+
+  get maxDateString(): string {
+    return this.maxDate.toISOString().split('T')[0];
+  }
 
   constructor(
     private modalService: NgbModal,
@@ -296,33 +296,85 @@ export class InvoiceFormComponent implements OnInit {
     }
    
   }
-  onStartDateChange(event: any): void {
-    if (event && event.value) {
-      // Since backend expects local time, use local date (not UTC)
-      const fromDate = new Date(event.value);
-      this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        const fromDate = new Date(dateString);
+        this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+      }
       
       console.log("this.from (Local): ", this.from);
       this.loadInvoices();
     } else {
-      console.error('Start date event or value is null');
+      console.error('Start date is null or empty');
     }
     this.cdr.markForCheck();
   }
   
-  onDateRangeChange(event: any): void {
-    if (event && event.value) {
-      // Since backend expects local time, use local date (not UTC)
-      const toDate = new Date(event.value);
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        const toDate = new Date(dateString);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      }
       
-      // Set 'to' to the next day at 12:00 AM local time
-      this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
-      
-      console.log("this.to (Local): ", this.to);  // This should log the correct 12:00 AM time
+      console.log("this.to (Local): ", this.to);
       this.loadInvoices();
     } else {
-      console.error('End date event or value is null');
+      console.error('End date is null or empty');
     }
+    this.cdr.markForCheck();
+  }
+
+  onDateRangeSelected(dateRange: { start: string | null; end: string | null }): void {
+    console.log('Date range selected:', dateRange);
+    
+    if (dateRange.start) {
+      // Parse start date as local date
+      const parts = dateRange.start.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        const fromDate = new Date(dateRange.start);
+        this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+      }
+    }
+    
+    if (dateRange.end) {
+      // Parse end date as local date
+      const parts = dateRange.end.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        const toDate = new Date(dateRange.end);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      }
+    }
+    
+    if (dateRange.start || dateRange.end) {
+      this.loadInvoices();
+    }
+    
     this.cdr.markForCheck();
   }
   
