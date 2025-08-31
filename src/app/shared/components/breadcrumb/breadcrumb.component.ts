@@ -2,6 +2,7 @@ import { Component, Input, OnInit, OnDestroy, OnChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BreadcrumbService } from '../../../Services/breadcrumb.service';
+import { ThemeService } from '../../../Services/theme.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -10,7 +11,8 @@ import { Subscription } from 'rxjs';
   imports: [CommonModule, RouterModule],
   template: `
     <nav aria-label="breadcrumb" class="mb-4" *ngIf="displayItems.length > 1">
-      <ol class="breadcrumb bg-light rounded-3 p-3 mb-0 shadow-sm">
+      <ol class="breadcrumb rounded-3 p-3 mb-0 shadow-sm" 
+          [ngClass]="{'breadcrumb-dark': isDarkMode, 'breadcrumb-light': !isDarkMode}">
         <li 
           *ngFor="let item of displayItems; let last = last" 
           class="breadcrumb-item"
@@ -34,37 +36,54 @@ import { Subscription } from 'rxjs';
     .breadcrumb {
       font-size: 0.875rem;
       margin-bottom: 1.5rem;
-      border: 1px solid #e5e7eb;
+      border: 1px solid var(--border-color);
+      background-color: var(--secondary-bg) !important;
+      transition: background-color 0.3s ease, border-color 0.3s ease;
+    }
+
+    .breadcrumb-dark {
+      background-color: var(--secondary-bg) !important;
+      border-color: var(--border-color) !important;
+    }
+
+    .breadcrumb-light {
+      background-color: var(--secondary-bg) !important;
+      border-color: var(--border-color) !important;
     }
 
     .breadcrumb-link {
-      color: #6b7280;
+      color: var(--brand-primary) !important;
       transition: all 0.15s ease-in-out;
       text-decoration: none !important;
     }
 
     .breadcrumb-link:hover {
-      color: #3b82f6;
+      color: var(--brand-primary) !important;
+      opacity: 0.8;
       text-decoration: none !important;
     }
 
     .breadcrumb-current {
-      color: #374151;
+      color: var(--primary-text) !important;
       font-weight: 500;
     }
 
+    .breadcrumb-item {
+      color: var(--secondary-text) !important;
+    }
+
     .breadcrumb-item.active {
-      color: #374151;
+      color: var(--primary-text) !important;
       font-weight: 500;
     }
 
     .breadcrumb-item + .breadcrumb-item::before {
       content: var(--bs-breadcrumb-divider, ">") !important;
-      color: #9ca3af;
+      color: var(--secondary-text) !important;
     }
 
     .shadow-sm {
-      box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+      box-shadow: 0 1px 2px 0 var(--shadow) !important;
     }
   `]
 })
@@ -73,11 +92,21 @@ export class BreadcrumbComponent implements OnInit, OnDestroy, OnChanges {
   @Input() autoGenerate: boolean = true; // New input to control auto-generation
   
   displayItems: BreadcrumbItem[] = [];
+  isDarkMode = false;
   private breadcrumbSubscription?: Subscription;
+  private themeSubscription?: Subscription;
 
-  constructor(private breadcrumbService: BreadcrumbService) {}
+  constructor(
+    private breadcrumbService: BreadcrumbService,
+    private themeService: ThemeService
+  ) {}
 
   ngOnInit() {
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.currentTheme$.subscribe(theme => {
+      this.isDarkMode = theme === 'dark';
+    });
+
     if (this.autoGenerate) {
       // Use auto-generated breadcrumbs from service
       this.breadcrumbSubscription = this.breadcrumbService.breadcrumbs$.subscribe(
@@ -93,6 +122,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy, OnChanges {
 
   ngOnDestroy() {
     this.breadcrumbSubscription?.unsubscribe();
+    this.themeSubscription?.unsubscribe();
   }
 
   // Update items when input changes
