@@ -1,11 +1,15 @@
 import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { BreadcrumbComponent } from '../breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-page-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BreadcrumbComponent],
   template: `
+    <!-- Breadcrumbs -->
+    <app-breadcrumb *ngIf="showBreadcrumbs"></app-breadcrumb>
+    
     <div class="page-header">
       <div class="container-fluid py-4">
         <div class="row align-items-center">
@@ -152,4 +156,5 @@ export class PageHeaderComponent {
   @Input() title: string = '';
   @Input() subtitle: string = '';
   @Input() showActions: boolean = true;
+  @Input() showBreadcrumbs: boolean = true; // New input for breadcrumb control
 }

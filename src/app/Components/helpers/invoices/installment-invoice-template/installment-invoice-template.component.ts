@@ -7,13 +7,14 @@ import html2pdf from 'html2pdf.js';
 import { DateService } from '../../../../Services/date-service.service';
 import { ConfigService } from '../../../../Services/config-service.service';
 import { CommonModule } from '@angular/common';
+import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/breadcrumb.component';
 
 @Component({
   selector: 'app-installment-invoice-template',
   standalone: true,
   templateUrl: './installment-invoice-template.component.html',
   styleUrls: ['./installment-invoice-template.component.scss'],
-  imports: [CommonModule],
+  imports: [CommonModule, BreadcrumbComponent],
   encapsulation: ViewEncapsulation.Emulated
 })
 export class InstallmentInvoiceTemplateComponent implements OnInit {

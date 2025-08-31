@@ -4,6 +4,7 @@ import { NavBarComponent } from "./Components/nav-bar/nav-bar.component";
 import { FooterComponent } from './Components/footer/footer.component';
 import { AuthService } from './Services/auth.service';
 import { ThemeService } from './Services/theme.service';
+import { BreadcrumbService } from './Services/breadcrumb.service';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './Components/sidebar/sidebar/sidebar.component';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
@@ -31,12 +32,16 @@ export class AppComponent implements OnInit {
 
   constructor(
     private authService: AuthService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private breadcrumbService: BreadcrumbService // Initialize breadcrumb service
   ) {}
 
   ngOnInit() {
     // Initialize theme service
     this.themeService.initializeTheme();
+    
+    // Initialize breadcrumb service (it will start listening to route changes automatically)
+    // No explicit initialization needed as the service starts listening in constructor
     
     this.isLoggedIn = this.authService.isLoggedIn;
     console.log("this.isLoggedIn: ", this.isLoggedIn);
