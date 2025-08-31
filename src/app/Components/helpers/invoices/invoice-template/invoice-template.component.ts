@@ -71,50 +71,124 @@ export class InvoiceTemplateComponent implements OnInit {
           * {
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            box-sizing: border-box !important;
           }
           body {
             margin: 0 !important;
             padding: 0 !important;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-            font-size: 11px !important;
-            line-height: 1.3 !important;
+            font-size: 10px !important;
+            line-height: 1.2 !important;
+            color: #000 !important;
+            background: white !important;
           }
           .invoice-container {
             margin: 0 !important;
-            padding: 8mm !important;
+            padding: 5mm !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             max-width: none !important;
             width: 210mm !important;
-            min-height: 297mm !important;
+            min-height: 287mm !important;
+            max-height: 287mm !important;
             page-break-inside: avoid !important;
+            overflow: hidden !important;
+            position: relative !important;
+            display: block !important;
           }
           #printable-template {
             width: 210mm !important;
-            min-height: 297mm !important;
+            min-height: 287mm !important;
+            max-height: 287mm !important;
             margin: 0 !important;
-            padding: 8mm !important;
+            padding: 5mm !important;
             box-shadow: none !important;
             border-radius: 0 !important;
             page-break-inside: avoid !important;
             page-break-after: avoid !important;
+            overflow: hidden !important;
+            position: relative !important;
+            display: block !important;
           }
           .d-print-none {
+            display: none !important;
+          }
+          .row {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .col-6, .col-md-6 {
+            width: 48% !important;
+            display: inline-block !important;
+            vertical-align: top !important;
+            margin-right: 2% !important;
+            padding: 0 !important;
+          }
+          .col-6:last-child, .col-md-6:last-child {
+            margin-right: 0 !important;
+          }
+          .hstack {
             display: none !important;
           }
           @page {
             size: A4;
             margin: 0;
+            padding: 0;
           }
+        }
+        
+        /* Non-print styles reset */
+        .invoice-container {
+          display: block !important;
+          position: relative !important;
+        }
+        #printable-template {
+          display: block !important;
+          position: relative !important;
+        }
+        .row {
+          display: flex !important;
+          flex-wrap: wrap !important;
+        }
+        .col-6, .col-md-6 {
+          flex: 0 0 48% !important;
+          max-width: 48% !important;
+          margin-right: 2% !important;
+        }
+        .col-6:last-child, .col-md-6:last-child {
+          margin-right: 0 !important;
         }
       `;
       
       // Add print styles to head
       document.head.appendChild(printStyle);
       
+      // Clone and prepare the printable element
+      const clonedElement = printableElement.cloneNode(true) as HTMLElement;
+      
+      // Apply inline styles to ensure proper layout
+      clonedElement.style.width = '210mm';
+      clonedElement.style.minHeight = '287mm';
+      clonedElement.style.maxHeight = '287mm';
+      clonedElement.style.padding = '5mm';
+      clonedElement.style.margin = '0';
+      clonedElement.style.overflow = 'hidden';
+      clonedElement.style.position = 'relative';
+      clonedElement.style.display = 'block';
+      clonedElement.style.backgroundColor = '#ffffff';
+      clonedElement.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+      clonedElement.style.fontSize = '10px';
+      clonedElement.style.lineHeight = '1.2';
+      clonedElement.style.color = '#000';
+      
       // Replace body content with printable content
-      document.body.innerHTML = printableElement.outerHTML;
+      document.body.innerHTML = clonedElement.outerHTML;
       document.title = `Invoice-${this.invoice?.invoiceNo || 'Print'}`;
+      
+      // Force layout recalculation
+      document.body.offsetHeight;
       
       // Wait for styles to be applied, then print
       setTimeout(() => {
@@ -129,8 +203,8 @@ export class InvoiceTemplateComponent implements OnInit {
           if (printStyle.parentNode) {
             printStyle.parentNode.removeChild(printStyle);
           }
-        }, 100);
-      }, 100);
+        }, 200);
+      }, 300);
     }
   }
 

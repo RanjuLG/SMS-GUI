@@ -302,50 +302,239 @@
 
 /* Print Styles */
 @media print {
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    box-sizing: border-box !important;
+  }
+
   body {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-    margin: 0;
-    padding: 0;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    color: #000 !important;
+    background: white !important;
   }
 
   .invoice-container {
-    margin: 0;
-    padding: 15mm;
-    box-shadow: none;
-    border-radius: 0;
-    max-width: none;
-    width: 210mm;
-    min-height: 297mm;
+    margin: 0 !important;
+    padding: 5mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    max-width: none !important;
+    width: 210mm !important;
+    min-height: 287mm !important;
+    max-height: 287mm !important;
+    page-break-inside: avoid !important;
+    overflow: hidden !important;
+    position: relative !important;
+    display: block !important;
   }
 
   #printable-template {
-    width: 210mm;
-    min-height: 297mm;
-    margin: 0;
-    padding: 15mm;
-    box-shadow: none;
-    border-radius: 0;
+    width: 210mm !important;
+    min-height: 287mm !important;
+    max-height: 287mm !important;
+    margin: 0 !important;
+    padding: 5mm !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    page-break-inside: avoid !important;
+    page-break-after: avoid !important;
+    overflow: hidden !important;
+    position: relative !important;
+    display: block !important;
   }
 
   .d-print-none {
     display: none !important;
   }
 
+  /* Header optimizations */
+  .invoice-header {
+    margin-bottom: 8px !important;
+    padding: 6px 0 !important;
+    border-bottom: 2px solid #1a365d !important;
+  }
+
+  .company-header-row {
+    margin-bottom: 8px !important;
+    gap: 10px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  .company-logo {
+    width: 50px !important;
+    height: auto !important;
+    max-height: 50px !important;
+  }
+
+  .company-name {
+    font-size: 1.2rem !important;
+    margin: 0 0 2px 0 !important;
+    line-height: 1.1 !important;
+  }
+
+  .company-tagline {
+    font-size: 0.6rem !important;
+    margin: 0 0 4px 0 !important;
+  }
+
+  .company-details .detail-item,
+  .company-address {
+    font-size: 0.6rem !important;
+  }
+
+  .invoice-info-row {
+    padding: 6px 8px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .meta-label {
+    font-size: 0.55rem !important;
+  }
+
+  .meta-value {
+    font-size: 0.7rem !important;
+  }
+
+  .type-badge {
+    padding: 3px 6px !important;
+    font-size: 0.55rem !important;
+  }
+
+  /* Content sections */
+  .section-divider {
+    margin: 6px 0 !important;
+    height: 1px !important;
+  }
+
+  .content-section {
+    margin-bottom: 8px !important;
+  }
+
+  .section-title {
+    font-size: 0.75rem !important;
+    margin-bottom: 4px !important;
+    padding-bottom: 2px !important;
+  }
+
+  .info-card, .summary-card {
+    padding: 6px !important;
+  }
+
+  .customer-row {
+    margin-bottom: 3px !important;
+    padding: 1px 0 !important;
+  }
+
+  .customer-label, .customer-value {
+    font-size: 0.6rem !important;
+  }
+
+  .customer-label {
+    min-width: 50px !important;
+    margin-right: 4px !important;
+  }
+
+  .summary-label, .summary-value {
+    font-size: 0.65rem !important;
+  }
+
+  .summary-row {
+    padding: 3px 0 !important;
+  }
+
+  .total-row .summary-label, 
+  .total-row .summary-value {
+    font-size: 0.8rem !important;
+  }
+
+  /* Footer optimizations */
   .invoice-footer {
-    page-break-before: avoid;
+    margin-top: 8px !important;
+    page-break-inside: avoid !important;
   }
 
   .disclaimer-section {
+    padding: 4px !important;
+    margin-bottom: 6px !important;
     background: #ecfdf5 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
+  }
+
+  .disclaimer-text {
+    font-size: 0.6rem !important;
+    line-height: 1.1 !important;
+  }
+
+  .signatures-section {
+    margin-top: 6px !important;
+  }
+
+  .signature-box {
+    padding: 4px 2px !important;
+  }
+
+  .signature-label {
+    font-size: 0.6rem !important;
+  }
+
+  .signature-line {
+    margin-bottom: 4px !important;
+  }
+
+  /* Force proper layout */
+  .row, .col, .col-6, .col-md-6 {
+    display: block !important;
+    width: 100% !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .row {
+    display: flex !important;
+    flex-wrap: wrap !important;
+  }
+
+  .col-6, .col-md-6 {
+    width: 48% !important;
+    display: inline-block !important;
+    vertical-align: top !important;
+    margin-right: 2% !important;
+  }
+
+  .col-6:last-child, .col-md-6:last-child {
+    margin-right: 0 !important;
   }
 
   /* Ensure proper page sizing */
   @page {
     size: A4;
     margin: 0;
+    padding: 0;
+  }
+
+  /* Prevent page breaks in critical sections */
+  .invoice-header,
+  .invoice-info-row,
+  .customer-details,
+  .summary-card,
+  .disclaimer-section,
+  .signatures-section {
+    page-break-inside: avoid !important;
+  }
+
+  /* Hide any Bootstrap utility classes that might interfere */
+  .d-flex, .flex-column, .flex-row {
+    display: block !important;
+  }
+
+  .hstack {
+    display: none !important;
   }
 }
 
