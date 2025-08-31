@@ -9,27 +9,38 @@
   height: 100vh;
   background-color: var(--secondary-bg);
   transition: background-color 0.3s ease;
+  position: relative;
 }
 
-// Sidebar Styles
+// Sidebar Styles with enhanced mobile support
 .sidebar-wrapper {
   position: fixed;
   top: 0;
   left: 0;
   height: 100vh;
-  width: 250px;
+  width: var(--mobile-sidebar-width);
   z-index: 1000;
   transition: all 0.3s ease;
-  transform: translateX(-250px);
+  transform: translateX(-100%);
+  box-shadow: none;
 
   &.sidebar-expanded {
     transform: translateX(0);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
   }
 
+  // Tablet breakpoint
+  @media (min-width: 768px) {
+    width: var(--tablet-sidebar-width);
+    box-shadow: 2px 0 10px var(--shadow);
+  }
+
+  // Desktop breakpoint
   @media (min-width: 992px) {
     position: relative;
     transform: translateX(0);
     width: 80px;
+    box-shadow: 2px 0 10px var(--shadow);
 
     &.sidebar-expanded {
       width: 250px;
@@ -37,7 +48,30 @@
   }
 }
 
-// Main Content Styles
+// Mobile overlay for sidebar
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (min-width: 992px) {
+    display: none;
+  }
+}
+
+// Main Content Styles with mobile optimization
 .main-content {
   flex: 1;
   display: flex;
@@ -45,6 +79,8 @@
   min-height: 100vh;
   transition: all 0.3s ease;
   margin-left: 0;
+  width: 100%;
+  overflow-x: hidden;
 
   @media (min-width: 992px) {
     margin-left: 80px;
@@ -55,7 +91,7 @@
   }
 }
 
-// Topbar Styles
+// Topbar Styles with mobile optimization
 .topbar {
   position: sticky;
   top: 0;
@@ -64,66 +100,162 @@
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 1px 3px 0 var(--shadow), 0 1px 2px 0 var(--shadow);
   transition: background-color 0.3s ease, border-color 0.3s ease;
-}
+  height: var(--mobile-header-height);
 
-// Page Content Styles
-.page-content {
-  flex: 1;
-  padding: 1.5rem;
-  overflow-y: auto;
-  background: var(--primary-bg);
-  min-height: calc(100vh - 140px);
-  transition: background-color 0.3s ease;
+  @media (min-width: 768px) {
+    height: var(--tablet-header-height);
+  }
 
-  .container-fluid {
-    max-width: 1400px;
+  @media (min-width: 992px) {
+    height: var(--desktop-header-height);
   }
 }
 
-// Footer Styles
+// Page Content Styles with mobile optimization
+.page-content {
+  flex: 1;
+  padding: var(--mobile-spacing);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--primary-bg);
+  min-height: calc(100vh - var(--mobile-header-height) - 60px);
+  transition: background-color 0.3s ease;
+  -webkit-overflow-scrolling: touch;
+
+  @media (min-width: 768px) {
+    padding: var(--tablet-spacing);
+    min-height: calc(100vh - var(--tablet-header-height) - 70px);
+  }
+
+  @media (min-width: 992px) {
+    padding: 1.5rem;
+    min-height: calc(100vh - var(--desktop-header-height) - 80px);
+  }
+
+  .container-fluid {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+
+    @media (min-width: 1400px) {
+      max-width: 1400px;
+    }
+  }
+}
+
+// Footer Styles with mobile optimization
 .app-footer {
   margin-top: auto;
   background: var(--navbar-bg);
   border-top: 1px solid var(--border-color);
-  padding: 1rem 0;
-  font-size: 0.875rem;
+  padding: 0.75rem 0;
+  font-size: 0.75rem;
   color: var(--secondary-text);
   z-index: 0;
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+
+  @media (min-width: 768px) {
+    padding: 1rem 0;
+    font-size: 0.875rem;
+  }
 }
 
-// Responsive Design
+// Enhanced Responsive Design
 @media (max-width: 991.98px) {
   .sidebar-wrapper {
     &.sidebar-expanded {
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
     }
   }
 
   .main-content {
     margin-left: 0 !important;
   }
+}
 
+// Mobile-specific optimizations
+@media (max-width: 767.98px) {
   .page-content {
-    padding: 1rem;
+    padding: 0.75rem;
+  }
+
+  .topbar {
+    height: var(--mobile-header-height);
+  }
+
+  // Ensure content doesn't go under notches on mobile
+  @supports (padding-top: env(safe-area-inset-top)) {
+    .topbar {
+      padding-top: env(safe-area-inset-top);
+    }
   }
 }
 
-// Dark mode support removed - now handled by CSS variables
-// @media (prefers-color-scheme: dark) removed
+// Small mobile devices
+@media (max-width: 575.98px) {
+  .page-content {
+    padding: 0.5rem;
+  }
 
-// Smooth transitions
+  .sidebar-wrapper {
+    width: calc(100vw - 2rem);
+    max-width: var(--mobile-sidebar-width);
+  }
+}
+
+// Landscape orientation on mobile
+@media (max-width: 896px) and (orientation: landscape) {
+  .page-content {
+    padding: 0.5rem;
+    min-height: calc(100vh - var(--mobile-header-height) - 40px);
+  }
+
+  .app-footer {
+    padding: 0.5rem 0;
+    font-size: 0.7rem;
+  }
+}
+
+// iPad specific optimizations
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar-wrapper {
+    width: var(--tablet-sidebar-width);
+
+    &.sidebar-expanded {
+      width: var(--tablet-sidebar-width);
+    }
+  }
+
+  .page-content {
+    padding: var(--tablet-spacing);
+  }
+}
+
+// High DPI displays (Retina)
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .app-layout {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+// Dark mode support handled by CSS variables
+// Smooth transitions for all layout changes
 * {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 
-// Utilities
+// Enhanced animations with mobile optimization
 .fade-in {
   animation: fadeIn 0.3s ease-in;
 }
 
 .slide-in {
   animation: slideInFromLeft 0.3s ease-out;
+}
+
+.slide-up {
+  animation: slideUpFromBottom 0.3s ease-out;
 }
 
 @keyframes fadeIn {
@@ -142,9 +274,21 @@
   }
 }
 
-// Custom scrollbar
+@keyframes slideUpFromBottom {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Custom scrollbar with mobile support
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -158,4 +302,34 @@
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--secondary-text);
+}
+
+// Mobile scrollbar (when supported)
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--secondary-bg);
+}
+
+// Focus management for accessibility
+.app-layout {
+  a:focus,
+  button:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Prevent overscroll on mobile
+.page-content {
+  overscroll-behavior: contain;
+}
+
+// Mobile safe area support
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .app-footer {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
 }

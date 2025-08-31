@@ -1,18 +1,23 @@
 .container {
-    background-color: #f8f9fa;
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
   }
   
   .card {
     border-radius: 12px;
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: 0 0.5rem 1rem var(--shadow);
+    color: var(--primary-text);
   }
   
   .btn-primary {
-    background-color: #007bff;
-    border-color: #007bff;
+    background-color: var(--brand-primary);
+    border-color: var(--brand-primary);
   }
   
   .btn-primary:hover {
-    background-color: #0056b3;
-    border-color: #0056b3;
+    background-color: var(--link-hover-color);
+    border-color: var(--link-hover-color);
   }
   

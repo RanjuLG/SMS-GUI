@@ -1,42 +1,54 @@
-<!-- Customer Management with Modern Components -->
+<!-- Mobile-Responsive Customer Management -->
 <app-page-header 
   title="Customer Management"
   subtitle="Manage all your customers with pagination, search, and filtering capabilities">
   
-  <div slot="actions" class="header-actions">
-    <button type="button" class="btn btn-primary" (click)="openAddCustomerModal()">
-      <i class="ri-add-line align-bottom me-1"></i> Add Customer
+  <div slot="actions" class="header-actions mobile-stack">
+    <button type="button" class="btn btn-primary btn-mobile" (click)="openAddCustomerModal()">
+      <i class="ri-add-line align-bottom me-1"></i> 
+      <span class="mobile-hide">Add Customer</span>
+      <span class="mobile-show">Add</span>
     </button>
-    <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedCustomers()">
-      <i class="ri-delete-bin-2-line"></i> Delete Selected
+    <button type="button" class="btn btn-danger btn-mobile ms-2" (click)="deleteSelectedCustomers()">
+      <i class="ri-delete-bin-2-line"></i> 
+      <span class="mobile-hide">Delete Selected</span>
+      <span class="mobile-show">Delete</span>
     </button>
   </div>
 </app-page-header>
 
-<div class="container-fluid">
-  <!-- Enhanced Data Table with Server-side Pagination - Shows All Customers by Default -->
-  <app-data-table
-    title="All Customers"
-    [data]="customers"
-    [columns]="tableColumns"
-    [actions]="tableActions"
-    [searchable]="true"
-    [selectable]="true"
-    [showActions]="true"
-    [showAddButton]="false"
-    [pageSize]="itemsPerPage"
-    [pageSizeOptions]="itemsPerPageOptions"
-    [loading]="loading"
-    [pagination]="pagination"
-    [serverSidePagination]="true"
-    (search)="onSearch($event)"
-    (add)="openAddCustomerModal()"
-    (action)="handleTableAction($event)"
-    (selectionChange)="onSelectionChange($event)"
-    (pageChange)="onPageChange($event)"
-    (pageSizeChange)="onPageSizeChange($event)"
-    (sortChange)="onSortChange($event)">
-  </app-data-table>
+<div class="container-mobile-fluid">
+  <!-- Mobile-Optimized Data Table with Server-side Pagination -->
+  <div class="card card-mobile">
+    <div class="card-header">
+      <h5 class="card-title mb-0">All Customers</h5>
+    </div>
+    <div class="card-body">
+      <app-data-table
+        title=""
+        [data]="customers"
+        [columns]="tableColumns"
+        [actions]="tableActions"
+        [searchable]="true"
+        [selectable]="true"
+        [showActions]="true"
+        [showAddButton]="false"
+        [pageSize]="itemsPerPage"
+        [pageSizeOptions]="itemsPerPageOptions"
+        [loading]="loading"
+        [pagination]="pagination"
+        [serverSidePagination]="true"
+        (search)="onSearch($event)"
+        (add)="openAddCustomerModal()"
+        (action)="handleTableAction($event)"
+        (selectionChange)="onSelectionChange($event)"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+        (sortChange)="onSortChange($event)"
+        class="table-responsive-mobile">
+      </app-data-table>
+    </div>
+  </div>
 </div>
 
 <!-- NIC Photo Modal -->

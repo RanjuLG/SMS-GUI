@@ -1,4 +1,10 @@
 <div class="app-layout">
+  <!-- Mobile Sidebar Overlay -->
+  <div *ngIf="isLoggedIn" 
+       class="sidebar-overlay" 
+       [class.show]="sidebarExpanded"
+       (click)="onSidebarToggle(false)"></div>
+
   <!-- Sidebar -->
   <div *ngIf="isLoggedIn" class="sidebar-wrapper" [class.sidebar-expanded]="sidebarExpanded">
     <app-sidebar (sidebarToggle)="onSidebarToggle($event)"></app-sidebar>
