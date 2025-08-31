@@ -25,9 +25,6 @@ export class InvoiceTemplateComponent implements OnInit {
   dateGenerated: string | null = null;
   errorMessage: string | null = null;
 
-  customWidth = 229; // Custom width in mm
-  customHeight = 180; // Custom height in mm
-
   constructor(
     private apiService: ApiService,
     private route: ActivatedRoute,
@@ -38,7 +35,6 @@ export class InvoiceTemplateComponent implements OnInit {
   ngOnInit(): void {
     this.invoiceId = +this.route.snapshot.paramMap.get('invoiceId')!;
     this.getInvoiceDetails();
-    this.getInvoiceSettings()
   }
 
   getInvoiceDetails(): void {
@@ -67,6 +63,7 @@ export class InvoiceTemplateComponent implements OnInit {
       const printWindow = window.open('', '_blank');
       if (printWindow) {
         printWindow.document.write('<html><head><title>Print Invoice</title>');
+        printWindow.document.write('<link rel="stylesheet" type="text/css" href="./invoice-template.component.scss">');
         printWindow.document.write('</head><body>');
         printWindow.document.write(element.outerHTML);
         printWindow.document.write('</body></html>');
@@ -77,31 +74,30 @@ export class InvoiceTemplateComponent implements OnInit {
       }
     }
   }
-
- getInvoiceSettings(): void {
-
-  var settings = this.configService.invoiceSettings;
-
-  console.log("this.settings: ",settings)
-  this.customWidth = settings.width;
-  this.customHeight = settings.height;
- }
   // Function to download the invoice as a PDF using html2pdf.js
   downloadTemplate(): void {
     const element = document.getElementById('printable-template');
     if (element) {
       const options = {
-        margin: 0,
-        filename: `${this.invoice?.invoiceNo}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
+        margin: [10, 15, 10, 15], // Top, Right, Bottom, Left margins in mm
+        filename: `Invoice-${this.invoice?.invoiceNo}.pdf`,
+        image: { 
+          type: 'jpeg', 
+          quality: 0.98 
+        },
         html2canvas: {
-          scale: 4,
-          useCORS: true
+          scale: 2, // Reduced scale for better performance while maintaining quality
+          useCORS: true,
+          logging: false,
+          letterRendering: true,
+          allowTaint: false
         },
         jsPDF: { 
-          unit: 'mm', // Specify the unit as millimeters
-          format: [this.customWidth, this.customHeight], // Custom dimensions in mm
-          orientation: 'portrait' // Orientation: 'portrait' or 'landscape'
+          unit: 'mm',
+          format: 'a4', // Standard A4 format for professional invoices
+          orientation: 'portrait',
+          putOnlyUsedFonts: true,
+          floatPrecision: 16
         }
       };
   

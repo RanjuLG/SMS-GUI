@@ -1,49 +1,39 @@
 <div class="invoice-container" id="printable-template">
     <!-- Professional Header Section -->
     <div class="invoice-header">
-        <div class="row align-items-center">
-            <!-- Left Section - Invoice Details -->
-            <div class="col-md-3">
-                <div class="invoice-details">
-                    <div class="detail-row">
-                        <span class="label">Date:</span>
-                        <span class="value">{{ dateGenerated }}</span>
-                    </div>
-                    <div class="detail-row">
-                        <span class="label">Invoice No:</span>
-                        <span class="value">{{ settlementInvoice?.invoiceNo }}</span>
-                    </div>
+        <!-- Company Branding Row -->
+        <div class="company-header-row">
+            <div class="company-logo-section">
+                <img src="GoldCashLogo-receipt.png" alt="Gold Cash Logo" class="company-logo">
+            </div>
+            <div class="company-info-section">
+                <h2 class="company-name">Gold Cash (Pvt) Ltd.</h2>
+                <p class="company-tagline">Premium Gold Financing Solutions</p>
+                <div class="company-details">
+                    <span class="detail-item">Reg No: 987654</span>
+                    <span class="detail-separator">|</span>
+                    <span class="detail-item">Email: goldcash&#64;gmail.com</span>
+                    <span class="detail-separator">|</span>
+                    <span class="detail-item">Phone: +(94) 81 222 1234</span>
+                </div>
+                <p class="company-address">Muruthalawa, Sri Lanka</p>
+            </div>
+        </div>
+
+        <!-- Invoice Information Row -->
+        <div class="invoice-info-row">
+            <div class="invoice-meta">
+                <div class="meta-group">
+                    <label class="meta-label">Invoice Date:</label>
+                    <span class="meta-value">{{ dateGenerated }}</span>
+                </div>
+                <div class="meta-group">
+                    <label class="meta-label">Invoice No:</label>
+                    <span class="meta-value">{{ settlementInvoice?.invoiceNo }}</span>
                 </div>
             </div>
-
-            <!-- Center Section - Company Branding -->
-            <div class="col-md-6 text-center">
-                <div class="company-branding">
-                    <img src="GoldCashLogo-receipt.png" alt="Gold Cash Logo" class="company-logo mb-2">
-                    <h3 class="company-name">Gold Cash (Pvt) Ltd.</h3>
-                    <p class="company-tagline">Premium Gold Financing Solutions</p>
-                </div>
-            </div>
-
-            <!-- Right Section - Company Contact -->
-            <div class="col-md-3 text-end">
-                <div class="company-contact">
-                    <div class="contact-row">
-                        <span class="contact-label">Reg No:</span>
-                        <span class="contact-value">987654</span>
-                    </div>
-                    <div class="contact-row">
-                        <span class="contact-label">Email:</span>
-                        <span class="contact-value">goldcash&#64;gmail.com</span>
-                    </div>
-                    <div class="contact-row">
-                        <span class="contact-label">Phone:</span>
-                        <span class="contact-value">+(94) 81 222 1234</span>
-                    </div>
-                    <div class="contact-row">
-                        <span class="contact-value">Muruthalawa, Sri Lanka</span>
-                    </div>
-                </div>
+            <div class="invoice-type">
+                <span class="type-badge settlement-badge">SETTLEMENT INVOICE</span>
             </div>
         </div>
     </div>
