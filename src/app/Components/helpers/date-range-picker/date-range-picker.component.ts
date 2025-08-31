@@ -1,13 +1,13 @@
-import { EventEmitter, NgModule, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DateRange, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 
-@NgModule({
-  declarations: [
-  ],
+@Component({
+  selector: 'app-date-range-picker',
+  standalone: true,
   imports: [
     CommonModule,
     MatDatepickerModule,
@@ -15,11 +15,9 @@ import { MatNativeDateModule } from '@angular/material/core';
     MatInputModule,
     MatNativeDateModule,
   ],
-  exports: [
-    DateRangePickerComponent
-  ]
+  templateUrl: './date-range-picker.component.html',
+  styleUrl: './date-range-picker.component.scss'
 })
-
 export class DateRangePickerComponent {
   @Output() dateRangeSelected = new EventEmitter<DateRange<Date>>();
 
