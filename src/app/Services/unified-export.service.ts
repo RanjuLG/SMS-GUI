@@ -1,16 +1,10 @@
 import { Injectable } from '@angular/core';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 import { TransactionReportDto, TransactionType } from '../Components/reports/reports.model';
 import { ExportOptions, TransactionSummary } from './unified-transaction.service';
-
-declare module 'jspdf' {
-  interface jsPDF {
-    autoTable: (options: any) => jsPDF;
-  }
-}
 
 @Injectable({
   providedIn: 'root'
@@ -89,7 +83,7 @@ export class UnifiedExportService {
     // Add main data table
     const tableData = this.prepareTableDataForPDF(transactions, options);
     
-    doc.autoTable({
+    autoTable(doc, {
       head: [this.getTableHeaders(options)],
       body: tableData,
       startY: yPosition,

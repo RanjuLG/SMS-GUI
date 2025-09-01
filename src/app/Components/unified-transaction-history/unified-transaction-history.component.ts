@@ -219,7 +219,6 @@ export class UnifiedTransactionHistoryComponent implements OnInit, OnDestroy {
     this.unifiedTransactionService.transactions$
       .pipe(takeUntil(this.destroy$))
       .subscribe(transactions => {
-        console.log('Received transactions:', transactions?.length || 0, transactions);
         this.transactions = transactions;
         this.filteredTransactions = transactions;
         this.cdr.markForCheck();

@@ -88,7 +88,6 @@ export class UnifiedTransactionService {
 
   // Load transactions based on filters
   private loadTransactions(filters: AdvancedFilters): void {
-    console.log('Loading transactions with filters:', filters);
     this.loadingSubject.next(true);
     
     const { dateRange, customerNIC, transactionTypes, amountRange, sortBy, sortOrder, searchTerm } = filters;
@@ -108,7 +107,6 @@ export class UnifiedTransactionService {
       amountRange?.max
     ).subscribe({
       next: (response: any) => {
-        console.log('API response:', response);
         // Handle both paginated and direct array responses
         let transactions: TransactionReportDto[] = Array.isArray(response) ? response : (response.data || []);
 
