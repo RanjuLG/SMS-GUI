@@ -115,17 +115,16 @@
                   <button 
                     *ngFor="let type of transactionTypes" 
                     type="button" 
-                    class="btn btn-outline-secondary btn-sm me-2 mb-2"
+                    class="btn btn-outline-secondary btn-sm me-2 mb-2 transaction-type-btn"
                     [class.active]="selectedTypes.includes(type.value)"
+                    [class.selected]="selectedTypes.includes(type.value)"
+                    [attr.data-selected]="selectedTypes.includes(type.value)"
                     [attr.title]="type.label + (selectedTypes.includes(type.value) ? ' (Selected)' : '')"
                     (click)="toggleType(type.value)">
                     <span class="badge me-2" [class]="'bg-' + getTransactionTypeColor(type.value)">
-                      <i class="bi bi-check2" *ngIf="selectedTypes.includes(type.value)"></i>
+                      {{ type.label.charAt(0) }}
                     </span>
                     {{ type.label }}
-                    <span *ngIf="selectedTypes.includes(type.value)" class="ms-1">
-                      <i class="bi bi-check-circle-fill text-success"></i>
-                    </span>
                   </button>
                 </div>
                 <div *ngIf="selectedTypes.length === 0" class="text-warning small mt-1">
