@@ -153,6 +153,29 @@ export class UnifiedTransactionService {
           });
         }
 
+        // Additional client-side filtering for global search term
+        if (filters.searchTerm && filters.searchTerm.trim()) {
+          const searchTerm = filters.searchTerm.toLowerCase().trim();
+          transactions = transactions.filter(t => {
+            return (
+              t.customer?.customerName?.toLowerCase().includes(searchTerm) ||
+              t.customer?.customerNIC?.toLowerCase().includes(searchTerm) ||
+              t.invoice?.invoiceNo?.toLowerCase().includes(searchTerm) ||
+              t.transactionId?.toString().includes(searchTerm)
+            );
+          });
+        }
+
+        // Additional client-side filtering for amount range (filter by totalAmount)
+        if (filters.amountRange) {
+          if (filters.amountRange.min !== undefined && filters.amountRange.min !== null) {
+            transactions = transactions.filter(t => (t.totalAmount || 0) >= filters.amountRange!.min!);
+          }
+          if (filters.amountRange.max !== undefined && filters.amountRange.max !== null) {
+            transactions = transactions.filter(t => (t.totalAmount || 0) <= filters.amountRange!.max!);
+          }
+        }
+
         this.transactionsSubject.next(transactions);
         this.loadingSubject.next(false);
       },
