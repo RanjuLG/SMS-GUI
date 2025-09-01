@@ -32,9 +32,10 @@ export class AuthService {
   }
 
   login(username: string, password: string): Observable<any> {
-    console.log("this.authUrl: ", this.authUrl);
+    const loginUrl = this.configService.getAuthEndpoint('login');
+    console.log("Login URL: ", loginUrl);
 
-    return this.http.post(`${this.authUrl}/login`, { username, password }, {
+    return this.http.post(loginUrl, { username, password }, {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -105,18 +106,16 @@ export class AuthService {
     this.authStatus.emit(false);
   }
 
-  register(username: string, email: string, password: string, role: string): Observable<any> {
+  register(userData: any): Observable<any> {
+    const registerUrl = this.configService.getAuthEndpoint('register');
     const token = localStorage.getItem('token');
-    return this.http.post(`${this.authUrl}/register?token=${token}`,
-      { username, email, password, roles: [role] },
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': token ? `Bearer ${token}` : ''
-        }
+    return this.http.post(`${registerUrl}?token=${token}`, userData, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
       }
-    ).pipe(
+    }).pipe(
       catchError((error: any) => {
         console.error('Registration failed:', error);
         return throwError(() => error);

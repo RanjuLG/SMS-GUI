@@ -49,7 +49,14 @@ export class SignUpComponent implements OnInit {
     const password = this.f['password'].value;
     const role = this.f['role'].value;
 
-    this.authService.register(username, email, password, role).subscribe({
+    const userData = {
+      username,
+      email,
+      password,
+      roles: [role]
+    };
+
+    this.authService.register(userData).subscribe({
       next: () => {
         // Display success SweetAlert2 popup
         Swal.fire({

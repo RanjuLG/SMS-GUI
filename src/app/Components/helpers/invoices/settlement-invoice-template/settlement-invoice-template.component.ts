@@ -2,7 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../../Services/api-service.service';
 import { InvoiceDto } from '../../../invoice-form/invoice.model';
-import { GetCustomerDTO, TransactionDto } from '../../../transaction-history/transaction.model';
+import { TransactionCustomerDTO, TransactionDto } from '../../../transaction-history/transaction.model';
+import { GetCustomerDTO } from '../../../customer-form/customer.model';
 import html2pdf from 'html2pdf.js';
 import { DateService } from '../../../../Services/date-service.service';
 import { ConfigService } from '../../../../Services/config-service.service';
@@ -19,7 +20,7 @@ import { BreadcrumbComponent } from '../../../../shared/components/breadcrumb/br
 export class SettlementInvoiceTemplateComponent implements OnInit {
   settlementInvoiceId: number = 0;
   settlementInvoice: InvoiceDto | null = null;
-  customer: GetCustomerDTO | null = null;
+  customer: TransactionCustomerDTO | null = null;
   transaction: TransactionDto | null = null;
   dateGenerated: string | null = null;
   constructor(

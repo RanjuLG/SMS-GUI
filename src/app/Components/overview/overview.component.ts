@@ -5,6 +5,7 @@ import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/creat
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { ApiService } from '../../Services/api-service.service';
 import { Overview } from '../reports/reports.model';
+import { CustomerSearchRequest } from '../customer-form/customer.model';
 import { 
   SystemHealthOverview, 
   DatabaseHealth, 
@@ -240,8 +241,16 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       invoices: this.apiService.getInvoices(lastTwoWeeks, currentDate, 1, 10, '', 'DateGenerated', 'desc').pipe(
         catchError(() => of({ data: [], total: 0 }))
       ),
-      customers: this.apiService.getCustomers(lastTwoWeeks, currentDate, 1, 5, '', 'CreatedAt', 'desc').pipe(
-        catchError(() => of({ data: [], total: 0 }))
+      customers: this.apiService.getCustomers({
+        from: this.formatDateForAPI(lastTwoWeeks),
+        to: this.formatDateForAPI(currentDate),
+        page: 1,
+        pageSize: 5,
+        search: '',
+        sortBy: 'createdAt',
+        sortOrder: 'desc'
+      }).pipe(
+        catchError(() => of({ data: [], pagination: { totalItems: 0 } }))
       )
     }).subscribe({
       next: (data) => {
@@ -612,5 +621,13 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
   viewCustomers(): void {
     this.router.navigate(['/customers']);
+  }
+
+  // Helper method to format Date objects for API calls
+  private formatDateForAPI(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 }

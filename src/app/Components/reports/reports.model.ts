@@ -1,4 +1,5 @@
-import { GetCustomerDTO } from "../transaction-history/transaction.model";
+import { TransactionCustomerDTO } from "../transaction-history/transaction.model";
+import { GetCustomerDTO } from "../customer-form/customer.model";
 
 export interface ReportByCustomer {
     customerId: number;

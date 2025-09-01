@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild } 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { CreateCustomerDto } from '../../../customer-form/customer.model';
+import { CreateCustomerDTO, GetCustomerDTO } from '../../../customer-form/customer.model';
 import { ApiService } from '../../../../Services/api-service.service';
 import { CommonModule } from '@angular/common';
 
@@ -14,8 +14,8 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./add-customer.component.scss']
 })
 export class AddCustomerComponent {
-  @Input() customer: CreateCustomerDto | null = null;
-  @Output() saveCustomer = new EventEmitter<CreateCustomerDto>();
+  @Input() customer: GetCustomerDTO | null = null;
+  @Output() saveCustomer = new EventEmitter<GetCustomerDTO>();
   customerForm: FormGroup;
   nicPhotoFile: File | null = null;  // To store the uploaded NIC file
   nicPhotoUrl: string | null = null;  // To display the current NIC photo URL
@@ -41,7 +41,8 @@ export class AddCustomerComponent {
   ngOnInit() {
     if (this.customer) {
       this.customerForm.patchValue(this.customer);
-      this.nicPhotoUrl = this.customer.nicPhotoPath ? this.customer.nicPhotoPath : null;
+      // Note: nicPhotoPath property doesn't exist in new DTO, handle photo via API call if needed
+      this.nicPhotoUrl = null;
     }
   }
 
@@ -65,20 +66,8 @@ export class AddCustomerComponent {
 
   onSubmit() {
     if (this.customerForm.valid) {
-      const customerDto: CreateCustomerDto = this.customerForm.value;
-      const formData = new FormData();
-
-      formData.append('customerNIC', customerDto.customerNIC);
-      formData.append('customerName', customerDto.customerName);
-      formData.append('customerAddress', customerDto.customerAddress);
-      formData.append('customerContactNo', customerDto.customerContactNo);
-
-      if (this.nicPhotoFile) {
-        formData.append('nicPhoto', this.nicPhotoFile);
-      } else if (this.nicPhotoUrl === null && this.customer) {
-        formData.append('nicPhoto', '');  // Mark the NIC photo as removed
-      }
-
+      const formValues = this.customerForm.value;
+      
       Swal.fire({
         title: 'Save Changes',
         text: 'Are you sure you want to save these changes?',
@@ -89,7 +78,19 @@ export class AddCustomerComponent {
       }).then((result) => {
         if (result.isConfirmed) {
           if (this.customer) {
-            this.apiService.updateCustomer(this.customer.customerId, customerDto, this.nicPhotoFile).subscribe({
+            // Update existing customer
+            const updateData: any = {
+              customerNIC: formValues.customerNIC,
+              customerName: formValues.customerName,
+              customerAddress: formValues.customerAddress,
+              customerContactNo: formValues.customerContactNo
+            };
+            
+            if (this.nicPhotoFile) {
+              updateData.customerNICPhoto = this.nicPhotoFile;
+            }
+            
+            this.apiService.updateCustomer(this.customer.customerId, updateData).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
                 this.activeModal.close();
@@ -101,7 +102,16 @@ export class AddCustomerComponent {
               }
             });
           } else {
-            this.apiService.createCustomer(customerDto, this.nicPhotoFile).subscribe({
+            // Create new customer
+            const createData: CreateCustomerDTO = {
+              customerNIC: formValues.customerNIC,
+              customerName: formValues.customerName,
+              customerAddress: formValues.customerAddress,
+              customerContactNo: formValues.customerContactNo,
+              customerNICPhoto: this.nicPhotoFile || undefined
+            };
+            
+            this.apiService.createCustomer(createData).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
                 this.activeModal.close();

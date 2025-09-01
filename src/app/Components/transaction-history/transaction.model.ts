@@ -4,7 +4,7 @@ export interface Transaction {
     subTotal: number;
     interestRate: number;
     totalAmount: number;
-    customer: GetCustomerDTO;
+    customer: TransactionCustomerDTO;
     items: GetItemDTO[];
   }
 
@@ -15,7 +15,7 @@ export interface Transaction {
     interestRate: number;
     interestAmount:number;
     totalAmount: number;
-    customer: GetCustomerDTO;
+    customer: TransactionCustomerDTO;
     items: GetItemDTO[];
   }
   
@@ -26,17 +26,19 @@ export interface Transaction {
     subTotal: number;
     interestRate: number;
     totalAmount: number;
-    customer: GetCustomerDTO;
+    customer: TransactionCustomerDTO;
     items: GetItemDTO;
   }
 
  
-  
-  export interface GetCustomerDTO {
+  // Renamed to avoid conflicts with customer model  
+  export interface TransactionCustomerDTO {
+    customerId?: number;
     customerName: string;
     customerAddress: string;
     customerNIC: string;
     customerContactNo: string;
+    createdAt?: string;
   }
   
   export interface GetItemDTO {
@@ -45,7 +47,7 @@ export interface Transaction {
     itemRemarks: string;
     itemCaratage: number;
     itemWeight: number;
-    itemGoldWeight: number;
+    itemItemGoldWeight: number;
     itemValue: number;
   }
   

@@ -1,12 +1,12 @@
 import { HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ConfigService } from './config-service.service'
-import { CreateCustomerDto, CustomerDto } from '../Components/customer-form/customer.model';
+import { CreateCustomerDto, CustomerDto, CreateCustomerDTO, UpdateCustomerDTO, GetCustomerDTO, PaginatedResponse, CustomerSearchRequest, CustomerQuickSearchResponse, CustomerCountResponse } from '../Components/customer-form/customer.model';
 import { Observable, throwError, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { CreateItemDto, ItemDto } from '../Components/item-form/item.model';
 import { CreateInvoiceDto, InvoiceDto, InvoiceDto2, InvoiceDto_, LoanInfoDto, UpdateInvoiceDto } from '../Components/invoice-form/invoice.model';
-import { CreateTransactionDto, GetCustomerDTO, GetItemDTO, TransactionDto } from '../Components/transaction-history/transaction.model';
+import { CreateTransactionDto, GetItemDTO, TransactionDto, TransactionCustomerDTO } from '../Components/transaction-history/transaction.model';
 import { forkJoin } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators'; // Make sure these models are created
 import { AuthService } from './auth.service';
@@ -151,79 +151,69 @@ export class ApiService {
   }
 
 //Customers
-createCustomer(customerDto: CreateCustomerDto, nicPhotoFile: File | null): Observable<any> {
-  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  // Create new customer - Updated to use config endpoints
+  createCustomer(customerData: CreateCustomerDTO): Observable<GetCustomerDTO> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-  const formData = new FormData();
+    const formData = new FormData();
+    formData.append('customerName', customerData.customerName);
+    formData.append('customerAddress', customerData.customerAddress);
+    formData.append('customerNIC', customerData.customerNIC);
+    formData.append('customerContactNo', customerData.customerContactNo);
+    
+    if (customerData.customerNICPhoto) {
+      formData.append('customerNICPhoto', customerData.customerNICPhoto);
+    }
 
-  // Append the customer details to the FormData
-  formData.append('customerNIC', customerDto.customerNIC);
-  formData.append('customerName', customerDto.customerName);
-  formData.append('customerAddress', customerDto.customerAddress);
-  formData.append('customerContactNo', customerDto.customerContactNo);
-
-  // Append the NIC photo file if it exists
-  if (nicPhotoFile) {
-    formData.append('nicPhoto', nicPhotoFile);
+    return this.http.post<GetCustomerDTO>(this.configService.getCustomerEndpoint('create'), formData, {
+      headers: this.getMultipartHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
-  // Make a POST request with proper headers for multipart data
-  return this.http.post(`${this.configService.apiUrl}/api/customers`, formData, {
-    headers: this.getMultipartHeaders()
-  }).pipe(
-    catchError(this.handleError.bind(this))
-  );
-}
+  updateCustomer(customerId: number, customerData: UpdateCustomerDTO): Observable<GetCustomerDTO> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile: File | null): Observable<any> {
-  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+    const formData = new FormData();
+    
+    if (customerData.customerName) formData.append('customerName', customerData.customerName);
+    if (customerData.customerAddress) formData.append('customerAddress', customerData.customerAddress);
+    if (customerData.customerNIC) formData.append('customerNIC', customerData.customerNIC);
+    if (customerData.customerContactNo) formData.append('customerContactNo', customerData.customerContactNo);
+    
+    if (customerData.customerNICPhoto) {
+      formData.append('customerNICPhoto', customerData.customerNICPhoto);
+    }
 
-  const formData = new FormData();
-  formData.append('customerNIC', customerDto.customerNIC);
-  formData.append('customerName', customerDto.customerName);
-  formData.append('customerAddress', customerDto.customerAddress);
-  formData.append('customerContactNo', customerDto.customerContactNo);
-  
-  if (nicPhotoFile) {
-    formData.append('nicPhoto', nicPhotoFile);  // Append file only if present
-  } else {
-    formData.append('nicPhoto', '');  // Add an empty string or skip this
+    return this.http.put<GetCustomerDTO>(
+      this.configService.getCustomerEndpoint('update', { customerId }), 
+      formData, {
+        headers: this.getMultipartHeaders()
+      }
+    ).pipe(
+      catchError(this.handleError.bind(this))
+    );
   }
 
-  // Make a PUT request with proper headers for multipart data
-  return this.http.put(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, formData, {
-    headers: this.getMultipartHeaders()
-  }).pipe(
-    catchError(this.handleError.bind(this))
-  );
-}
 
-
-  getCustomers(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string): Observable<any> {
+  // Get paginated customers - Updated to use config endpoints
+  getCustomers(searchParams: CustomerSearchRequest): Observable<PaginatedResponse<GetCustomerDTO>> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    // Convert dates to local ISO strings (backend expects local time)
-    const fromStr = this.toLocalISOString(from);
-    const toStr = this.toLocalISOString(to);
-  
-    // Build query parameters
+    // Build query parameters according to API documentation
     let params = new HttpParams()
-      .set('From', fromStr)
-      .set('To', toStr)
-      .set('Page', page.toString())
-      .set('PageSize', pageSize.toString());
+      .set('from', searchParams.from)
+      .set('to', searchParams.to);
     
-    if (search) {
-      params = params.set('Search', search);
-    }
-    if (sortBy) {
-      params = params.set('SortBy', sortBy);
-    }
-    if (sortOrder) {
-      params = params.set('SortOrder', sortOrder);
-    }
+    if (searchParams.page) params = params.set('page', searchParams.page.toString());
+    if (searchParams.pageSize) params = params.set('pageSize', searchParams.pageSize.toString());
+    if (searchParams.search) params = params.set('search', searchParams.search);
+    if (searchParams.sortBy) params = params.set('sortBy', searchParams.sortBy);
+    if (searchParams.sortOrder) params = params.set('sortOrder', searchParams.sortOrder);
+    if (searchParams.customerNIC) params = params.set('customerNIC', searchParams.customerNIC);
     
-    return this.http.get(`${this.configService.apiUrl}/api/customers`, {
+    return this.http.get<PaginatedResponse<GetCustomerDTO>>(this.configService.getCustomerEndpoint('getAll'), {
       headers: this.getHttpHeaders(),
       params: params
     }).pipe(
@@ -231,21 +221,54 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
     );
   }
 
-  getCustomerById(customerId: number): Observable<CustomerDto> {
+  // Get customer by ID - Updated to use config endpoints
+  getCustomerById(customerId: number): Observable<GetCustomerDTO> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.get<CustomerDto>(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, {
-      headers: this.getHttpHeaders()
-    }).pipe(
+    return this.http.get<GetCustomerDTO>(
+      this.configService.getCustomerEndpoint('getById', { customerId }), {
+        headers: this.getHttpHeaders()
+      }
+    ).pipe(
       catchError(this.handleError.bind(this))
     );
   }
 
-  deleteCustomer(customerId: number): Observable<any> {
+  // Delete customer - Updated to use config endpoints
+  deleteCustomer(customerId: number): Observable<{ message: string }> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.delete(`${this.configService.apiUrl}/api/customers/${customerId}/customer`, {
-      headers: this.getHttpHeaders()
+    return this.http.delete<{ message: string }>(
+      this.configService.getCustomerEndpoint('delete', { customerId }), {
+        headers: this.getHttpHeaders()
+      }
+    ).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Get customer's NIC photo - Updated to use config endpoints
+  getCustomerNICPhoto(customerId: number): Observable<Blob> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+    
+    return this.http.get(
+      this.configService.getCustomerEndpoint('getNicPhoto', { customerId }), { 
+        headers: this.getHttpHeaders(),
+        responseType: 'blob' 
+      }
+    ).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
+  // Search customers - Updated to use config endpoints
+  searchCustomers(searchTerm: string): Observable<GetCustomerDTO[]> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+    
+    const params = new HttpParams().set('search', searchTerm);
+    return this.http.get<GetCustomerDTO[]>(this.configService.getCustomerEndpoint('search'), { 
+      headers: this.getHttpHeaders(),
+      params 
     }).pipe(
       catchError(this.handleError.bind(this))
     );
@@ -254,7 +277,7 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   deleteMultipleCustomers(customerIds: number[]): Observable<any>{
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-    return this.http.delete(`${this.configService.apiUrl}/api/customers/delete-multiple`, { 
+    return this.http.delete(this.configService.getCustomerEndpoint('deleteMultiple'), { 
       headers: this.getHttpHeaders(),
       body: customerIds 
     }).pipe(
@@ -265,7 +288,7 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   getCustomersByIds(customerIds: number[]): Observable<CustomerDto[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.post<CustomerDto[]>(`${this.configService.apiUrl}/api/customers/byIds`, customerIds, {
+    return this.http.post<CustomerDto[]>(this.configService.getCustomerEndpoint('getByIds'), customerIds, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -274,10 +297,12 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 
   getCustomerByNIC(customerNIC: string): Observable<CustomerDto> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.post<CustomerDto>(`${this.configService.apiUrl}/api/customers/byNIC`, JSON.stringify(customerNIC), {
-      headers: { 'Content-Type': 'application/json' }
-    });
-}
+    return this.http.post<CustomerDto>(this.configService.getCustomerEndpoint('getByNIC'), JSON.stringify(customerNIC), {
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
 
 
   
@@ -288,7 +313,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   createItem(itemDto: CreateItemDto): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.post(`${this.configService.apiUrl}/api/items`, itemDto, {
+    const createUrl = this.configService.getItemEndpoint('create');
+    return this.http.post(createUrl, itemDto, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -298,7 +324,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   updateItem(itemId: number, itemDto: CreateItemDto): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.put(`${this.configService.apiUrl}/api/items/${itemId}/item`, itemDto, {
+    const updateUrl = this.configService.getItemEndpoint('update', { itemId });
+    return this.http.put(updateUrl, itemDto, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -332,9 +359,18 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
       params = params.set('CustomerNIC', customerNIC);
     }
 
-    return this.http.get<any>(`${this.configService.apiUrl}/api/items`, { 
-      headers: this.getHttpHeaders(),
-      params: params 
+    const getAllUrl = this.configService.getItemEndpoint('getAll', {
+      from: fromStr,
+      to: toStr,
+      page,
+      pageSize,
+      search: search || '',
+      sortBy: sortBy || '',
+      sortOrder: sortOrder || '',
+      customerNIC: customerNIC || ''
+    });
+    return this.http.get<any>(getAllUrl, { 
+      headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
     );
@@ -343,7 +379,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   getItemById(itemId: number): Observable<ItemDto> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.get<ItemDto>(`${this.configService.apiUrl}/api/items/${itemId}/item`, {
+    const getByIdUrl = this.configService.getItemEndpoint('getById', { itemId });
+    return this.http.get<ItemDto>(getByIdUrl, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -353,7 +390,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   deleteItem(itemId: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.delete(`${this.configService.apiUrl}/api/items/${itemId}/item`, {
+    const deleteUrl = this.configService.getItemEndpoint('delete', { itemId });
+    return this.http.delete(deleteUrl, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -363,7 +401,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   deleteMultipleItems(itemIds: number[]): Observable<any>{
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
 
-    return this.http.delete(`${this.configService.apiUrl}/api/items/delete-multiple`, { 
+    const deleteMultipleUrl = this.configService.getItemEndpoint('deleteMultiple');
+    return this.http.delete(deleteMultipleUrl, { 
       headers: this.getHttpHeaders(),
       body: itemIds 
     }).pipe(
@@ -374,7 +413,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   getItemsByCustomerNIC(nic: string): Observable<ItemDto[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    return this.http.get<ItemDto[]>(`${this.configService.apiUrl}/api/items/customer/${nic}`, {
+    const getByCustomerUrl = this.configService.getItemEndpoint('getByCustomerNIC', { nic });
+    return this.http.get<ItemDto[]>(getByCustomerUrl, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -387,9 +427,12 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
   createInvoice(invoiceDto: CreateInvoiceDto, initialInvoiceNumber: string, installmentNumber: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   
-    const url = `${this.configService.apiUrl}/api/invoices/${initialInvoiceNumber}/${installmentNumber}`; 
+    const createUrl = this.configService.getInvoiceEndpoint('create', { 
+      initialInvoiceNumber, 
+      installmentNumber 
+    });
   
-    return this.http.post(url, invoiceDto, {
+    return this.http.post(createUrl, invoiceDto, {
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
@@ -398,7 +441,8 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 
   updateInvoice(invoiceId: number, invoiceDto: CreateInvoiceDto): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.put(`${this.configService.apiUrl}/api/invoices/${invoiceId}`, invoiceDto);
+    const updateUrl = this.configService.getInvoiceEndpoint('update', { invoiceId });
+    return this.http.put(updateUrl, invoiceDto);
   }
 
   getInvoices(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string, status?: number, invoiceTypeId?: number): Observable<any> {
@@ -434,44 +478,64 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
       params = params.set('InvoiceTypeId', invoiceTypeId.toString());
     }
 
-    return this.http.get<any>(`${this.configService.apiUrl}/api/invoices`, { params });
+    const getAllUrl = this.configService.getInvoiceEndpoint('getAll', {
+      from: fromStr,
+      to: toStr,
+      page,
+      pageSize,
+      search: search || '',
+      sortBy: sortBy || '',
+      sortOrder: sortOrder || '',
+      customerNIC: customerNIC || '',
+      status: status?.toString() || '',
+      invoiceTypeId: invoiceTypeId?.toString() || ''
+    });
+
+    return this.http.get<any>(getAllUrl);
   }
 
   getInvoiceById(invoiceId: number): Observable<InvoiceDto_> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<InvoiceDto_>(`${this.configService.apiUrl}/api/invoices/${invoiceId}`);
+    const getByIdUrl = this.configService.getInvoiceEndpoint('getById', { invoiceId });
+    return this.http.get<InvoiceDto_>(getByIdUrl);
   }
 
   deleteInvoice(invoiceId: number): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.delete(`${this.configService.apiUrl}/api/invoices/${invoiceId}`);
+    const deleteUrl = this.configService.getInvoiceEndpoint('delete', { invoiceId });
+    return this.http.delete(deleteUrl);
   }
 
   deleteMultipleInvoices(invoiceIds: number[]): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.delete(`${this.configService.apiUrl}/api/invoices/delete-multiple`, { body: invoiceIds });
+    const deleteMultipleUrl = this.configService.getInvoiceEndpoint('deleteMultiple');
+    return this.http.delete(deleteMultipleUrl, { body: invoiceIds });
   }
 
   getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto2[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<InvoiceDto2[]>(`${this.configService.apiUrl}/api/invoices/customer/${nic}`);
+    const getByCustomerUrl = this.configService.getInvoiceEndpoint('getByCustomerNIC', { nic });
+    return this.http.get<InvoiceDto2[]>(getByCustomerUrl);
   }
 
   getInvoiceByInvoiceNo(invoiceNo: string): Observable<InvoiceDto[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<InvoiceDto[]>(`${this.configService.apiUrl}/api/invoices/invoiceNo/${invoiceNo}`);
+    const getByInvoiceNoUrl = this.configService.getInvoiceEndpoint('getByInvoiceNo', { invoiceNo });
+    return this.http.get<InvoiceDto[]>(getByInvoiceNoUrl);
   }
 
   getLoanInfoByInitialInvoiceNo(invoiceNo: string): Observable<LoanInfoDto> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    return this.http.get<LoanInfoDto>(`${this.configService.apiUrl}/api/invoices/InitialInvoice/${invoiceNo}`);
+    const getLoanInfoUrl = this.configService.getInvoiceEndpoint('getLoanInfoByInitialInvoiceNo', { invoiceNo });
+    return this.http.get<LoanInfoDto>(getLoanInfoUrl);
   }
 
 
  // Transactions
  createTransaction(transactionDto: CreateTransactionDto): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.post(`${this.configService.apiUrl}/api/transactions`, transactionDto)
+  const createUrl = this.configService.getTransactionEndpoint('create');
+  return this.http.post(createUrl, transactionDto)
     .pipe(catchError(this.handleError));
 }
 
@@ -541,13 +605,15 @@ getTransactionsByIds(transactionIds: number[]): Observable<TransactionDto[]> {
 
 deleteTransaction(transactionId: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.delete(`${this.configService.apiUrl}/api/transactions/${transactionId}`)
+  const deleteUrl = this.configService.getTransactionEndpoint('delete', { transactionId });
+  return this.http.delete(deleteUrl)
     .pipe(catchError(this.handleError));
 }
 
 deleteMultipleTransactions(transactionIds: number[]): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.request('delete', `${this.configService.apiUrl}/api/transactions/delete-multiple`, { body: transactionIds })
+  const deleteMultipleUrl = this.configService.getTransactionEndpoint('deleteMultiple');
+  return this.http.request('delete', deleteMultipleUrl, { body: transactionIds })
     .pipe(catchError(this.handleError));
 }
 
@@ -562,7 +628,7 @@ getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
 }
 
 
-getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: GetCustomerDTO, items: GetItemDTO[] }> {
+getInvoiceDetails(invoiceId: number): Observable<{ invoice: InvoiceDto_, transactions: TransactionDto[], customer: TransactionCustomerDTO, items: GetItemDTO[] }> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   return this.getInvoiceById(invoiceId).pipe(
     switchMap(invoice => 
@@ -637,94 +703,109 @@ deleteUsers(userIds: string[]){
 
 getAllKarats(): Observable<Karat[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Karat[]>(`${this.configService.apiUrl}/api/karatage/karats`);
+  return this.http.get<Karat[]>(this.configService.getKaratageEndpoint('karats', 'getAll'));
 }
 
 getKaratById(karatId: number): Observable<Karat> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Karat>(`${this.configService.apiUrl}/api/karatage/karats/${karatId}`);
+  return this.http.get<Karat>(this.configService.getKaratageEndpoint('karats', 'getById', { karatId }));
 }
 
 createKarat(karatValue: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   const karatDto: KaratDTO = { karatValue };
-  return this.http.post(`${this.configService.apiUrl}/api/karatage/karats`, karatDto);
+  return this.http.post(this.configService.getKaratageEndpoint('karats', 'create'), karatDto);
 }
 
 updateKarat(karatId: number, karat: Karat): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.put(`${this.configService.apiUrl}/api/karatage/karats/${karatId}`, karat);
+  return this.http.put(this.configService.getKaratageEndpoint('karats', 'update', { karatId }), karat);
 }
 
 deleteKarat(karatId: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.delete(`${this.configService.apiUrl}/api/karatage/karats/${karatId}`);
+  return this.http.delete(this.configService.getKaratageEndpoint('karats', 'delete', { karatId }));
 }
 
 // LoanPeriod Operations
 
 getAllLoanPeriods(): Observable<LoanPeriod[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<LoanPeriod[]>(`${this.configService.apiUrl}/api/karatage/loanperiods`);
+  return this.http.get<LoanPeriod[]>(this.configService.getKaratageEndpoint('loanPeriods', 'getAll'));
 }
 
 getLoanPeriodById(loanPeriodId: number): Observable<LoanPeriod> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<LoanPeriod>(`${this.configService.apiUrl}/api/karatage/loanperiods/${loanPeriodId}`);
+  return this.http.get<LoanPeriod>(this.configService.getKaratageEndpoint('loanPeriods', 'getById', { loanPeriodId }));
 }
 
 createLoanPeriod(periodInMonths: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
   const loanPeriodDto: LoanPeriodDTO = { period: periodInMonths };
-  return this.http.post(`${this.configService.apiUrl}/api/karatage/loanperiods`, loanPeriodDto);
+  return this.http.post(this.configService.getKaratageEndpoint('loanPeriods', 'create'), loanPeriodDto);
 }
 
 updateLoanPeriod(loanPeriodId: number, loanPeriod: LoanPeriod): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.put(`${this.configService.apiUrl}/api/karatage/loanperiods/${loanPeriodId}`, loanPeriod);
+  return this.http.put(this.configService.getKaratageEndpoint('loanPeriods', 'update', { loanPeriodId }), loanPeriod);
 }
 
 deleteLoanPeriod(loanPeriodId: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.delete(`${this.configService.apiUrl}/api/karatage/loanperiods/${loanPeriodId}`);
+  return this.http.delete(this.configService.getKaratageEndpoint('loanPeriods', 'delete', { loanPeriodId }));
 }
 
 // Pricing Operations
 
 getAllPricings(): Observable<Pricing[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings`);
+  return this.http.get<Pricing[]>(this.configService.getKaratageEndpoint('pricings', 'getAll'));
 }
 
 getPricingById(pricingId: number): Observable<Pricing> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Pricing>(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`);
+  return this.http.get<Pricing>(this.configService.getKaratageEndpoint('pricings', 'getById', { pricingId }));
 }
 
 createPricing(pricing: PricingDTO): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.post(`${this.configService.apiUrl}/api/karatage/pricings`, pricing);
+  return this.http.post(this.configService.getKaratageEndpoint('pricings', 'create'), pricing);
 }
 
 createPricingBatch(pricing: PricingBatchDTO[]): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.post(`${this.configService.apiUrl}/api/karatage/pricings/batch`, pricing);
+  return this.http.post(this.configService.getKaratageEndpoint('pricings', 'createBatch'), pricing);
 }
 
 updatePricing(pricingId: number, pricing: PricingPutDTO): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.put(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`, pricing);
+  return this.http.put(this.configService.getKaratageEndpoint('pricings', 'update', { pricingId }), pricing);
 }
 
 deletePricing(pricingId: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.delete(`${this.configService.apiUrl}/api/karatage/pricings/${pricingId}`);
+  return this.http.delete(this.configService.getKaratageEndpoint('pricings', 'delete', { pricingId }));
 }
 
 // Custom Operation: Get Pricings by Karat and LoanPeriod
 getPricingsByKaratAndLoanPeriod(karatId: number, loanPeriodId: number): Observable<Pricing[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
+  return this.http.get<Pricing[]>(this.configService.getKaratageEndpoint('pricings', 'getByKaratAndLoanPeriod', { karatId, loanPeriodId }));
+}
+
+// Excel Operations for Pricing
+getPricingExcelTemplate(): Observable<Blob> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  return this.http.get(this.configService.getKaratageEndpoint('pricings', 'getExcelTemplate'), {
+    responseType: 'blob'
+  });
+}
+
+uploadPricingExcel(file: File): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  const formData = new FormData();
+  formData.append('file', file);
+  return this.http.post(this.configService.getKaratageEndpoint('pricings', 'uploadExcel'), formData);
 }
 
 // Installments

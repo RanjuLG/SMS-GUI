@@ -12,13 +12,15 @@
 		"customers": {
 			"base": "/api/customers",
 			"create": "/api/customers",
-			"getAll": "/api/customers?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}",
-			"getById": "/api/customers/{customerId}/customer",
-			"update": "/api/customers/{customerId}/customer",
-			"delete": "/api/customers/{customerId}/customer",
+			"getAll": "/api/customers",
+			"getById": "/api/customers/{customerId}",
+			"update": "/api/customers/{customerId}",
+			"delete": "/api/customers/{customerId}",
 			"deleteMultiple": "/api/customers/delete-multiple",
 			"getByIds": "/api/customers/byIds",
-			"getByNIC": "/api/customers/byNIC"
+			"getByNIC": "/api/customers/byNIC",
+			"search": "/api/customers/search",
+			"getNicPhoto": "/api/customers/{customerId}/nic-photo"
 		},
 		"items": {
 			"base": "/api/items",
@@ -73,7 +75,7 @@
 		"karatage": {
 			"karats": {
 				"base": "/api/karatage/karats",
-				"getAll": "/api/karatage/karats?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}",
+				"getAll": "/api/karatage/karats",
 				"getById": "/api/karatage/karats/{karatId}",
 				"create": "/api/karatage/karats",
 				"update": "/api/karatage/karats/{karatId}",
@@ -81,7 +83,7 @@
 			},
 			"loanPeriods": {
 				"base": "/api/karatage/loanperiods",
-				"getAll": "/api/karatage/loanperiods?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}",
+				"getAll": "/api/karatage/loanperiods",
 				"getById": "/api/karatage/loanperiods/{loanPeriodId}",
 				"create": "/api/karatage/loanperiods",
 				"update": "/api/karatage/loanperiods/{loanPeriodId}",
@@ -89,13 +91,15 @@
 			},
 			"pricings": {
 				"base": "/api/karatage/pricings",
-				"getAll": "/api/karatage/pricings?Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&KaratId={karatId}&LoanPeriodId={loanPeriodId}&MinPrice={minPrice}&MaxPrice={maxPrice}",
+				"getAll": "/api/karatage/pricings",
 				"getById": "/api/karatage/pricings/{pricingId}",
 				"create": "/api/karatage/pricings",
 				"createBatch": "/api/karatage/pricings/batch",
 				"update": "/api/karatage/pricings/{pricingId}",
 				"delete": "/api/karatage/pricings/{pricingId}",
-				"getByKaratAndLoanPeriod": "/api/karatage/pricings/karat/{karatId}/loanperiod/{loanPeriodId}"
+				"getByKaratAndLoanPeriod": "/api/karatage/pricings/karat/{karatId}/loanperiod/{loanPeriodId}",
+				"getExcelTemplate": "/api/karatage/pricings/excel-template",
+				"uploadExcel": "/api/karatage/pricings/upload-excel"
 			}
 		},
 		"reports": {

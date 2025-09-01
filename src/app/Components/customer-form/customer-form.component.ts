@@ -5,7 +5,7 @@ import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { ApiService } from '../../Services/api-service.service';
-import { CustomerDto } from './customer.model';
+import { Customer, GetCustomerDTO, CreateCustomerDTO, UpdateCustomerDTO, PaginatedResponse, CustomerSearchRequest } from './customer.model';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
@@ -15,7 +15,7 @@ import { of } from 'rxjs';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
 
-export interface ExtendedCustomerDto extends CustomerDto {
+export interface ExtendedCustomerDto extends GetCustomerDTO {
   selected?: boolean;
 }
 
@@ -143,15 +143,16 @@ export class CustomerFormComponent implements OnInit {
         this.page = 1; // Reset to first page when searching
         if (!searchTerm) {
           // If no search term, load all customers with pagination
-          return this.apiService.getCustomers(
-            this.from, 
-            this.to, 
-            this.page, 
-            this.itemsPerPage, 
-            this.searchTerm, 
-            this.sortBy, 
-            this.sortOrder
-          );
+          const searchParams: CustomerSearchRequest = {
+            from: this.formatDateForAPI(this.from),
+            to: this.formatDateForAPI(this.to),
+            page: this.page,
+            pageSize: this.itemsPerPage,
+            search: this.searchTerm || undefined,
+            sortBy: this.sortBy || undefined,
+            sortOrder: this.sortOrder || undefined
+          };
+          return this.apiService.getCustomers(searchParams);
         }
         // If there's a search term, search by NIC
         return this.apiService.getCustomerByNIC(searchTerm).pipe(
@@ -162,7 +163,7 @@ export class CustomerFormComponent implements OnInit {
       next: (result: any) => {
         if (result && result.data && Array.isArray(result.data)) {
           // Handle paginated response
-          this.customers = result.data.map((customer: CustomerDto) => ({
+          this.customers = result.data.map((customer: GetCustomerDTO) => ({
             ...customer,
             createdAt: this.dateService.formatDateTime(customer.createdAt),
             selected: false
@@ -199,18 +200,21 @@ export class CustomerFormComponent implements OnInit {
 
   loadCustomers(): void {
     this.loading = true;
-    this.apiService.getCustomers(
-      this.from, 
-      this.to, 
-      this.page, 
-      this.itemsPerPage, 
-      this.searchTerm, 
-      this.sortBy, 
-      this.sortOrder
-    ).subscribe({
-      next: (response: any) => {
-        // Handle paginated response
-        this.customers = response.data?.map((customer: CustomerDto) => ({
+    
+    const searchParams: CustomerSearchRequest = {
+      from: this.formatDateForAPI(this.from),
+      to: this.formatDateForAPI(this.to),
+      page: this.page,
+      pageSize: this.itemsPerPage,
+      search: this.searchTerm || undefined,
+      sortBy: this.sortBy || undefined,
+      sortOrder: this.sortOrder || undefined
+    };
+
+    this.apiService.getCustomers(searchParams).subscribe({
+      next: (response: PaginatedResponse<GetCustomerDTO>) => {
+        // Handle paginated response according to new API structure
+        this.customers = response.data?.map((customer: GetCustomerDTO) => ({
           ...customer,
           createdAt: this.dateService.formatDateTime(customer.createdAt),
           selected: false
@@ -225,6 +229,14 @@ export class CustomerFormComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  // Helper method to format Date objects for API calls
+  private formatDateForAPI(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   }
 
   // Handle table actions (view, edit, delete)

@@ -2,7 +2,8 @@ import { Component, OnInit,ViewEncapsulation  } from '@angular/core';
 import { ApiService } from '../../../../Services/api-service.service';
 import { ActivatedRoute } from '@angular/router';
 import { InvoiceDto } from '../../../invoice-form/invoice.model';
-import { GetCustomerDTO, GetItemDTO, TransactionDto } from '../../../transaction-history/transaction.model';
+import { TransactionCustomerDTO, GetItemDTO, TransactionDto } from '../../../transaction-history/transaction.model';
+import { GetCustomerDTO } from '../../../customer-form/customer.model';
 import html2pdf from 'html2pdf.js';
 import { ConfigService } from '../../../../Services/config-service.service';
 import { CommonModule } from '@angular/common';
@@ -21,7 +22,7 @@ export class InvoiceTemplateComponent implements OnInit {
   invoiceId: number = 0;
   invoice: InvoiceDto | null = null;
   transaction: TransactionDto | null = null;
-  customer: GetCustomerDTO | null = null;
+  customer: TransactionCustomerDTO | null = null;
   items: GetItemDTO[] | null = null;
   dateGenerated: string | null = null;
   errorMessage: string | null = null;
