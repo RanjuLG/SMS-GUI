@@ -52,6 +52,6 @@ export const routes: Routes = [
     {path:'config/pricings',component: KaratValueComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports',component: ReportsComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    {path:'reports/transactions',component: IncomeReportComponent, canActivate: [AuthGuard], data: { role: 'Admin' }},
+    {path:'reports/transactions',component: UnifiedTransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'create-invoice',component: DashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
 ];

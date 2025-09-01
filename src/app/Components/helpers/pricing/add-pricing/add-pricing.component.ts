@@ -121,4 +121,98 @@ export class AddPricingComponent implements OnInit {
       }
     });
   }
+
+  addNewKarat() {
+    Swal.fire({
+      title: 'Add New Karat Value',
+      input: 'number',
+      inputLabel: 'Karat Value',
+      inputPlaceholder: 'Enter karat value (e.g., 18, 22, 24)',
+      showCancelButton: true,
+      confirmButtonText: 'Add',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Please enter a karat value!';
+        }
+        const numValue = parseInt(value);
+        if (numValue <= 0 || numValue > 24) {
+          return 'Please enter a valid karat value between 1 and 24!';
+        }
+        // Check if karat already exists
+        if (this.karats.some(k => k.karatValue === numValue)) {
+          return 'This karat value already exists!';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const newKarat = {
+          karatId: 0, // Will be set by backend
+          karatValue: parseInt(result.value)
+        };
+        
+        this.apiService.createKarat(newKarat).subscribe({
+          next: (response) => {
+            this.karats.push(response);
+            this.pricingForm.patchValue({ karatId: response.karatId });
+            this.cdr.detectChanges();
+            Swal.fire('Success!', 'New karat value added successfully.', 'success');
+          },
+          error: (error) => {
+            console.error('Error creating karat:', error);
+            Swal.fire('Error', 'Failed to add new karat value. Please try again.', 'error');
+          }
+        });
+      }
+    });
+  }
+
+  addNewLoanPeriod() {
+    Swal.fire({
+      title: 'Add New Loan Period',
+      input: 'number',
+      inputLabel: 'Loan Period (Months)',
+      inputPlaceholder: 'Enter loan period in months (e.g., 6, 12, 24)',
+      showCancelButton: true,
+      confirmButtonText: 'Add',
+      cancelButtonText: 'Cancel',
+      inputValidator: (value) => {
+        if (!value) {
+          return 'Please enter a loan period!';
+        }
+        const numValue = parseInt(value);
+        if (numValue <= 0 || numValue > 120) {
+          return 'Please enter a valid loan period between 1 and 120 months!';
+        }
+        // Check if loan period already exists
+        const periodText = `${numValue} Months`;
+        if (this.loanPeriods.some(p => p.period === periodText)) {
+          return 'This loan period already exists!';
+        }
+        return null;
+      }
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const monthsValue = parseInt(result.value);
+        const newLoanPeriod = {
+          loanPeriodId: 0, // Will be set by backend
+          period: `${monthsValue} Months`
+        };
+        
+        this.apiService.createLoanPeriod(newLoanPeriod).subscribe({
+          next: (response) => {
+            this.loanPeriods.push(response);
+            this.pricingForm.patchValue({ loanPeriodId: response.loanPeriodId });
+            this.cdr.detectChanges();
+            Swal.fire('Success!', 'New loan period added successfully.', 'success');
+          },
+          error: (error) => {
+            console.error('Error creating loan period:', error);
+            Swal.fire('Error', 'Failed to add new loan period. Please try again.', 'error');
+          }
+        });
+      }
+    });
+  }
 }

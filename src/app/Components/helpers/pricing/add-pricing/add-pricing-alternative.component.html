@@ -1,0 +1,50 @@
+<!-- Alternative approach with editable autocomplete fields -->
+<div class="modal-header">
+  <h5 class="modal-title">{{ pricing ? 'Edit Pricing' : 'Add Pricing' }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
+</div>
+<div class="modal-body">
+  <form [formGroup]="pricingForm" (ngSubmit)="onSubmit()">
+    <div class="mb-3">
+      <label for="karatValue" class="form-label">Karat Value</label>
+      <input 
+        type="number" 
+        id="karatValue" 
+        formControlName="karatValue" 
+        class="form-control"
+        placeholder="Enter karat value (e.g., 18, 22, 24)"
+        list="karatSuggestions" />
+      <datalist id="karatSuggestions">
+        <option *ngFor="let karat of karats" [value]="karat.karatValue">
+      </datalist>
+      <small class="form-text text-muted">
+        Enter a new value or select from existing: {{ getKaratValues() }}
+      </small>
+    </div>
+    
+    <div class="mb-3">
+      <label for="loanPeriod" class="form-label">Loan Period (Months)</label>
+      <input 
+        type="number" 
+        id="loanPeriod" 
+        formControlName="loanPeriod" 
+        class="form-control"
+        placeholder="Enter loan period in months (e.g., 6, 12, 24)"
+        list="periodSuggestions" />
+      <datalist id="periodSuggestions">
+        <option *ngFor="let period of loanPeriods" [value]="getMonthsFromPeriod(period.period)">
+      </datalist>
+      <small class="form-text text-muted">
+        Enter number of months or select from existing: {{ getLoanPeriodValues() }}
+      </small>
+    </div>
+    
+    <div class="mb-3">
+      <label for="price" class="form-label">Price (Rs.)</label>
+      <input type="number" id="price" formControlName="price" class="form-control" />
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">{{ pricing ? 'Save Changes' : 'Add Pricing' }}</button>
+    </div>
+  </form>
+</div>

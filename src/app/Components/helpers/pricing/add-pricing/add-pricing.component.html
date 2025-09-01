@@ -6,15 +6,27 @@
   <form [formGroup]="pricingForm" (ngSubmit)="onSubmit()">
     <div class="mb-3">
       <label for="karatId" class="form-label">Karat</label>
-      <select id="karatId" formControlName="karatId" class="form-select">
-        <option *ngFor="let karat of karats" [value]="karat.karatId">{{ karat.karatValue }}</option>
-      </select>
+      <div class="input-group">
+        <select id="karatId" formControlName="karatId" class="form-select">
+          <option value="">Select Karat Value</option>
+          <option *ngFor="let karat of karats" [value]="karat.karatId">{{ karat.karatValue }}</option>
+        </select>
+        <button type="button" class="btn btn-outline-primary" (click)="addNewKarat()" title="Add New Karat">
+          <i class="ri-add-line"></i>
+        </button>
+      </div>
     </div>
     <div class="mb-3">
       <label for="loanPeriodId" class="form-label">Loan Period</label>
-      <select id="loanPeriodId" formControlName="loanPeriodId" class="form-select">
-        <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">{{ period.period }}</option>
-      </select>
+      <div class="input-group">
+        <select id="loanPeriodId" formControlName="loanPeriodId" class="form-select">
+          <option value="">Select Loan Period</option>
+          <option *ngFor="let period of loanPeriods" [value]="period.loanPeriodId">{{ period.period }}</option>
+        </select>
+        <button type="button" class="btn btn-outline-primary" (click)="addNewLoanPeriod()" title="Add New Loan Period">
+          <i class="ri-add-line"></i>
+        </button>
+      </div>
     </div>
     <div class="mb-3">
       <label for="price" class="form-label">Price (Rs.)</label>
