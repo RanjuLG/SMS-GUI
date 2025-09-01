@@ -74,7 +74,7 @@ import { FormsModule } from '@angular/forms';
                     <span *ngSwitchCase="'currency'">{{ getNestedValue(item, column.key) | currency:'LKR':'symbol':'1.2-2' }}</span>
                     <span *ngSwitchCase="'badge'" 
                           [class]="'badge ' + getBadgeClass(getNestedValue(item, column.key))">
-                      {{ getNestedValue(item, column.key) }}
+                      {{ getDisplayValue(item, column) }}
                     </span>
                     <span *ngSwitchDefault>{{ getNestedValue(item, column.key) }}</span>
                   </ng-container>
@@ -481,14 +481,55 @@ export class DataTableComponent {
 
   getBadgeClass(value: any): string {
     const badgeMap: {[key: string]: string} = {
+      // General status badges
       'active': 'bg-success',
       'inactive': 'bg-secondary',
       'pending': 'bg-warning',
       'completed': 'bg-success',
-      'cancelled': 'bg-danger'
+      'cancelled': 'bg-danger',
+      
+      // Transaction type badges (by number)
+      '1': 'bg-primary',    // LoanIssuance
+      '2': 'bg-success',    // InstallmentPayment
+      '3': 'bg-info',       // InterestPayment
+      '4': 'bg-warning',    // LateFeePayment
+      '5': 'bg-secondary',  // LoanClosure
+      
+      // Transaction type badges (by name)
+      'loanissuance': 'bg-primary',
+      'loan issuance': 'bg-primary',
+      'loan disbursement': 'bg-primary',
+      'installmentpayment': 'bg-success',
+      'installment payment': 'bg-success',
+      'interestpayment': 'bg-info',
+      'interest payment': 'bg-info',
+      'latefeepayment': 'bg-warning',
+      'late fee payment': 'bg-warning',
+      'loanclosure': 'bg-secondary',
+      'loan closure': 'bg-secondary'
     };
     const stringValue = value?.toString?.()?.toLowerCase?.() || '';
     return badgeMap[stringValue] || 'bg-secondary';
+  }
+
+  getDisplayValue(item: any, column: any): string {
+    const rawValue = this.getNestedValue(item, column.key);
+    
+    // Handle transaction types specifically
+    if (column.key === 'transactionType') {
+      const transactionTypeMap: {[key: string]: string} = {
+        '1': 'Loan Disbursement',
+        '2': 'Installment Payment', 
+        '3': 'Interest Payment',
+        '4': 'Late Fee Payment',
+        '5': 'Loan Closure'
+      };
+      const displayName = transactionTypeMap[rawValue?.toString()];
+      return displayName || rawValue?.toString() || 'Unknown';
+    }
+    
+    // For other badge types, return the raw value
+    return rawValue?.toString() || '';
   }
 
   getTotalColumns(): number {

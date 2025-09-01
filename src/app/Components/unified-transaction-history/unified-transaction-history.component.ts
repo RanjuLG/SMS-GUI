@@ -177,13 +177,11 @@ export class UnifiedTransactionHistoryComponent implements OnInit, OnDestroy {
 
   // Initialize forms
   private initializeForms(): void {
+    // Initialize with all transaction types selected by default
+    const allTransactionTypes = this.transactionTypes.map(t => t.value);
+    
     this.filtersForm = this.fb.group({
-      transactionTypes: [[]],
-      amountRange: this.fb.group({
-        min: [null],
-        max: [null]
-      }),
-      customerId: [''],
+      transactionTypes: [allTransactionTypes],
       customerNIC: [''],
       invoiceNo: [''],
       loanStatus: ['all'],
@@ -265,11 +263,12 @@ export class UnifiedTransactionHistoryComponent implements OnInit, OnDestroy {
     const advancedFilters: Partial<AdvancedFilters> = {
       transactionTypes: filters.transactionTypes || [],
       amountRange: {
-        min: filters.amountRange?.min || undefined,
-        max: filters.amountRange?.max || undefined
+        min: filters.minAmount || undefined,
+        max: filters.maxAmount || undefined
       },
-      customerNIC: filters.customerId || undefined,
-      invoiceNumber: filters.invoiceNo || undefined
+      customerNIC: filters.customerNIC || undefined,
+      invoiceNumber: filters.invoiceNo || undefined,
+      loanStatus: filters.loanStatus !== 'all' ? filters.loanStatus : undefined
     };
 
     if (filters.dateRange?.from && filters.dateRange?.to) {
@@ -539,13 +538,34 @@ export class UnifiedTransactionHistoryComponent implements OnInit, OnDestroy {
     this.filtersForm.patchValue({ transactionTypes: currentTypes });
   }
 
+  selectAllTransactionTypes(): void {
+    const allTypes = this.transactionTypes.map(t => t.value);
+    this.filtersForm.patchValue({ transactionTypes: allTypes });
+  }
+
+  clearAllTransactionTypes(): void {
+    this.filtersForm.patchValue({ transactionTypes: [] });
+  }
+
   get selectedTypes(): TransactionType[] {
     return this.filtersForm.get('transactionTypes')?.value || [];
   }
 
   clearFilters(): void {
     this.searchControl.setValue('');
-    this.filtersForm.reset();
+    const allTransactionTypes = this.transactionTypes.map(t => t.value);
+    this.filtersForm.reset({
+      transactionTypes: allTransactionTypes,
+      customerNIC: '',
+      invoiceNo: '',
+      loanStatus: 'all',
+      minAmount: null,
+      maxAmount: null,
+      dateRange: {
+        from: null,
+        to: null
+      }
+    });
     this.showAdvancedFilters = false;
     this.unifiedTransactionService.applyQuickFilter('month');
   }

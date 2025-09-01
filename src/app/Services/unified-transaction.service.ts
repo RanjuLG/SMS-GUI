@@ -232,26 +232,35 @@ export class UnifiedTransactionService {
 
     switch (preset) {
       case 'today':
-        from = new Date(now.setHours(0, 0, 0, 0));
-        to = new Date(now.setHours(23, 59, 59, 999));
+        from = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+        to = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
         break;
       case 'week':
-        from = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+        const weekStart = new Date(now);
+        weekStart.setDate(now.getDate() - now.getDay()); // Sunday
+        weekStart.setHours(0, 0, 0, 0);
+        from = weekStart;
+        to.setHours(23, 59, 59, 999);
         break;
       case 'month':
-        from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
+        to.setHours(23, 59, 59, 999);
         break;
       case 'quarter':
-        from = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+        const quarterStart = Math.floor(now.getMonth() / 3) * 3;
+        from = new Date(now.getFullYear(), quarterStart, 1, 0, 0, 0, 0);
+        to.setHours(23, 59, 59, 999);
         break;
       case 'year':
-        from = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+        from = new Date(now.getFullYear(), 0, 1, 0, 0, 0, 0);
+        to.setHours(23, 59, 59, 999);
         break;
       case 'all':
         from = new Date(2000, 0, 1); // Far past date
+        to = new Date(2030, 11, 31); // Far future date
         break;
       default:
-        from = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+        from = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0);
     }
 
     this.updateFilters({ dateRange: { from, to } });

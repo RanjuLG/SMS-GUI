@@ -4,7 +4,7 @@ export interface TableColumn {
   key: string;
   label: string;
   sortable?: boolean;
-  type?: 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'custom';
+  type?: 'text' | 'number' | 'date' | 'boolean' | 'currency' | 'badge' | 'custom';
   width?: string;
   align?: 'left' | 'center' | 'right';
   formatter?: (value: any) => string;
