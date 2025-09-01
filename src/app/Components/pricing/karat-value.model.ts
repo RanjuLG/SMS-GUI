@@ -11,14 +11,12 @@ export interface Pricing {
 
 export interface LoanPeriod {
     loanPeriodId: number;
-    period: string; // e.g., "30 Days", "60 Days"
-   // pricings?: Pricing[];
+    period: number; // Period in months (e.g., 6, 12, 24)
 }
 
 export interface Karat {
     karatId: number;
-    karatValue: number;
-    //pricings?: Pricing[];
+    karatValue: number; // Gold purity (e.g., 18, 22, 24)
 }
 
 export interface CreatePricing {
@@ -29,13 +27,31 @@ export interface CreatePricing {
 
 export interface PricingBatchDTO {
     price: number; // The price offering for this combination of Karat and LoanPeriod
-    karatValue: number; // Selected Karat ID
-    period: number; // Selected Loan Period ID
+    karatValue: number; // Karat value - will create if doesn't exist
+    period: number; // Period in months - will create if doesn't exist
 }
-
 
 export interface EditPricing {
     price: number; // The price to be updated
+}
+
+// DTOs for creation based on API documentation
+export interface KaratDTO {
+    karatValue: number; // Required for creation
+}
+
+export interface LoanPeriodDTO {
+    period: number; // Required for creation - period in months
+}
+
+export interface PricingDTO {
+    price: number; // Required
+    karatId: number; // Required - must exist
+    loanPeriodId: number; // Required - must exist
+}
+
+export interface PricingPutDTO {
+    price: number; // Required - new price value
 }
 
 

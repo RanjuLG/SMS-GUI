@@ -58,8 +58,14 @@ export class AddPricingComponent implements OnInit {
       loanPeriods: this.apiService.getAllLoanPeriods()
     }).subscribe({
       next: (result) => {
-        this.karats = result.karats;
-        this.loanPeriods = result.loanPeriods;
+        console.log('API Response:', result); // Debug log
+        
+        // API returns direct arrays as per documentation
+        this.karats = (result.karats || []).filter((k: any) => k && k.karatId);
+        this.loanPeriods = (result.loanPeriods || []).filter((p: any) => p && p.loanPeriodId);
+
+        console.log('Filtered Karats:', this.karats); // Debug log
+        console.log('Filtered Loan Periods:', this.loanPeriods); // Debug log
 
         this.cdr.detectChanges();
 
@@ -85,6 +91,7 @@ export class AddPricingComponent implements OnInit {
         if (result.isConfirmed) {
           const pricingData = this.pricingForm.getRawValue();
           if (this.pricing) {
+            // Update existing pricing - only price can be updated
             this.apiService.updatePricing(this.pricing.pricingId, { price: pricingData.price }).subscribe({
               next: (response) => {
                 this.savePricing.emit(response);
@@ -93,7 +100,13 @@ export class AddPricingComponent implements OnInit {
               error: () => Swal.fire('Error', 'Failed to save changes. Please try again.', 'error')
             });
           } else {
-            this.apiService.createPricing(pricingData).subscribe({
+            // Create new pricing using PricingDTO
+            const newPricing = {
+              price: pricingData.price,
+              karatId: pricingData.karatId,
+              loanPeriodId: pricingData.loanPeriodId
+            };
+            this.apiService.createPricing(newPricing).subscribe({
               next: (response) => {
                 this.savePricing.emit(response);
                 this.activeModal.close();
@@ -147,12 +160,7 @@ export class AddPricingComponent implements OnInit {
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        const newKarat = {
-          karatId: 0, // Will be set by backend
-          karatValue: parseInt(result.value)
-        };
-        
-        this.apiService.createKarat(newKarat).subscribe({
+        this.apiService.createKarat(parseInt(result.value)).subscribe({
           next: (response) => {
             this.karats.push(response);
             this.pricingForm.patchValue({ karatId: response.karatId });
@@ -185,22 +193,15 @@ export class AddPricingComponent implements OnInit {
         if (numValue <= 0 || numValue > 120) {
           return 'Please enter a valid loan period between 1 and 120 months!';
         }
-        // Check if loan period already exists
-        const periodText = `${numValue} Months`;
-        if (this.loanPeriods.some(p => p.period === periodText)) {
+        // Check if loan period already exists - comparing the period numbers directly
+        if (this.loanPeriods.some(p => p.period === numValue)) {
           return 'This loan period already exists!';
         }
         return null;
       }
     }).then((result) => {
       if (result.isConfirmed) {
-        const monthsValue = parseInt(result.value);
-        const newLoanPeriod = {
-          loanPeriodId: 0, // Will be set by backend
-          period: `${monthsValue} Months`
-        };
-        
-        this.apiService.createLoanPeriod(newLoanPeriod).subscribe({
+        this.apiService.createLoanPeriod(parseInt(result.value)).subscribe({
           next: (response) => {
             this.loanPeriods.push(response);
             this.pricingForm.patchValue({ loanPeriodId: response.loanPeriodId });

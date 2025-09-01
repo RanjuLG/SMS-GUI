@@ -9,7 +9,6 @@ import Swal from 'sweetalert2';
 import { AddPricingComponent } from '../helpers/pricing/add-pricing/add-pricing.component';
 import * as XLSX from 'xlsx';
 import * as FileSaver from 'file-saver';
-import { RouterLink } from '@angular/router';
 
 // Import shared components
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -26,7 +25,6 @@ export interface ExtendedPricingDto extends Pricing {
     FormsModule,
     CommonModule,
     ReactiveFormsModule,
-    RouterLink,
     PageHeaderComponent,
     DataTableComponent
   ],
@@ -98,7 +96,7 @@ export class KaratValueComponent implements OnInit {
       this.filterPricingsByKarat(searchTerm);
   });
   }
-  filterPricingsByKarat(searchTerm: string): void {
+    filterPricingsByKarat(searchTerm: string): void {
     if (!searchTerm) {
         // If no search term, load all pricings
         this.loadPricings();
@@ -112,18 +110,20 @@ export class KaratValueComponent implements OnInit {
         this.pricings = data.filter((pricing: any) => pricing.karat?.karatValue === searchValue);
         this.cdr.markForCheck();
     });
-}
+  }
 
   loadKarats(): void {
     this.apiService.getAllKarats().subscribe((data) => {
-      this.karats = data;
+      // API returns direct array as per documentation
+      this.karats = data.filter((k: any) => k && k.karatId);
       this.cdr.markForCheck();
     });
   }
 
   loadLoanPeriods(): void {
     this.apiService.getAllLoanPeriods().subscribe((data) => {
-      this.loanPeriods = data;
+      // API returns direct array as per documentation
+      this.loanPeriods = data.filter((p: any) => p && p.loanPeriodId);
       this.cdr.markForCheck();
     });
   }
@@ -132,12 +132,13 @@ export class KaratValueComponent implements OnInit {
     this.loading = true;
     this.apiService.getAllPricings().subscribe({
       next: (data: ExtendedPricingDto[]) => {
+        // API returns direct array as per documentation
         this.pricings = data.map((pricing: ExtendedPricingDto) => ({
           ...pricing,
           selected: false
         }));
         this.loading = false;
-        this.cdr.markForCheck(); // Ensure change detection is triggered
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error loading pricings:', error);
@@ -328,15 +329,16 @@ export class KaratValueComponent implements OnInit {
   downloadExcelTemplate(): void {
     // Define the template data
     const templateData = [
-      ['Price', 'Karat Value', 'Loan Period (months)'],  // Header row
-      [1000, 22, 12],  // Example row
-      [1500, 24, 6],   // Example row
+      ['Price', 'Karat Value', 'Period (months)'],  // Header row
+      [1000, 22, 12],  // Example row: 1000 Rs for 22K gold, 12 months
+      [1500, 24, 6],   // Example row: 1500 Rs for 24K gold, 6 months
+      [1200, 18, 24],  // Example row: 1200 Rs for 18K gold, 24 months
     ];
 
     // Create a new workbook and worksheet
     const worksheet = XLSX.utils.aoa_to_sheet(templateData);
     const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, 'Template');
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Pricing Template');
 
     // Create a blob from the workbook
     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });

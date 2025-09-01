@@ -32,10 +32,10 @@
         placeholder="Enter loan period in months (e.g., 6, 12, 24)"
         list="periodSuggestions" />
       <datalist id="periodSuggestions">
-        <option *ngFor="let period of loanPeriods" [value]="getMonthsFromPeriod(period.period)">
+        <option *ngFor="let period of loanPeriods" [value]="period.period">
       </datalist>
       <small class="form-text text-muted">
-        Enter number of months or select from existing: {{ getLoanPeriodValues() }}
+        Enter number of months or select from existing values
       </small>
     </div>
     
