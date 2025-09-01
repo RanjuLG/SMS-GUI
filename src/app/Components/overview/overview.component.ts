@@ -1,5 +1,5 @@
 import { Component, OnInit, AfterViewInit, ElementRef } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { DecimalPipe, CommonModule } from '@angular/common';
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -69,7 +69,8 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     private modalService: NgbModal,
     private el: ElementRef,
     private apiService: ApiService,
-    private authService: AuthService
+    private authService: AuthService,
+    private router: Router
   ) {}
 
   ngAfterViewInit(): void {
@@ -230,16 +231,16 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
     // Get recent activities data from multiple sources
     const currentDate = new Date();
-    const lastWeek = new Date(currentDate.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const lastTwoWeeks = new Date(currentDate.getTime() - 14 * 24 * 60 * 60 * 1000); // Extended to 2 weeks for better data
 
     forkJoin({
-      transactions: this.apiService.getTransactions(lastWeek, currentDate, 1, 3, '', 'CreatedAt', 'desc').pipe(
+      transactions: this.apiService.getTransactions(lastTwoWeeks, currentDate, 1, 10, '', 'CreatedAt', 'desc').pipe(
         catchError(() => of({ data: [], total: 0 }))
       ),
-      invoices: this.apiService.getInvoices(lastWeek, currentDate, 1, 3, '', 'CreatedAt', 'desc').pipe(
+      invoices: this.apiService.getInvoices(lastTwoWeeks, currentDate, 1, 10, '', 'DateGenerated', 'desc').pipe(
         catchError(() => of({ data: [], total: 0 }))
       ),
-      customers: this.apiService.getCustomers(lastWeek, currentDate, 1, 2, '', 'CreatedAt', 'desc').pipe(
+      customers: this.apiService.getCustomers(lastTwoWeeks, currentDate, 1, 5, '', 'CreatedAt', 'desc').pipe(
         catchError(() => of({ data: [], total: 0 }))
       )
     }).subscribe({
@@ -263,17 +264,56 @@ export class OverviewComponent implements OnInit, AfterViewInit {
 
     // Process transactions
     if (data.transactions?.data) {
-      data.transactions.data.slice(0, 2).forEach((transaction: any) => {
+      data.transactions.data.slice(0, 3).forEach((transaction: any) => {
+        // Get customer name from nested customer object
+        const customerName = transaction.customer?.customerName || 'Unknown Customer';
+        
+        // Determine transaction type and details
+        let title = 'Transaction Processed';
+        let icon = 'ri-money-dollar-circle-line';
+        let iconBg = 'bg-success';
+        let status = 'Completed';
+        let statusBg = 'bg-success';
+        
+        // Map transaction types (based on your data structure)
+        switch (transaction.transactionType) {
+          case 1: // Loan/New Transaction
+            title = 'New Loan Created';
+            icon = 'ri-hand-coin-line';
+            iconBg = 'bg-primary';
+            status = 'Loan';
+            statusBg = 'bg-primary';
+            break;
+          case 2: // Payment/Installment
+            title = 'Payment Received';
+            icon = 'ri-money-dollar-circle-line';
+            iconBg = 'bg-success';
+            status = 'Payment';
+            statusBg = 'bg-success';
+            break;
+          case 5: // Buy Back/Settlement
+            title = 'Item Buy Back';
+            icon = 'ri-exchange-line';
+            iconBg = 'bg-warning';
+            status = 'Buy Back';
+            statusBg = 'bg-warning';
+            break;
+          default:
+            title = 'Transaction Processed';
+            status = 'Transaction';
+        }
+
         activities.push({
           id: `transaction-${transaction.transactionId}`,
           type: 'transaction',
-          icon: 'ri-money-dollar-circle-line',
-          iconBg: 'bg-success',
-          title: 'Payment Received',
-          description: `Payment of Rs. ${transaction.amount?.toLocaleString()} received${transaction.customerName ? ` from ${transaction.customerName}` : ''}`,
+          icon: icon,
+          iconBg: iconBg,
+          title: title,
+          description: `${title.toLowerCase().includes('payment') ? 'Payment' : 'Transaction'} of Rs. ${transaction.totalAmount?.toLocaleString()} ${title.toLowerCase().includes('payment') ? 'received from' : 'processed for'} ${customerName}`,
           time: this.formatActivityTimeAgo(transaction.createdAt),
-          status: transaction.transactionType === 1 ? 'Payment' : 'Received',
-          statusBg: 'bg-success'
+          originalTime: transaction.createdAt,
+          status: status,
+          statusBg: statusBg
         });
       });
     }
@@ -281,41 +321,87 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     // Process invoices
     if (data.invoices?.data) {
       data.invoices.data.slice(0, 2).forEach((invoice: any) => {
+        // Get customer name from invoice customer NIC and match with transaction data
+        let customerName = 'Unknown Customer';
+        if (invoice.customerNIC && data.transactions?.data) {
+          const matchingTransaction = data.transactions.data.find((t: any) => 
+            t.customer?.customerNIC === invoice.customerNIC
+          );
+          if (matchingTransaction?.customer?.customerName) {
+            customerName = matchingTransaction.customer.customerName;
+          }
+        }
+
+        // Determine invoice type
+        let title = 'New Invoice Created';
+        let icon = 'ri-file-add-line';
+        let iconBg = 'bg-primary';
+        let status = 'Created';
+        let statusBg = 'bg-primary';
+
+        switch (invoice.invoiceTypeId) {
+          case 1: // Loan Invoice
+            title = 'Loan Invoice Created';
+            icon = 'ri-file-add-line';
+            iconBg = 'bg-primary';
+            break;
+          case 2: // Payment Invoice
+            title = 'Payment Invoice Created';
+            icon = 'ri-file-text-line';
+            iconBg = 'bg-success';
+            status = 'Payment';
+            statusBg = 'bg-success';
+            break;
+          case 3: // Buy Back Invoice
+            title = 'Buy Back Invoice Created';
+            icon = 'ri-file-transfer-line';
+            iconBg = 'bg-warning';
+            status = 'Buy Back';
+            statusBg = 'bg-warning';
+            break;
+        }
+
         activities.push({
           id: `invoice-${invoice.invoiceId}`,
           type: 'invoice',
-          icon: 'ri-file-add-line',
-          iconBg: 'bg-primary',
-          title: 'New Invoice Created',
-          description: `Invoice #${invoice.invoiceNumber || invoice.invoiceId} created with total amount Rs. ${invoice.totalAmount?.toLocaleString()}`,
-          time: this.formatActivityTimeAgo(invoice.createdAt),
-          status: 'Created',
-          statusBg: 'bg-primary'
+          icon: icon,
+          iconBg: iconBg,
+          title: title,
+          description: `Invoice #${invoice.invoiceNo} created for ${customerName} with amount Rs. ${invoice.totalAmount?.toLocaleString()}`,
+          time: this.formatActivityTimeAgo(invoice.dateGenerated),
+          originalTime: invoice.dateGenerated,
+          status: status,
+          statusBg: statusBg
         });
       });
     }
 
     // Process customers
     if (data.customers?.data) {
-      data.customers.data.slice(0, 1).forEach((customer: any) => {
+      data.customers.data.slice(0, 2).forEach((customer: any) => {
         activities.push({
           id: `customer-${customer.customerId}`,
           type: 'customer',
           icon: 'ri-user-add-line',
           iconBg: 'bg-info',
           title: 'New Customer Registered',
-          description: `${customer.firstName} ${customer.lastName} has been added to the system`,
+          description: `${customer.customerName} has been registered with NIC ${customer.customerNIC}`,
           time: this.formatActivityTimeAgo(customer.createdAt),
+          originalTime: customer.createdAt,
           status: 'Registered',
           statusBg: 'bg-info'
         });
       });
     }
 
-    // Sort by time (newest first) and limit to 5
+    // Sort by time (newest first) and limit to 6
     return activities
-      .sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime())
-      .slice(0, 5);
+      .sort((a, b) => {
+        const timeA = new Date(a.originalTime || 0).getTime();
+        const timeB = new Date(b.originalTime || 0).getTime();
+        return timeB - timeA;
+      })
+      .slice(0, 6);
   }
 
   // Generate mock activities as fallback
@@ -507,5 +593,24 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     } else {
       return `${diffMinutes}m ago`;
     }
+  }
+
+  // Navigate to view all activities
+  viewAllActivities(): void {
+    // Navigate to transaction history which shows all transactions and activities
+    this.router.navigate(['/transaction-history']);
+  }
+
+  // Navigate to specific activity types
+  viewTransactionHistory(): void {
+    this.router.navigate(['/transaction-history']);
+  }
+
+  viewReports(): void {
+    this.router.navigate(['/reports']);
+  }
+
+  viewCustomers(): void {
+    this.router.navigate(['/customers']);
   }
 }

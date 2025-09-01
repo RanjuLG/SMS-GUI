@@ -255,10 +255,51 @@
             <i class="ri-refresh-line me-1"></i>
             Refresh
           </button>
-          <button class="btn btn-sm btn-outline-primary rounded-pill">
-            <i class="ri-external-link-line me-1"></i>
-            View All
-          </button>
+          
+          <!-- Dropdown for View All options -->
+          <div class="btn-group" role="group">
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline-primary rounded-pill"
+              (click)="viewAllActivities()">
+              <i class="ri-external-link-line me-1"></i>
+              View All
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split rounded-pill" 
+              data-bs-toggle="dropdown" 
+              aria-expanded="false">
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" (click)="viewTransactionHistory()">
+                  <i class="ri-exchange-line me-2"></i>
+                  All Transactions
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" (click)="viewReports()">
+                  <i class="ri-file-chart-line me-2"></i>
+                  Reports & Analytics
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" (click)="viewCustomers()">
+                  <i class="ri-user-line me-2"></i>
+                  Customer Management
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" routerLink="/invoices">
+                  <i class="ri-file-list-line me-2"></i>
+                  All Invoices
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         
         <!-- Loading State -->
