@@ -90,6 +90,14 @@ export class NavBarComponent implements OnInit, OnDestroy {
   toggleSidebar() {
     const newState = !this.sidebarExpanded;
     this.sidebarToggle.emit(newState);
+    
+    // Force update of mobile state for better responsiveness
+    setTimeout(() => {
+      // Add haptic feedback for mobile devices
+      if ('vibrate' in navigator) {
+        navigator.vibrate(50);
+      }
+    }, 10);
   }
 
   // Toggle theme

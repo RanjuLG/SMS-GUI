@@ -4,7 +4,9 @@
     <div class="navbar-left">
       <button class="mobile-sidebar-toggle d-lg-none" 
               (click)="toggleSidebar()"
-              [attr.aria-label]="sidebarExpanded ? 'Close menu' : 'Open menu'">
+              (touchstart)="$event.preventDefault()"
+              [attr.aria-label]="sidebarExpanded ? 'Close menu' : 'Open menu'"
+              [attr.aria-expanded]="sidebarExpanded">
         <i [class]="sidebarExpanded ? 'ri-close-line' : 'ri-menu-line'"></i>
       </button>
       

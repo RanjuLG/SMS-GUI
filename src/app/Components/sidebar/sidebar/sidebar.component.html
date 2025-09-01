@@ -1,4 +1,4 @@
-<aside class="modern-sidebar" [class.expanded]="expanded">
+<aside class="modern-sidebar" [class.expanded]="expanded" (click)="$event.stopPropagation()">>
     <!-- Sidebar Header -->
     <div class="sidebar-header">
         <div class="logo-container" *ngIf="expanded">

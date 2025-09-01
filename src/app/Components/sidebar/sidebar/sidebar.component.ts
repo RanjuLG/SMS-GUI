@@ -114,6 +114,9 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.themeSubscription?.unsubscribe();
+    
+    // Clean up mobile event listeners
+    window.removeEventListener('orientationchange', this.checkMobileSidebarState);
   }
 
   private updateSidebarTheme() {
@@ -137,12 +140,78 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
         trigger: 'hover'
       });
     });
+    
+    // Handle mobile-specific sidebar behavior
+    this.setupMobileSidebarHandling();
+  }
+  
+  private setupMobileSidebarHandling(): void {
+    // Add touch event listeners for better mobile handling
+    const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+    if (sidebarElement) {
+      // Prevent text selection on mobile when interacting with sidebar
+      sidebarElement.addEventListener('touchstart', (e: TouchEvent) => {
+        if (window.innerWidth <= 991.98) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Handle touch end events for better responsiveness
+      sidebarElement.addEventListener('touchend', (e: TouchEvent) => {
+        if (window.innerWidth <= 991.98) {
+          // Small delay to prevent double-taps
+          setTimeout(() => {
+            this.checkMobileSidebarState();
+          }, 50);
+        }
+      });
+    }
+    
+    // Listen for orientation changes on mobile
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        this.checkMobileSidebarState();
+      }, 300);
+    });
+  }
+  
+  private checkMobileSidebarState(): void {
+    // Ensure sidebar state is consistent on mobile
+    if (window.innerWidth <= 991.98) {
+      const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+      const sidebarWrapper = document.querySelector('.sidebar-wrapper');
+      const overlay = document.querySelector('.sidebar-overlay');
+      
+      if (sidebarElement && sidebarWrapper) {
+        if (this.expanded) {
+          sidebarElement.classList.add('expanded');
+          sidebarWrapper.classList.add('sidebar-expanded');
+          if (overlay) overlay.classList.add('show');
+        } else {
+          sidebarElement.classList.remove('expanded');
+          sidebarWrapper.classList.remove('sidebar-expanded');
+          if (overlay) overlay.classList.remove('show');
+        }
+      }
+    }
   }
 
   toggleSidebar(): void {
     this.expanded = !this.expanded;
     this.sidebarToggle.emit(this.expanded);
     localStorage.setItem('sidebarExpanded', JSON.stringify(this.expanded));
+    
+    // Force DOM update for mobile devices
+    setTimeout(() => {
+      const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+      if (sidebarElement) {
+        if (this.expanded) {
+          sidebarElement.classList.add('expanded');
+        } else {
+          sidebarElement.classList.remove('expanded');
+        }
+      }
+    }, 10);
   }
 
   expandSidebar(): void {
@@ -150,6 +219,14 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
       this.expanded = true;
       this.sidebarToggle.emit(this.expanded);
       localStorage.setItem('sidebarExpanded', JSON.stringify(this.expanded));
+      
+      // Force DOM update for mobile devices
+      setTimeout(() => {
+        const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+        if (sidebarElement) {
+          sidebarElement.classList.add('expanded');
+        }
+      }, 10);
     }
   }
 

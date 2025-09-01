@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavBarComponent } from "./Components/nav-bar/nav-bar.component";
 import { FooterComponent } from './Components/footer/footer.component';
 import { AuthService } from './Services/auth.service';
 import { ThemeService } from './Services/theme.service';
 import { BreadcrumbService } from './Services/breadcrumb.service';
+import { SidebarService } from './Services/sidebar.service';
 import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './Components/sidebar/sidebar/sidebar.component';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -23,17 +25,20 @@ import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loa
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'SMS';
   isLoggedIn = false;
   sidebarExpanded = true;
   isLoading = false;
   loadingMessage = 'Loading...';
+  
+  private sidebarSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
     private themeService: ThemeService,
-    private breadcrumbService: BreadcrumbService // Initialize breadcrumb service
+    private breadcrumbService: BreadcrumbService,
+    public sidebarService: SidebarService
   ) {}
 
   ngOnInit() {
@@ -50,17 +55,25 @@ export class AppComponent implements OnInit {
       this.isLoggedIn = status;
     });
 
-    // Load sidebar state from localStorage
-    const savedSidebarState = localStorage.getItem('sidebarExpanded');
-    if (savedSidebarState !== null) {
-      this.sidebarExpanded = JSON.parse(savedSidebarState);
-    }
+    // Subscribe to sidebar state changes
+    this.sidebarSubscription = this.sidebarService.sidebarExpanded$.subscribe(
+      (expanded: boolean) => {
+        this.sidebarExpanded = expanded;
+      }
+    );
+  }
+
+  ngOnDestroy() {
+    this.sidebarSubscription?.unsubscribe();
   }
 
   onSidebarToggle(expanded: boolean) {
-    this.sidebarExpanded = expanded;
-    // Save sidebar state to localStorage
-    localStorage.setItem('sidebarExpanded', JSON.stringify(expanded));
+    this.sidebarService.setSidebarState(expanded);
+  }
+
+  // Helper method for closing mobile sidebar from overlay click
+  closeMobileSidebar() {
+    this.sidebarService.closeMobileSidebar();
   }
 
   showLoading(message: string = 'Loading...') {

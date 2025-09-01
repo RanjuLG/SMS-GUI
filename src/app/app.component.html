@@ -3,7 +3,8 @@
   <div *ngIf="isLoggedIn" 
        class="sidebar-overlay" 
        [class.show]="sidebarExpanded"
-       (click)="onSidebarToggle(false)"></div>
+       (click)="closeMobileSidebar()"
+       (touchstart)="closeMobileSidebar()"></div>
 
   <!-- Sidebar -->
   <div *ngIf="isLoggedIn" class="sidebar-wrapper" [class.sidebar-expanded]="sidebarExpanded">

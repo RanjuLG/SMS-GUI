@@ -19,8 +19,31 @@
     z-index: 1050;
     transform: translateX(-100%);
     box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+    
+    // Optimize for mobile performance
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    
+    // Prevent text selection and callouts on mobile
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    // Ensure smooth animations
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
 
     &.expanded {
+      -webkit-transform: translateX(0);
+      -moz-transform: translateX(0);
+      -ms-transform: translateX(0);
       transform: translateX(0);
       width: var(--mobile-sidebar-width);
     }
