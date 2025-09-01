@@ -117,6 +117,14 @@ export class UnifiedTransactionService {
           );
         }
 
+        // Additional client-side filtering for Customer NIC (in case API doesn't filter properly)
+        if (filters.customerNIC && filters.customerNIC.trim()) {
+          const searchTerm = filters.customerNIC.toLowerCase().trim();
+          transactions = transactions.filter(t =>
+            t.customer?.customerNIC?.toLowerCase().includes(searchTerm)
+          );
+        }
+
         // Filter by customer name if provided (client-side for complex searches)
         if (filters.customerName) {
           const searchTerm = filters.customerName.toLowerCase();

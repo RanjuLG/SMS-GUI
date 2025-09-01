@@ -94,20 +94,20 @@
             <!-- Quick Filters -->
             <div class="row mb-3">
               <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center mb-2">
+                <div class="d-flex justify-content-between align-items-center mb-3">
                   <h6 class="text-muted small mb-0">Transaction Types:</h6>
                   <div class="btn-group btn-group-sm" role="group">
-                    <button type="button" class="btn btn-outline-primary btn-sm" 
+                    <button type="button" class="btn btn-outline-primary" 
                             (click)="selectAllTransactionTypes()" 
                             [disabled]="selectedTypes.length === transactionTypes.length"
                             title="Select All Transaction Types">
-                      <i class="bi bi-check-all"></i> All
+                      <i class="bi bi-check-all me-1"></i>All
                     </button>
-                    <button type="button" class="btn btn-outline-secondary btn-sm" 
+                    <button type="button" class="btn btn-outline-secondary" 
                             (click)="clearAllTransactionTypes()"
                             [disabled]="selectedTypes.length === 0"
                             title="Clear All Transaction Types">
-                      <i class="bi bi-x-circle"></i> None
+                      <i class="bi bi-x-circle me-1"></i>None
                     </button>
                   </div>
                 </div>

@@ -536,7 +536,6 @@ export class UnifiedTransactionHistoryComponent implements OnInit, OnDestroy {
     }
     
     this.filtersForm.patchValue({ transactionTypes: currentTypes });
-    console.log('Selected types:', currentTypes, 'Clicked type:', type); // Debug log
   }
 
   selectAllTransactionTypes(): void {
