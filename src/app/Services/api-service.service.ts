@@ -478,6 +478,7 @@ updateCustomer(customerId: number, customerDto: CreateCustomerDto, nicPhotoFile:
 
 getTransactions(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string, transactionType?: number, minAmount?: number, maxAmount?: number): Observable<any> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
   // Convert dates to local ISO strings (backend expects local time)
   const fromStr = this.toLocalISOString(from);
   const toStr = this.toLocalISOString(to);
@@ -511,18 +512,30 @@ getTransactions(from: Date, to: Date, page: number = 1, pageSize: number = 10, s
     params = params.set('MaxAmount', maxAmount.toString());
   }
 
-  return this.http.get<any>(`${this.configService.apiUrl}/api/transactions`, { params })
+  // Use configuration endpoint
+  const endpoint = this.configService.apiEndpoints?.transactions?.getAll || '/api/transactions';
+  const url = `${this.configService.apiUrl}${endpoint.split('?')[0]}`;
+  
+  return this.http.get<any>(url, { params })
     .pipe(catchError(this.handleError));
 }
 
 getTransactionById(transactionId: number): Observable<TransactionDto> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<TransactionDto>(`${this.configService.apiUrl}/api/transactions/${transactionId}`)
+  
+  const endpoint = this.configService.apiEndpoints?.transactions?.getById || '/api/transactions/{transactionId}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{transactionId}', transactionId.toString())}`;
+  
+  return this.http.get<TransactionDto>(url)
     .pipe(catchError(this.handleError));
 }
 getTransactionsByIds(transactionIds: number[]): Observable<TransactionDto[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.post<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/byIds`, transactionIds)
+  
+  const endpoint = this.configService.apiEndpoints?.transactions?.getByIds || '/api/transactions/byIds';
+  const url = `${this.configService.apiUrl}${endpoint}`;
+  
+  return this.http.post<TransactionDto[]>(url, transactionIds)
     .pipe(catchError(this.handleError));
 }
 
@@ -540,8 +553,12 @@ deleteMultipleTransactions(transactionIds: number[]): Observable<any> {
 
 getTransactionsByCustomerNIC(nic: string): Observable<TransactionDto[]> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<TransactionDto[]>(`${this.configService.apiUrl}/api/transactions/customer/${nic}`)
-  .pipe(catchError(this.handleError));
+  
+  const endpoint = this.configService.apiEndpoints?.transactions?.getByCustomerNIC || '/api/transactions/customer/{customerNIC}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{customerNIC}', nic)}`;
+  
+  return this.http.get<TransactionDto[]>(url)
+    .pipe(catchError(this.handleError));
 }
 
 
@@ -765,18 +782,109 @@ getPricingsByKaratAndLoanPeriod(karatId: any, loanPeriodId: number): Observable<
   return this.http.get<Pricing[]>(`${this.configService.apiUrl}/api/karatage/pricings/karat/${karatId}/loanperiod/${loanPeriodId}`);
 }
 
+// Installments
+
+getAllInstallments(): Observable<any[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.getAll || '/api/installments';
+  const url = `${this.configService.apiUrl}${endpoint}`;
+  
+  return this.http.get<any[]>(url)
+    .pipe(catchError(this.handleError));
+}
+
+getInstallmentById(installmentId: number): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.getById || '/api/installments/{installmentId}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{installmentId}', installmentId.toString())}`;
+  
+  return this.http.get<any>(url)
+    .pipe(catchError(this.handleError));
+}
+
+getInstallmentsByTransaction(transactionId: number): Observable<any[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.getByTransaction || '/api/installments/transaction/{transactionId}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{transactionId}', transactionId.toString())}`;
+  
+  return this.http.get<any[]>(url)
+    .pipe(catchError(this.handleError));
+}
+
+getInstallmentsByInvoiceNumber(invoiceNumber: string): Observable<any[]> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.getByInvoiceNumber || '/api/installments/invoice/{invoiceNumber}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{invoiceNumber}', invoiceNumber)}`;
+  
+  return this.http.get<any[]>(url)
+    .pipe(catchError(this.handleError));
+}
+
+createInstallment(installmentData: any): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.create || '/api/installments';
+  const url = `${this.configService.apiUrl}${endpoint}`;
+  
+  return this.http.post<any>(url, installmentData)
+    .pipe(catchError(this.handleError));
+}
+
+updateInstallment(installmentId: number, installmentData: any): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.update || '/api/installments/{installmentId}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{installmentId}', installmentId.toString())}`;
+  
+  return this.http.put<any>(url, installmentData)
+    .pipe(catchError(this.handleError));
+}
+
+deleteInstallment(installmentId: number): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.delete || '/api/installments/{installmentId}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{installmentId}', installmentId.toString())}`;
+  
+  return this.http.delete<any>(url)
+    .pipe(catchError(this.handleError));
+}
+
+deleteMultipleInstallments(installmentIds: number[]): Observable<any> {
+  if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+  
+  const endpoint = this.configService.apiEndpoints?.installments?.deleteMultiple || '/api/installments/delete-multiple';
+  const url = `${this.configService.apiUrl}${endpoint}`;
+  
+  return this.http.request('delete', url, { body: installmentIds })
+    .pipe(catchError(this.handleError));
+}
 
 
 // Reports
 
 getReportByCustomer(customerNIC: any): Observable<ReportByCustomer> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<ReportByCustomer>(`${this.configService.apiUrl}/api/reports/customer/${customerNIC}`);
+  
+  const endpoint = this.configService.apiEndpoints?.reports?.getByCustomer || '/api/reports/customer/{customerNIC}';
+  const url = `${this.configService.apiUrl}${endpoint.replace('{customerNIC}', customerNIC)}`;
+  
+  return this.http.get<ReportByCustomer>(url)
+    .pipe(catchError(this.handleError));
 }
 
-getOverview():Observable<Overview> {
+getOverview(): Observable<Overview> {
   if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-  return this.http.get<Overview>(`${this.configService.apiUrl}/api/reports/overview`);
+  
+  const endpoint = this.configService.apiEndpoints?.reports?.getOverview || '/api/reports/overview';
+  const url = `${this.configService.apiUrl}${endpoint}`;
+  
+  return this.http.get<Overview>(url)
+    .pipe(catchError(this.handleError));
 }
 
 // System Health Monitoring Endpoints

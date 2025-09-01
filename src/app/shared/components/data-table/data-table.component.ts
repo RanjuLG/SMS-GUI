@@ -479,7 +479,7 @@ export class DataTableComponent {
     return path.split('.').reduce((o, p) => o?.[p], obj);
   }
 
-  getBadgeClass(value: string): string {
+  getBadgeClass(value: any): string {
     const badgeMap: {[key: string]: string} = {
       'active': 'bg-success',
       'inactive': 'bg-secondary',
@@ -487,7 +487,8 @@ export class DataTableComponent {
       'completed': 'bg-success',
       'cancelled': 'bg-danger'
     };
-    return badgeMap[value?.toLowerCase()] || 'bg-secondary';
+    const stringValue = value?.toString?.()?.toLowerCase?.() || '';
+    return badgeMap[stringValue] || 'bg-secondary';
   }
 
   getTotalColumns(): number {

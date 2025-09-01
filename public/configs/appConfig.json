@@ -36,9 +36,10 @@
 			"getAll": "/api/transactions?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&CustomerNIC={customerNIC}&TransactionType={transactionType}&MinAmount={minAmount}&MaxAmount={maxAmount}",
 			"getById": "/api/transactions/{transactionId}",
 			"getByIds": "/api/transactions/byIds",
+			"update": "/api/transactions/{transactionId}",
 			"delete": "/api/transactions/{transactionId}",
 			"deleteMultiple": "/api/transactions/delete-multiple",
-			"getByCustomerNIC": "/api/transactions/customer/{nic}"
+			"getByCustomerNIC": "/api/transactions/customer/{customerNIC}"
 		},
 		"invoices": {
 			"base": "/api/invoices",
@@ -48,9 +49,20 @@
 			"update": "/api/invoices/{invoiceId}",
 			"delete": "/api/invoices/{invoiceId}",
 			"deleteMultiple": "/api/invoices/delete-multiple",
-			"getByCustomerNIC": "/api/invoices/customer/{nic}",
+			"getByCustomerNIC": "/api/invoices/customer/{customerNIC}",
 			"getByInvoiceNo": "/api/invoices/invoiceNo/{invoiceNo}",
 			"getLoanInfoByInitialInvoiceNo": "/api/invoices/InitialInvoice/{invoiceNo}"
+		},
+		"installments": {
+			"base": "/api/installments",
+			"create": "/api/installments",
+			"getAll": "/api/installments",
+			"getById": "/api/installments/{installmentId}",
+			"getByTransaction": "/api/installments/transaction/{transactionId}",
+			"getByInvoiceNumber": "/api/installments/invoice/{invoiceNumber}",
+			"update": "/api/installments/{installmentId}",
+			"delete": "/api/installments/{installmentId}",
+			"deleteMultiple": "/api/installments/delete-multiple"
 		},
 		"users": {
 			"base": "/api/account/users",

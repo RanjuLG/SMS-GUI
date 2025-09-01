@@ -25,6 +25,7 @@ import { SettlementInvoiceTemplateComponent } from './Components/helpers/invoice
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { IncomeReportComponent } from './Components/helpers/reports/income-report/income-report.component';
 import { ProfileComponent } from './Components/profile/profile.component';
+import { UnifiedTransactionHistoryComponent } from './Components/unified-transaction-history/unified-transaction-history.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -32,7 +33,8 @@ export const routes: Routes = [
     { path: 'profile', component: ProfileComponent }, // Safe route for logged-in users without full permissions
     { path: 'customers', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'items',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'transaction-history', component: UnifiedTransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'transaction-history-legacy', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'invoices',component: InvoiceFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
    // { path: 'create-initial-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
    // { path: 'create-installment-invoice', component: CreateInstallmentPaymentInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
