@@ -427,19 +427,17 @@
           <div class="status-item">
             <div class="status-indicator" [ngClass]="getBackupStatusClass()"></div>
             <div class="status-content">
-              <div class="status-title">Last Backup</div>
+              <div class="status-title">Backup Service</div>
               <div class="status-description">
-                <span *ngIf="backupStatus?.status === 'success'">Backup completed successfully</span>
-                <span *ngIf="backupStatus?.status === 'running'">Backup in progress</span>
-                <span *ngIf="backupStatus?.status === 'failed'">Last backup failed</span>
-                <span *ngIf="backupStatus?.status === 'no-backup'">No backup configured</span>
-                <span *ngIf="backupStatus?.status === 'error'">Backup system error</span>
-                <span *ngIf="!backupStatus">Checking backup status...</span>
+                {{ getBackupStatusDescription() }}
               </div>
             </div>
             <div class="status-metric">
-              <span class="metric-value">
-                {{ (backupStatus && backupStatus.lastBackup && backupStatus.lastBackup.timestamp) ? formatTimeAgo(backupStatus.lastBackup.timestamp) : '--' }}
+              <span class="metric-value" *ngIf="shouldShowBackupIcon()">
+                <i [class]="getBackupIconClass()"></i>
+              </span>
+              <span class="metric-value" *ngIf="!shouldShowBackupIcon()">
+                {{ getBackupMetricValue() }}
               </span>
             </div>
           </div>

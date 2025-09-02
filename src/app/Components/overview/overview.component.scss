@@ -27,6 +27,20 @@
   --overview-bg: var(--overview-bg-light);
 }
 
+/* Spinning animation for loading icons */
+.spinning-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* Dark theme adjustments */
 [data-theme="dark"] {
   --overview-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);

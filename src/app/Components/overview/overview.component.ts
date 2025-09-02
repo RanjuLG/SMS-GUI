@@ -503,28 +503,21 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.isHealthLoading = true;
     this.healthError = null;
 
-    return forkJoin({
-      // database: this.apiService.getDatabaseHealth(),
-      // services: this.apiService.getServiceHealth(),
-      backup: this.apiService.getBackupStatus(),
-      // storage: this.apiService.getStorageUsage(),
-      // ping: this.apiService.getHealthPing()
-    }).pipe(
-      tap((healthData) => {
-        // this.databaseHealth = healthData.database;
-        // this.servicesHealth = healthData.services;
-        this.backupStatus = healthData.backup;
-        // this.storageUsage = healthData.storage;
+    // Handle backup status with improved error handling
+    this.apiService.getBackupStatus().subscribe({
+      next: (backupData) => {
+        this.backupStatus = backupData;
         this.isHealthLoading = false;
-        // console.log('Health ping:', healthData.ping);
-      }),
-      catchError((error) => {
-        console.error('Error loading health data:', error);
-        this.healthError = 'Failed to load health data';
+        console.log('Backup status loaded:', backupData);
+      },
+      error: (error) => {
+        console.error('Failed to load backup status:', error);
+        this.healthError = 'Failed to load backup status';
         this.isHealthLoading = false;
-        return of(null);
-      })
-    );
+      }
+    });
+
+    return of(null); // Return observable for compatibility
   }
 
   // Get database status class for styling - COMMENTED OUT TO REDUCE RESOURCE USAGE
@@ -601,6 +594,119 @@ export class OverviewComponent implements OnInit, AfterViewInit {
       return `${diffHours}h ago`;
     } else {
       return `${diffMinutes}m ago`;
+    }
+  }
+
+  // Get backup status description
+  getBackupStatusDescription(): string {
+    if (!this.backupStatus) {
+      return 'Checking backup status...';
+    }
+
+    const hasValidBackup = this.backupStatus.lastBackup && this.backupStatus.lastBackup.timestamp;
+    const nextScheduled = this.backupStatus.nextScheduled 
+      ? new Date(this.backupStatus.nextScheduled).toLocaleDateString('en-US', { 
+          month: 'short', day: 'numeric', year: 'numeric', 
+          hour: 'numeric', minute: '2-digit', hour12: true 
+        })
+      : 'Not scheduled';
+
+    switch (this.backupStatus.status) {
+      case 'success':
+        const lastBackupDate = hasValidBackup 
+          ? new Date(this.backupStatus.lastBackup.timestamp).toLocaleDateString('en-US', { 
+              month: 'short', day: 'numeric', year: 'numeric', 
+              hour: 'numeric', minute: '2-digit', hour12: true 
+            })
+          : 'Unknown';
+        return `Last backup: ${lastBackupDate} | Next: ${nextScheduled}`;
+      case 'running':
+        return `Backup currently in progress... | Next: ${nextScheduled}`;
+      case 'failed':
+        const failedBackupDate = hasValidBackup
+          ? new Date(this.backupStatus.lastBackup.timestamp).toLocaleDateString('en-US', { 
+              month: 'short', day: 'numeric', year: 'numeric', 
+              hour: 'numeric', minute: '2-digit', hour12: true 
+            })
+          : 'Unknown';
+        return `Last backup failed on ${failedBackupDate} | Next: ${nextScheduled}`;
+      case 'no-backup':
+        return 'No backup configured';
+      case 'error':
+        return `Backup system error | Next scheduled: ${nextScheduled}`;
+      default:
+        return 'Unknown backup status';
+    }
+  }
+
+  // Get backup metric value
+  getBackupMetricValue(): string {
+    if (!this.backupStatus) {
+      return '--';
+    }
+
+    switch (this.backupStatus.status) {
+      case 'success':
+        if (this.backupStatus.lastBackup && this.backupStatus.lastBackup.timestamp) {
+          return this.formatTimeAgo(this.backupStatus.lastBackup.timestamp);
+        }
+        return '--';
+      case 'running':
+        return 'In Progress';
+      case 'failed':
+      case 'no-backup':
+      case 'error':
+      default:
+        // Show time until next backup for failed/error states
+        if (this.backupStatus.nextScheduled) {
+          return this.formatTimeUntilNext(this.backupStatus.nextScheduled);
+        }
+        return '--';
+    }
+  }
+
+  // Format time until next backup
+  formatTimeUntilNext(nextScheduled: string): string {
+    const now = new Date();
+    const scheduled = new Date(nextScheduled);
+    const diffMs = scheduled.getTime() - now.getTime();
+    
+    if (diffMs <= 0) {
+      return 'Overdue';
+    }
+    
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffDays > 0) {
+      return `${diffDays}d ${diffHours % 24}h`;
+    } else if (diffHours > 0) {
+      return `${diffHours}h`;
+    } else {
+      const diffMinutes = Math.floor(diffMs / (1000 * 60));
+      return `${diffMinutes}m`;
+    }
+  }
+
+  // Check if backup metric should show icon
+  shouldShowBackupIcon(): boolean {
+    if (!this.backupStatus) return false;
+    return ['running', 'failed', 'no-backup'].includes(this.backupStatus.status);
+  }
+
+  // Get backup icon class
+  getBackupIconClass(): string {
+    if (!this.backupStatus) return '';
+    
+    switch (this.backupStatus.status) {
+      case 'running':
+        return 'ri-loader-4-line spinning-icon';
+      case 'failed':
+        return 'ri-error-warning-line text-danger';
+      case 'no-backup':
+        return 'ri-alert-line text-warning';
+      default:
+        return '';
     }
   }
 

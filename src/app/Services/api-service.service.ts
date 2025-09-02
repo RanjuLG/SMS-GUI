@@ -982,7 +982,15 @@ getBackupStatus(): Observable<BackupStatus> {
     timeout(10000),
     catchError((error) => {
       console.error('Backup status endpoint failed:', error);
-      return throwError(() => new Error('Backup status service unavailable'));
+      
+      // If the error response contains backup data (even with 503 status), pass it through
+      if (error.error && typeof error.error === 'object' && error.error.status) {
+        console.log('Backup endpoint returned error status but with data, using the data:', error.error);
+        return of(error.error as BackupStatus);
+      }
+      
+      // Otherwise, throw the error
+      return throwError(() => error);
     })
   );
 }
