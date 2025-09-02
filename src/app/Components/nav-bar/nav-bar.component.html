@@ -26,9 +26,58 @@
           <i class="ri-search-line search-icon"></i>
           <input type="text" 
                  class="search-input" 
-                 placeholder="Search anything..."
-                 #searchInput>
-          <kbd class="search-shortcut">Ctrl K</kbd>
+                 placeholder="Search pages, customers, invoices..."
+                 #searchInput
+                 [(ngModel)]="searchQuery"
+                 (input)="onSearchInput($event)"
+                 (focus)="showSearchResults = true"
+                 (blur)="hideSearchResults()"
+                 (keydown)="onSearchKeydown($event)">
+        </div>
+        
+        <!-- Search Results Dropdown -->
+        <div class="search-results" *ngIf="showSearchResults && (filteredPages.length > 0 || popularPages.length > 0 || searchQuery.length > 0)">
+          <div class="search-results-header" *ngIf="searchQuery.length > 0">
+            <small class="text-muted">Search results for "{{ searchQuery }}"</small>
+          </div>
+          
+          <!-- Page Results -->
+          <div class="search-category" *ngIf="filteredPages.length > 0">
+            <div class="search-category-title">Pages</div>
+            <button class="search-result-item" 
+                    *ngFor="let page of filteredPages; let i = index"
+                    [class.highlighted]="selectedResultIndex === i"
+                    (mousedown)="navigateToPage(page.route)"
+                    (mouseenter)="selectedResultIndex = i">
+              <i [class]="page.icon"></i>
+              <div class="result-content">
+                <div class="result-title">{{ page.title }}</div>
+                <div class="result-description">{{ page.description }}</div>
+              </div>
+            </button>
+          </div>
+          
+          <!-- No Results -->
+          <div class="no-results" *ngIf="searchQuery.length > 0 && filteredPages.length === 0">
+            <i class="ri-search-line"></i>
+            <span>No pages found for "{{ searchQuery }}"</span>
+          </div>
+          
+          <!-- Recent/Popular Pages when no search -->
+          <div class="search-category" *ngIf="searchQuery.length === 0">
+            <div class="search-category-title">Quick Access</div>
+            <button class="search-result-item" 
+                    *ngFor="let page of popularPages; let i = index"
+                    [class.highlighted]="selectedResultIndex === i"
+                    (mousedown)="navigateToPage(page.route)"
+                    (mouseenter)="selectedResultIndex = i">
+              <i [class]="page.icon"></i>
+              <div class="result-content">
+                <div class="result-title">{{ page.title }}</div>
+                <div class="result-description">{{ page.description }}</div>
+              </div>
+            </button>
+          </div>
         </div>
       </div>
     </div>

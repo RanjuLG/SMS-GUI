@@ -10,12 +10,21 @@ import { ExtendedItemDto } from '../item-form/item-form.component';
 import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
+
+interface SearchablePage {
+  title: string;
+  description: string;
+  route: string;
+  icon: string;
+  keywords: string[];
+}
 
 @Component({
   selector: 'app-nav-bar',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, FormsModule],
   templateUrl: './nav-bar.component.html',
   styleUrls: ['./nav-bar.component.scss']
 })
@@ -25,6 +34,118 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   currentTheme: 'light' | 'dark' = 'light';
   private themeSubscription?: Subscription;
+
+  // Search properties
+  searchQuery: string = '';
+  showSearchResults: boolean = false;
+  searchResults: SearchablePage[] = [];
+  filteredPages: SearchablePage[] = [];
+  selectedResultIndex: number = -1;
+
+  // Available pages for search
+  allPages: SearchablePage[] = [
+    {
+      title: 'Dashboard',
+      description: 'Overview and analytics',
+      route: '/overview',
+      icon: 'ri-dashboard-line',
+      keywords: ['dashboard', 'overview', 'home', 'analytics', 'stats', 'summary']
+    },
+    {
+      title: 'Create Invoice',
+      description: 'Create new loan invoice',
+      route: '/create-invoice',
+      icon: 'ri-file-add-line',
+      keywords: ['invoice', 'create', 'new', 'loan', 'bill']
+    },
+    {
+      title: 'Invoices',
+      description: 'View all invoices',
+      route: '/invoices',
+      icon: 'ri-file-list-line',
+      keywords: ['invoices', 'bills', 'loans', 'list']
+    },
+    {
+      title: 'Customers',
+      description: 'Manage customer profiles',
+      route: '/customers',
+      icon: 'ri-user-line',
+      keywords: ['customers', 'clients', 'people', 'users', 'profiles']
+    },
+    {
+      title: 'Items',
+      description: 'Manage jewelry inventory',
+      route: '/items',
+      icon: 'ri-archive-line',
+      keywords: ['items', 'inventory', 'jewelry', 'gold', 'products', 'stock']
+    },
+    {
+      title: 'Transaction History',
+      description: 'View all transactions',
+      route: '/transaction-history',
+      icon: 'ri-exchange-line',
+      keywords: ['transactions', 'history', 'payments', 'records']
+    },
+    {
+      title: 'Reports',
+      description: 'Generate reports and analytics',
+      route: '/reports',
+      icon: 'ri-file-chart-line',
+      keywords: ['reports', 'analytics', 'charts', 'statistics', 'data']
+    },
+    {
+      title: 'Customer Reports',
+      description: 'Customer-specific reports',
+      route: '/reports/by-customer',
+      icon: 'ri-user-search-line',
+      keywords: ['customer reports', 'client reports', 'individual reports']
+    },
+    {
+      title: 'Income Reports',
+      description: 'Revenue and income analytics',
+      route: '/reports/income',
+      icon: 'ri-money-dollar-circle-line',
+      keywords: ['income', 'revenue', 'earnings', 'profit', 'financial']
+    },
+    {
+      title: 'Invoice Reports',
+      description: 'Invoice analytics and trends',
+      route: '/reports/invoice',
+      icon: 'ri-file-chart-line',
+      keywords: ['invoice reports', 'billing reports', 'loan reports']
+    },
+    {
+      title: 'Pricing',
+      description: 'Manage gold rates and pricing',
+      route: '/pricing',
+      icon: 'ri-price-tag-3-line',
+      keywords: ['pricing', 'rates', 'gold rates', 'karats', 'valuation']
+    },
+    {
+      title: 'User Management',
+      description: 'Manage system users',
+      route: '/user-management',
+      icon: 'ri-team-line',
+      keywords: ['users', 'management', 'staff', 'employees', 'access']
+    },
+    {
+      title: 'Configuration',
+      description: 'System settings and configuration',
+      route: '/configuration',
+      icon: 'ri-settings-3-line',
+      keywords: ['settings', 'configuration', 'setup', 'preferences', 'admin']
+    },
+    {
+      title: 'Profile',
+      description: 'User profile and settings',
+      route: '/profile',
+      icon: 'ri-user-settings-line',
+      keywords: ['profile', 'account', 'personal', 'settings']
+    }
+  ];
+
+  // Popular/frequently used pages
+  popularPages: SearchablePage[] = [];
 
   constructor(
     private location: Location,
@@ -41,6 +162,15 @@ export class NavBarComponent implements OnInit, OnDestroy {
       this.currentTheme = theme;
       this.cdr.markForCheck();
     });
+
+    // Set popular pages (most commonly used)
+    this.popularPages = [
+      this.allPages.find(p => p.route === '/overview')!,
+      this.allPages.find(p => p.route === '/create-invoice')!,
+      this.allPages.find(p => p.route === '/customers')!,
+      this.allPages.find(p => p.route === '/invoices')!,
+      this.allPages.find(p => p.route === '/transaction-history')!
+    ].filter(Boolean);
   }
 
   ngOnDestroy() {
@@ -112,5 +242,73 @@ export class NavBarComponent implements OnInit, OnDestroy {
       email: 'user@example.com',
       avatar: 'nav-bar/user-logo.png'
     };
+  }
+
+  // Search functionality
+  onSearchInput(event: any): void {
+    const query = event.target.value.toLowerCase().trim();
+    this.searchQuery = query;
+    
+    if (query.length === 0) {
+      this.filteredPages = [];
+      this.selectedResultIndex = -1;
+      return;
+    }
+
+    // Filter pages based on search query
+    this.filteredPages = this.allPages.filter(page => {
+      const searchFields = [
+        page.title.toLowerCase(),
+        page.description.toLowerCase(),
+        ...page.keywords.map(k => k.toLowerCase())
+      ];
+      
+      return searchFields.some(field => field.includes(query));
+    }).slice(0, 8); // Limit to 8 results
+
+    this.selectedResultIndex = -1;
+  }
+
+  onSearchKeydown(event: KeyboardEvent): void {
+    const visibleResults = this.searchQuery.length > 0 ? this.filteredPages : this.popularPages;
+    
+    switch (event.key) {
+      case 'ArrowDown':
+        event.preventDefault();
+        this.selectedResultIndex = Math.min(this.selectedResultIndex + 1, visibleResults.length - 1);
+        break;
+      case 'ArrowUp':
+        event.preventDefault();
+        this.selectedResultIndex = Math.max(this.selectedResultIndex - 1, -1);
+        break;
+      case 'Enter':
+        event.preventDefault();
+        if (this.selectedResultIndex >= 0 && this.selectedResultIndex < visibleResults.length) {
+          this.navigateToPage(visibleResults[this.selectedResultIndex].route);
+        }
+        break;
+      case 'Escape':
+        this.clearSearch();
+        break;
+    }
+  }
+
+  navigateToPage(route: string): void {
+    this.router.navigate([route]);
+    this.clearSearch();
+  }
+
+  clearSearch(): void {
+    this.searchQuery = '';
+    this.filteredPages = [];
+    this.selectedResultIndex = -1;
+    this.showSearchResults = false;
+  }
+
+  hideSearchResults(): void {
+    // Add a small delay to allow click events to fire
+    setTimeout(() => {
+      this.showSearchResults = false;
+    }, 150);
   }
 }
