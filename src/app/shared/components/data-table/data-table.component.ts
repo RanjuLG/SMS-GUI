@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
@@ -145,15 +145,15 @@ import { FormsModule } from '@angular/forms';
               <!-- Pagination controls -->
               <ul class="pagination pagination-sm mb-0">
                 <!-- First page -->
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <button class="page-link" (click)="onPageChange(1)" [disabled]="currentPage === 1" title="First page">
+                <li class="page-item" [class.disabled]="currentPageValue === 1">
+                  <button class="page-link" (click)="onPageChange(1)" [disabled]="currentPageValue === 1" title="First page">
                     <i class="ri-skip-back-line"></i>
                   </button>
                 </li>
                 
                 <!-- Previous page -->
-                <li class="page-item" [class.disabled]="currentPage === 1">
-                  <button class="page-link" (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1" title="Previous page">
+                <li class="page-item" [class.disabled]="currentPageValue === 1">
+                  <button class="page-link" (click)="onPageChange(currentPageValue - 1)" [disabled]="currentPageValue === 1" title="Previous page">
                     <i class="ri-arrow-left-s-line"></i>
                   </button>
                 </li>
@@ -161,20 +161,20 @@ import { FormsModule } from '@angular/forms';
                 <!-- Page numbers -->
                 <li *ngFor="let page of getVisiblePages()" 
                     class="page-item" 
-                    [class.active]="page === currentPage">
+                    [class.active]="page === currentPageValue">
                   <button class="page-link" (click)="onPageChange(page)">{{ page }}</button>
                 </li>
                 
                 <!-- Next page -->
-                <li class="page-item" [class.disabled]="currentPage === totalPages">
-                  <button class="page-link" (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages" title="Next page">
+                <li class="page-item" [class.disabled]="currentPageValue === totalPages">
+                  <button class="page-link" (click)="onPageChange(currentPageValue + 1)" [disabled]="currentPageValue === totalPages" title="Next page">
                     <i class="ri-arrow-right-s-line"></i>
                   </button>
                 </li>
                 
                 <!-- Last page -->
-                <li class="page-item" [class.disabled]="currentPage === totalPages">
-                  <button class="page-link" (click)="onPageChange(totalPages)" [disabled]="currentPage === totalPages" title="Last page">
+                <li class="page-item" [class.disabled]="currentPageValue === totalPages">
+                  <button class="page-link" (click)="onPageChange(totalPages)" [disabled]="currentPageValue === totalPages" title="Last page">
                     <i class="ri-skip-forward-line"></i>
                   </button>
                 </li>
@@ -315,7 +315,7 @@ import { FormsModule } from '@angular/forms';
     }
   `]
 })
-export class DataTableComponent {
+export class DataTableComponent implements OnChanges {
   @Input() title: string = '';
   @Input() data: any[] = [];
   @Input() columns: TableColumn[] = [];
@@ -343,6 +343,14 @@ export class DataTableComponent {
   sortDirection: 'asc' | 'desc' = 'asc';
   currentPage: number = 1;
   pageInput: number = 1;
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Synchronize internal currentPage with server-side pagination
+    if (changes['pagination'] && this.serverSidePagination && this.pagination) {
+      this.currentPage = this.pagination.currentPage;
+      this.pageInput = this.pagination.currentPage;
+    }
+  }
 
   get filteredData() {
     // Use server-side pagination if enabled
@@ -560,7 +568,12 @@ export class DataTableComponent {
     const maxVisible = 5; // Maximum number of page buttons to show
     const halfVisible = Math.floor(maxVisible / 2);
     
-    let startPage = Math.max(1, this.currentPage - halfVisible);
+    // Use the correct current page based on pagination mode
+    const currentPageToUse = (this.serverSidePagination && this.pagination) 
+      ? this.pagination.currentPage 
+      : this.currentPage;
+    
+    let startPage = Math.max(1, currentPageToUse - halfVisible);
     let endPage = Math.min(this.totalPages, startPage + maxVisible - 1);
     
     // Adjust start page if we're near the end
@@ -573,6 +586,12 @@ export class DataTableComponent {
     }
     
     return pages;
+  }
+
+  get currentPageValue(): number {
+    return (this.serverSidePagination && this.pagination) 
+      ? this.pagination.currentPage 
+      : this.currentPage;
   }
 }
 

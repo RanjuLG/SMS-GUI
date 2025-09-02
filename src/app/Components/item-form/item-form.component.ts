@@ -4,7 +4,7 @@ import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { ItemDto } from './item.model';
+import { ItemDto, ItemSearchRequest, ItemSearchResponse } from './item.model';
 import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
@@ -17,7 +17,7 @@ import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-pic
 export interface ExtendedItemDto extends ItemDto {
   amountPerCaratage?: number;
   selected?: boolean;
-  customerNIC: string;
+  statusText?: string; // For display purposes
 }
 
 @Component({
@@ -41,8 +41,23 @@ export class ItemFormComponent implements OnInit {
   searchControl = new FormControl();
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
-  from = new Date(this._currentDate);
-  to = new Date(this._currentDate);
+  from: Date | null = null;  // Start with no date filter
+  to: Date | null = null;    // Start with no date filter
+  dateRangeSelected = false; // Track if user has selected a date range
+
+  // Pagination properties
+  currentPage = 1;
+  pageSize = 10;
+  totalItems = 0;
+  totalPages = 0;
+  hasNextPage = false;
+  hasPreviousPage = false;
+  isLoading = false;
+
+  // Search and sorting properties
+  searchTerm = '';
+  sortBy = 'createdAt';
+  sortOrder = 'desc';
 
   get maxDateString(): string {
     return this.maxDate.toISOString().split('T')[0];
@@ -58,7 +73,7 @@ export class ItemFormComponent implements OnInit {
     { key: 'itemWeight', label: 'Net Wt (g)', sortable: true, type: 'text' as const },
     { key: 'itemGoldWeight', label: 'Gold Wt (g)', sortable: true, type: 'text' as const },
     { key: 'itemValue', label: 'Value', sortable: true, type: 'currency' as const },
-    { key: 'status', label: 'Status', sortable: true, type: 'badge' as const },
+    { key: 'statusText', label: 'Status', sortable: true, type: 'badge' as const },
     { key: 'customerNIC', label: 'Customer NIC', sortable: true, type: 'text' as const }
   ];
 
@@ -75,61 +90,100 @@ export class ItemFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.from.setDate(this.from.getDate() - 30);
-    this.to.setDate(this.to.getDate() + 1);
+    // Load all items by default (no date filter)
     this.loadItems();
 
+    // Enhanced search with debouncing - searches across multiple fields
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((nic: string) => {
-        if (!nic) {
-          return this.apiService.getItems(this.from,this.to); // Return all items if NIC is empty
-        }
-        console.log(nic)
-        return this.apiService.getItemsByCustomerNIC(nic).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
-        );
+      switchMap((searchTerm: string) => {
+        this.searchTerm = searchTerm || '';
+        this.currentPage = 1; // Reset to first page when searching
+        console.log('Searching for:', this.searchTerm);
+        return this.searchItems();
       })
     ).subscribe({
-      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
-        this.items = result.map(item => ({
-          ...item,
-          createdAt: this.dateService.formatDateTime(item.createdAt),
-          selected: false,
-          customerNIC: item.customerNIC, // Ensure this property is available in the response
-          // Map status to badge text for the DataTable
-          status: this.getStatusText(item.status)
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
+      next: (response: ItemSearchResponse) => { 
+        this.handleSearchResponse(response);
       },
       error: (error: any) => {
-        console.error('Failed to fetch items', error);
+        console.error('Failed to search items', error);
+        this.isLoading = false;
       }
     });
   }
   
   loadItems(): void {
-    console.log("$",this.from)
-    console.log("$$",this.to)
-    this.apiService.getItems(this.from,this.to).subscribe({
-      next: (items: any[]) => { // Use 'any' type here if your API response does not have a consistent type
-        this.items = items.map(item => ({
-          ...item,
-          createdAt: this.dateService.formatDateTime(item.createdAt),
-          selected: false,
-          customerNIC: item.customerNIC, // Ensure this property is available in the response
-          // Map status to badge text for the DataTable
-          status: this.getStatusText(item.status)
-        })) as ExtendedItemDto[]; // Type assertion to ExtendedItemDto[]
-  
-        this.cdr.markForCheck(); // Trigger change detection
-        console.log(this.items);
+    this.isLoading = true;
+    this.searchItems().subscribe({
+      next: (response: ItemSearchResponse) => {
+        this.handleSearchResponse(response);
       },
       error: (error: any) => {
         console.error('Failed to load items', error);
+        this.isLoading = false;
       }
     });
+  }
+
+  searchItems() {
+    const searchRequest: any = {
+      page: this.currentPage,
+      pageSize: this.pageSize,
+      search: this.searchTerm || undefined,
+      sortBy: this.sortBy,
+      sortOrder: this.sortOrder
+    };
+
+    // Only add date filters if both dates are selected
+    if (this.dateRangeSelected && this.from && this.to) {
+      searchRequest.from = this.from;
+      searchRequest.to = this.to;
+    }
+
+    return this.apiService.searchItems(searchRequest);
+  }
+
+  handleSearchResponse(response: ItemSearchResponse): void {
+    console.log('Handling search response:', response);
+    console.log('Current page before update:', this.currentPage);
+    console.log('Items received:', response.data?.length);
+    
+    // Clear existing items first to force update
+    this.items = [];
+    this.cdr.detectChanges();
+    
+    // Then assign new items
+    this.items = response.data.map(item => ({
+      ...item,
+      createdAt: this.dateService.formatDateTime(item.createdAt),
+      selected: false,
+      statusText: this.getStatusText(item.status)
+    }));
+
+    // Update pagination info from server response
+    if (response.pagination) {
+      this.currentPage = response.pagination.currentPage;
+      this.pageSize = response.pagination.pageSize;
+      this.totalItems = response.pagination.totalItems;
+      this.totalPages = response.pagination.totalPages;
+      this.hasNextPage = response.pagination.hasNextPage;
+      this.hasPreviousPage = response.pagination.hasPreviousPage;
+      
+      console.log('Pagination updated:', {
+        currentPage: this.currentPage,
+        pageSize: this.pageSize,
+        totalItems: this.totalItems,
+        totalPages: this.totalPages
+      });
+    }
+    
+    this.isLoading = false;
+    // Force change detection to ensure table updates
+    this.cdr.detectChanges();
+    console.log('Items loaded:', this.items.length, 'Total:', this.totalItems);
+    console.log('First few items:', this.items.slice(0, 3));
   }
   
 
@@ -137,8 +191,10 @@ export class ItemFormComponent implements OnInit {
   openAddItemModal(): void {
     const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
     modalRef.componentInstance.saveItem.subscribe((item: ExtendedItemDto) => {
+      // Refresh the current page data after adding new item
+      this.loadItems();
       this.cdr.markForCheck();
-      Swal.fire('Added!', 'Item has been added.', 'success');
+      Swal.fire('Added!', 'Item has been added successfully.', 'success');
     });
   }
 
@@ -156,8 +212,9 @@ export class ItemFormComponent implements OnInit {
         const modalRef = this.modalService.open(AddItemComponent, { size: 'lg' });
         modalRef.componentInstance.item = { ...item };
         modalRef.componentInstance.saveItem.subscribe((updatedItem: ExtendedItemDto) => {
+          // Refresh the current page data after editing
           this.loadItems();
-          Swal.fire('Updated!', 'Item has been updated.', 'success');
+          Swal.fire('Updated!', 'Item has been updated successfully.', 'success');
         });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
         Swal.fire('Cancelled', 'Item editing cancelled.', 'info');
@@ -288,9 +345,19 @@ export class ItemFormComponent implements OnInit {
       }
       
       console.log("this.from (Local): ", this.from);
-      this.loadItems();
+      
+      // Check if both dates are selected to enable date filtering
+      if (this.from && this.to) {
+        this.dateRangeSelected = true;
+        this.currentPage = 1; // Reset to first page
+        this.loadItems();
+      }
     } else {
-      console.error('Start date string is null or empty');
+      this.from = null;
+      this.dateRangeSelected = false;
+      console.log('Start date cleared - loading all items');
+      this.currentPage = 1;
+      this.loadItems();
     }
     this.cdr.markForCheck();
   }
@@ -303,16 +370,26 @@ export class ItemFormComponent implements OnInit {
         const year = parseInt(parts[0]);
         const month = parseInt(parts[1]) - 1; // Month is 0-based
         const day = parseInt(parts[2]);
-        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+        this.to = new Date(year, month, day, 23, 59, 59, 999); // End of day in local time
       } else {
         const toDate = new Date(dateString);
-        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999);
       }
       
-      console.log("this.to (Local): ", this.to);  // This should log the correct 12:00 AM time
-      this.loadItems();
+      console.log("this.to (Local): ", this.to);
+      
+      // Check if both dates are selected to enable date filtering
+      if (this.from && this.to) {
+        this.dateRangeSelected = true;
+        this.currentPage = 1; // Reset to first page
+        this.loadItems();
+      }
     } else {
-      console.error('End date string is null or empty');
+      this.to = null;
+      this.dateRangeSelected = false;
+      console.log('End date cleared - loading all items');
+      this.currentPage = 1;
+      this.loadItems();
     }
     this.cdr.markForCheck();
   }
@@ -327,7 +404,7 @@ export class ItemFormComponent implements OnInit {
         const year = parseInt(fromParts[0]);
         const month = parseInt(fromParts[1]) - 1; // Month is 0-based
         const day = parseInt(fromParts[2]);
-        this.from = new Date(year, month, day, 0, 0, 0);
+        this.from = new Date(year, month, day, 0, 0, 0); // Start of day in local time
       } else {
         this.from = new Date(range.start);
       }
@@ -336,18 +413,116 @@ export class ItemFormComponent implements OnInit {
         const year = parseInt(toParts[0]);
         const month = parseInt(toParts[1]) - 1; // Month is 0-based
         const day = parseInt(toParts[2]);
-        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+        this.to = new Date(year, month, day, 23, 59, 59, 999); // End of day in local time
       } else {
         const toDate = new Date(range.end);
-        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999);
       }
       
+      this.dateRangeSelected = true;
       console.log("Date range selected - from:", this.from, "to:", this.to);
+      this.currentPage = 1; // Reset to first page when date range changes
+      this.loadItems();
+    } else if (range === null || (range && !range.start && !range.end)) {
+      // Date range cleared
+      this.from = null;
+      this.to = null;
+      this.dateRangeSelected = false;
+      console.log('Date range cleared - loading all items');
+      this.currentPage = 1;
       this.loadItems();
     } else {
       console.error('Date range is incomplete');
     }
     this.cdr.markForCheck();
+  }
+
+  // Method to clear date filter and load all items
+  clearDateFilter(): void {
+    this.from = null;
+    this.to = null;
+    this.dateRangeSelected = false;
+    this.currentPage = 1;
+    this.isLoading = true;
+    this.loadItems();
+    this.cdr.markForCheck();
+  }
+
+  // Pagination methods
+  goToPage(page: number): void {
+    console.log(`goToPage called with page: ${page}, current page: ${this.currentPage}, total pages: ${this.totalPages}`);
+    
+    if (page >= 1 && page <= this.totalPages && !this.isLoading) {
+      console.log(`Changing from page ${this.currentPage} to page ${page}`);
+      this.currentPage = page;
+      this.isLoading = true;
+      this.cdr.detectChanges(); // Force UI update to show loading state
+      this.loadItems();
+    } else {
+      console.log(`goToPage rejected: page=${page}, totalPages=${this.totalPages}, isLoading=${this.isLoading}`);
+    }
+  }
+
+  goToFirstPage(): void {
+    this.goToPage(1);
+  }
+
+  goToPreviousPage(): void {
+    if (this.hasPreviousPage) {
+      this.goToPage(this.currentPage - 1);
+    }
+  }
+
+  goToNextPage(): void {
+    if (this.hasNextPage) {
+      this.goToPage(this.currentPage + 1);
+    }
+  }
+
+  goToLastPage(): void {
+    this.goToPage(this.totalPages);
+  }
+
+  changePageSize(newPageSize: number): void {
+    console.log(`changePageSize called: current=${this.pageSize}, new=${newPageSize}`);
+    
+    if (newPageSize !== this.pageSize && !this.isLoading) {
+      this.pageSize = newPageSize;
+      this.currentPage = 1; // Reset to first page when page size changes
+      this.isLoading = true;
+      console.log(`Page size changed to ${newPageSize}, loading items...`);
+      this.cdr.detectChanges(); // Force UI update
+      this.loadItems();
+    }
+  }
+
+  // Sorting method
+  onSort(column: string): void {
+    if (this.sortBy === column) {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+    } else {
+      this.sortBy = column;
+      this.sortOrder = 'asc';
+    }
+    this.currentPage = 1; // Reset to first page when sorting changes
+    this.loadItems();
+  }
+
+  // Handle search from data table
+  onSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.currentPage = 1; // Reset to first page when searching
+    this.isLoading = true;
+    this.loadItems();
+  }
+
+  // Handle sort change from data table
+  onSortChange(event: { sortBy: string, sortOrder: string }): void {
+    this.sortBy = event.sortBy;
+    this.sortOrder = event.sortOrder;
+    this.currentPage = 1; // Reset to first page when sorting changes
+    this.isLoading = true;
+    this.loadItems();
   }
   
 }

@@ -25,10 +25,11 @@
 		"items": {
 			"base": "/api/items",
 			"create": "/api/items",
-			"getAll": "/api/items?From={from}&To={to}&Page={page}&PageSize={pageSize}&Search={search}&SortBy={sortBy}&SortOrder={sortOrder}&CustomerNIC={customerNIC}",
-			"getById": "/api/items/{itemId}/item",
-			"update": "/api/items/{itemId}/item",
-			"delete": "/api/items/{itemId}/item",
+			"getAll": "/api/items?From={from}&To={to}",
+			"search": "/api/items/search",
+			"getById": "/api/items/{itemId}/Item",
+			"update": "/api/items/{itemId}/Item",
+			"delete": "/api/items/{itemId}/Item",
 			"deleteMultiple": "/api/items/delete-multiple",
 			"getByCustomerNIC": "/api/items/customer/{nic}"
 		},

@@ -332,48 +332,59 @@ export class ApiService {
     );
   }
 
-  getItems(from: Date, to: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string): Observable<any> {
+  // Updated method using the new search endpoint with proper pagination
+  searchItems(searchRequest: {
+    page?: number;
+    pageSize?: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    from?: Date | null;
+    to?: Date | null;
+    customerNIC?: string;
+    minValue?: number;
+    maxValue?: number;
+  }): Observable<any> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     
-    // Convert dates to local ISO strings (backend expects local time)
-    const fromStr = this.toLocalISOString(from);
-    const toStr = this.toLocalISOString(to);
+    // Build request body - only include dates if both are provided
+    const requestBody: any = {
+      page: searchRequest.page || 1,
+      pageSize: searchRequest.pageSize || 10,
+      search: searchRequest.search || undefined,
+      sortBy: searchRequest.sortBy || 'createdAt',
+      sortOrder: searchRequest.sortOrder || 'desc',
+      customerNIC: searchRequest.customerNIC || undefined,
+      minValue: searchRequest.minValue || undefined,
+      maxValue: searchRequest.maxValue || undefined
+    };
 
-    // Build query parameters
-    let params = new HttpParams()
-      .set('From', fromStr)
-      .set('To', toStr)
-      .set('Page', page.toString())
-      .set('PageSize', pageSize.toString());
-    
-    if (search) {
-      params = params.set('Search', search);
-    }
-    if (sortBy) {
-      params = params.set('SortBy', sortBy);
-    }
-    if (sortOrder) {
-      params = params.set('SortOrder', sortOrder);
-    }
-    if (customerNIC) {
-      params = params.set('CustomerNIC', customerNIC);
+    // Only add date filters if both from and to are provided
+    if (searchRequest.from && searchRequest.to) {
+      requestBody.from = this.toLocalISOString(searchRequest.from);
+      requestBody.to = this.toLocalISOString(searchRequest.to);
     }
 
-    const getAllUrl = this.configService.getItemEndpoint('getAll', {
-      from: fromStr,
-      to: toStr,
-      page,
-      pageSize,
-      search: search || '',
-      sortBy: sortBy || '',
-      sortOrder: sortOrder || '',
-      customerNIC: customerNIC || ''
-    });
-    return this.http.get<any>(getAllUrl, { 
+    const searchUrl = this.configService.getItemEndpoint('search');
+    return this.http.post<any>(searchUrl, requestBody, { 
       headers: this.getHttpHeaders()
     }).pipe(
       catchError(this.handleError.bind(this))
     );
+  }
+
+  // Legacy method for backward compatibility - now calls searchItems
+  getItems(from?: Date, to?: Date, page: number = 1, pageSize: number = 10, search?: string, sortBy?: string, sortOrder?: string, customerNIC?: string): Observable<any> {
+    return this.searchItems({
+      page,
+      pageSize,
+      search,
+      sortBy,
+      sortOrder,
+      from,
+      to,
+      customerNIC
+    });
   }
 
   getItemById(itemId: number): Observable<ItemDto> {

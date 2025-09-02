@@ -14,22 +14,39 @@
 </app-page-header>
 
 <div class="container-fluid">
-  <!-- Date Range and Search Controls -->
+  <!-- Search and Filter Controls -->
   <div class="card mb-3">
     <div class="card-body">
       <div class="row mb-3 align-items-center">
-        <div class="col-md-8 d-flex align-items-center">
-          <div class="me-2 date-range-container">
+        <div class="col-md-6">
+          <div class="date-range-container">
             <app-modern-date-range-picker
-              placeholder="Select date range..."
+              placeholder="Select date range to filter items..."
               [maxDate]="maxDateString"
               (startDateChange)="onStartDateChange($event)"
               (endDateChange)="onDateRangeChange($event)"
               (dateRangeSelected)="onDateRangeSelected($event)">
             </app-modern-date-range-picker>
           </div>
-          <input type="text" class="form-control search-nic" id="searchResultList"
-            placeholder="Search by Customer NIC..." [formControl]="searchControl" />
+        </div>
+        
+        <div class="col-md-4">
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Search items..." 
+            [formControl]="searchControl" />
+        </div>
+        
+        <div class="col-md-2">
+          <button 
+            *ngIf="dateRangeSelected" 
+            type="button" 
+            class="btn btn-outline-secondary w-100"
+            (click)="clearDateFilter()"
+            title="Clear date filter">
+            <i class="ri-close-line"></i> Clear
+          </button>
         </div>
       </div>
     </div>
@@ -42,12 +59,24 @@
     [columns]="tableColumns"
     [actions]="tableActions"
     [selectable]="true"
-    [searchable]="true"
+    [searchable]="false"
     [showActions]="true"
     [showAddButton]="false"
-    [pageSizeOptions]="[1, 5, 10, 15, 20]"
-    [pageSize]="10"
+    [loading]="isLoading"
+    [serverSidePagination]="true"
+    [pagination]="{
+      currentPage: currentPage,
+      pageSize: pageSize,
+      totalItems: totalItems,
+      totalPages: totalPages,
+      hasNextPage: hasNextPage,
+      hasPreviousPage: hasPreviousPage
+    }"
+    [pageSizeOptions]="[5, 10, 15, 20, 50]"
     (action)="onTableAction($event)"
-    (selectionChange)="onSelectionChange($event)">
+    (selectionChange)="onSelectionChange($event)"
+    (pageChange)="goToPage($event)"
+    (pageSizeChange)="changePageSize($event)"
+    (sortChange)="onSortChange($event)">
   </app-data-table>
 </div>
