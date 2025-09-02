@@ -112,11 +112,11 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     // Default to last 31 days and set the 31D button as active
     this.updateChartData('7D', 'btn-7D');
 
-    // Set up auto-refresh for health data every 1 hour
-    interval(3600000).pipe(
-      startWith(0),
-      switchMap(() => this.loadSystemHealthData())
-    ).subscribe();
+    // Set up auto-refresh for health data every 1 hour - COMMENTED OUT TO REDUCE RESOURCE USAGE
+    // interval(3600000).pipe(
+    //   startWith(0),
+    //   switchMap(() => this.loadSystemHealthData())
+    // ).subscribe();
   }
 
   openCreateInvoiceModal() {
@@ -504,19 +504,19 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     this.healthError = null;
 
     return forkJoin({
-      database: this.apiService.getDatabaseHealth(),
-      services: this.apiService.getServiceHealth(),
+      // database: this.apiService.getDatabaseHealth(),
+      // services: this.apiService.getServiceHealth(),
       backup: this.apiService.getBackupStatus(),
-      storage: this.apiService.getStorageUsage(),
-      ping: this.apiService.getHealthPing()
+      // storage: this.apiService.getStorageUsage(),
+      // ping: this.apiService.getHealthPing()
     }).pipe(
       tap((healthData) => {
-        this.databaseHealth = healthData.database;
-        this.servicesHealth = healthData.services;
+        // this.databaseHealth = healthData.database;
+        // this.servicesHealth = healthData.services;
         this.backupStatus = healthData.backup;
-        this.storageUsage = healthData.storage;
+        // this.storageUsage = healthData.storage;
         this.isHealthLoading = false;
-        console.log('Health ping:', healthData.ping);
+        // console.log('Health ping:', healthData.ping);
       }),
       catchError((error) => {
         console.error('Error loading health data:', error);
@@ -527,27 +527,27 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     );
   }
 
-  // Get database status class for styling
-  getDatabaseStatusClass(): string {
-    if (!this.databaseHealth) return 'bg-secondary';
-    switch (this.databaseHealth.status) {
-      case 'connected': return 'bg-success pulse';
-      case 'error': return 'bg-danger pulse';
-      case 'disconnected': return 'bg-warning pulse';
-      default: return 'bg-secondary';
-    }
-  }
+  // Get database status class for styling - COMMENTED OUT TO REDUCE RESOURCE USAGE
+  // getDatabaseStatusClass(): string {
+  //   if (!this.databaseHealth) return 'bg-secondary';
+  //   switch (this.databaseHealth.status) {
+  //     case 'connected': return 'bg-success pulse';
+  //     case 'error': return 'bg-danger pulse';
+  //     case 'disconnected': return 'bg-warning pulse';
+  //     default: return 'bg-secondary';
+  //   }
+  // }
 
-  // Get services status class for styling
-  getServicesStatusClass(): string {
-    if (!this.servicesHealth) return 'bg-secondary';
-    switch (this.servicesHealth.status) {
-      case 'healthy': return 'bg-success pulse';
-      case 'degraded': return 'bg-warning pulse';
-      case 'unhealthy': return 'bg-danger pulse';
-      default: return 'bg-secondary';
-    }
-  }
+  // Get services status class for styling - COMMENTED OUT TO REDUCE RESOURCE USAGE
+  // getServicesStatusClass(): string {
+  //   if (!this.servicesHealth) return 'bg-secondary';
+  //   switch (this.servicesHealth.status) {
+  //     case 'healthy': return 'bg-success pulse';
+  //     case 'degraded': return 'bg-warning pulse';
+  //     case 'unhealthy': return 'bg-danger pulse';
+  //     default: return 'bg-secondary';
+  //   }
+  // }
 
   // Get backup status class for styling
   getBackupStatusClass(): string {
@@ -562,17 +562,17 @@ export class OverviewComponent implements OnInit, AfterViewInit {
     }
   }
 
-  // Get storage status class for styling
-  getStorageStatusClass(): string {
-    if (!this.storageUsage) return 'bg-secondary';
-    const dbStatus = this.storageUsage.database.status;
-    switch (dbStatus) {
-      case 'normal': return 'bg-info pulse';
-      case 'warning': return 'bg-warning pulse';
-      case 'critical': return 'bg-danger pulse';
-      default: return 'bg-secondary';
-    }
-  }
+  // Get storage status class for styling - COMMENTED OUT TO REDUCE RESOURCE USAGE
+  // getStorageStatusClass(): string {
+  //   if (!this.storageUsage) return 'bg-secondary';
+  //   const dbStatus = this.storageUsage.database.status;
+  //   switch (dbStatus) {
+  //     case 'normal': return 'bg-info pulse';
+  //     case 'warning': return 'bg-warning pulse';
+  //     case 'critical': return 'bg-danger pulse';
+  //     default: return 'bg-secondary';
+  //   }
+  // }
 
   // Format uptime for display
   formatUptime(uptimeSeconds: number): string {

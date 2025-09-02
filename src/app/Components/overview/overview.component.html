@@ -385,8 +385,8 @@
         </div>
 
         <div class="status-list" *ngIf="!isHealthLoading">
-          <!-- Database Health -->
-          <div class="status-item">
+          <!-- Database Health - COMMENTED OUT TO REDUCE RESOURCE USAGE -->
+          <!-- <div class="status-item">
             <div class="status-indicator" [ngClass]="getDatabaseStatusClass()"></div>
             <div class="status-content">
               <div class="status-title">Database Connection</div>
@@ -402,10 +402,10 @@
                 {{ (databaseHealth && databaseHealth.uptime) ? (databaseHealth.uptime + '%') : '--' }}
               </span>
             </div>
-          </div>
+          </div> -->
 
-          <!-- API Services Health -->
-          <div class="status-item">
+          <!-- API Services Health - COMMENTED OUT TO REDUCE RESOURCE USAGE -->
+          <!-- <div class="status-item">
             <div class="status-indicator" [ngClass]="getServicesStatusClass()"></div>
             <div class="status-content">
               <div class="status-title">API Services</div>
@@ -421,9 +421,9 @@
                 {{ servicesHealth?.services?.length || '--' }}
               </span>
             </div>
-          </div>
+          </div> -->
 
-          <!-- Backup Status -->
+          <!-- Backup Status - KEPT ACTIVE -->
           <div class="status-item">
             <div class="status-indicator" [ngClass]="getBackupStatusClass()"></div>
             <div class="status-content">
@@ -444,8 +444,8 @@
             </div>
           </div>
 
-          <!-- Storage Usage -->
-          <div class="status-item">
+          <!-- Storage Usage - COMMENTED OUT TO REDUCE RESOURCE USAGE -->
+          <!-- <div class="status-item">
             <div class="status-indicator" [ngClass]="getStorageStatusClass()"></div>
             <div class="status-content">
               <div class="status-title">Storage Usage</div>
@@ -461,7 +461,7 @@
                 {{ (storageUsage && storageUsage.database && storageUsage.database.percentage) ? (storageUsage.database.percentage + '%') : '--' }}
               </span>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <!-- Refresh Button -->
