@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnChanges } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { Router } from '@angular/router';
@@ -37,7 +37,7 @@ export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
   styleUrls: ['./invoice-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InvoiceFormComponent implements OnInit {
+export class InvoiceFormComponent implements OnInit, OnChanges {
   invoices: ExtendedInvoiceDto[] = [];
   tableColumns = [
     { key: 'invoiceNo', label: 'Invoice No.' },
@@ -46,12 +46,21 @@ export class InvoiceFormComponent implements OnInit {
     { key: 'loanPeriod', label: 'Loan Period (months)' },
     { key: 'dateGenerated', label: 'Date' }
   ];
-  searchNICControl = new FormControl();
-  searchInvoiceNoControl = new FormControl();
+
+  // Pagination properties
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalRecords = 0;
+  isLoading = false;
+
+  // Search and filter properties
+  searchQuery = '';
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
   to = new Date(this._currentDate);
+  dateRangeSelected = false;
 
   get maxDateString(): string {
     return this.maxDate.toISOString().split('T')[0];
@@ -66,93 +75,92 @@ export class InvoiceFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Set default date range to last 30 days
     this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadInvoices();
-
-    this.searchNICControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((nic: string) => {
-        if (!nic) {
-          return this.apiService.getInvoices(this.from,this.to); // Return all invoices if NIC is empty
-        }
-        return this.apiService.getInvoicesByCustomerNIC(nic).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
-        );
-      })
-    ).subscribe({
-      next: (result: any[]) => { 
-        console.log(result)// Use 'any' type here if your API response does not have a consistent type
-        this.invoices = result.map(invoice => ({
-          ...invoice,
-          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false,
-          customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo,
-          invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
-          loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
-      },
-      error: (error: any) => {
-        console.error('Failed to fetch invoices by NIC', error);
-      }
-    });
-
-    this.searchInvoiceNoControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((invoiceNo: string) => {
-        if (!invoiceNo) {
-          return this.apiService.getInvoices(this.from,this.to); // Return all invoices if Invoice No is empty
-        }
-        return this.apiService.getInvoiceByInvoiceNo(invoiceNo).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
-        );
-      })
-    ).subscribe({
-      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
-        this.invoices = result.map(invoice => ({
-          ...invoice,
-          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false,
-          customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo,
-          invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
-          loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
-      },
-      error: (error: any) => {
-        console.error('Failed to fetch invoices by Invoice No', error);
-      }
-    });
   }
-  
-  loadInvoices() {
-    this.apiService.getInvoices(this.from, this.to).subscribe({
-      next: (data: InvoiceDto[]) => {
-        this.invoices = data.map(invoice => ({
-          ...invoice,
-          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false,
-          customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo,
-          invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
-          loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
-        }));
-  
-        console.log("invoices: ", this.invoices);
-        this.cdr.markForCheck(); // Trigger change detection
+
+  ngOnChanges(): void {
+    this.loadInvoices();
+  }
+
+  loadInvoices(): void {
+    this.isLoading = true;
+    this.cdr.markForCheck();
+
+    const searchParams = {
+      page: this.currentPage,
+      pageSize: this.pageSize,
+      search: this.searchQuery || undefined,
+      from: this.from,
+      to: this.to,
+      sortBy: 'dateGenerated',
+      sortOrder: 'desc'
+    };
+
+    this.apiService.getInvoicesPaginated(searchParams).subscribe({
+      next: (response: any) => {
+        console.log('Invoice pagination response:', response);
+        
+        if (response && response.data) {
+          this.invoices = response.data.map((invoice: any) => ({
+            ...invoice,
+            dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
+            selected: false,
+            customerNIC: invoice.customerNIC,
+            invoiceNo: invoice.invoiceNo,
+            invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
+            loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
+          }));
+
+          // Update pagination metadata
+          this.currentPage = response.currentPage || 1;
+          this.totalPages = response.totalPages || 1;
+          this.totalRecords = response.totalRecords || 0;
+          this.pageSize = response.pageSize || 10;
+        } else {
+          this.invoices = [];
+          this.totalPages = 1;
+          this.totalRecords = 0;
+        }
+
+        this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error fetching invoices:', error);
+        this.isLoading = false;
+        this.invoices = [];
+        this.totalPages = 1;
+        this.totalRecords = 0;
+        this.cdr.markForCheck();
       }
     });
   }
-  
 
+  onSearch(searchQuery: string): void {
+    this.searchQuery = searchQuery;
+    this.currentPage = 1; // Reset to first page
+    this.loadInvoices();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.loadInvoices();
+    }
+  }
+
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = newSize;
+    this.currentPage = 1; // Reset to first page when changing page size
+    this.loadInvoices();
+  }
+
+  get currentPageValue(): number {
+    return this.currentPage;
+  }
   openCreateInvoiceModal() {
     const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
     modalRef.result.then((result) => {
@@ -163,6 +171,7 @@ export class InvoiceFormComponent implements OnInit {
       console.log('Create invoice modal dismissed:', error);
     });
   }
+
   openCreateInvoiceWindow() {
     // Construct the URL to the CreateInvoiceComponent route
     const url = `${window.location.origin}/create-invoice`;
@@ -199,7 +208,6 @@ export class InvoiceFormComponent implements OnInit {
       }
     });
   }
-  
 
   deleteInvoice(invoiceId: number) {
     console.log("invo id: ",invoiceId )
@@ -284,6 +292,7 @@ export class InvoiceFormComponent implements OnInit {
   viewInvoiceTemplate() {
     this.router.navigate(['/view-invoice-template/37']);
   }
+
   viewInvoice(invoiceId: number,invoiceTypeId:number) {
     if(invoiceTypeId == 1){
       this.router.navigate([`/view-invoice-template/${invoiceId}`]);
@@ -294,7 +303,6 @@ export class InvoiceFormComponent implements OnInit {
     else if(invoiceTypeId==3){
       this.router.navigate([`/view-settlement-invoice-template/${invoiceId}`]);
     }
-   
   }
   onStartDateChange(dateString: string): void {
     if (dateString) {
@@ -311,6 +319,7 @@ export class InvoiceFormComponent implements OnInit {
       }
       
       console.log("this.from (Local): ", this.from);
+      this.currentPage = 1; // Reset to first page
       this.loadInvoices();
     } else {
       console.error('Start date is null or empty');
@@ -333,6 +342,7 @@ export class InvoiceFormComponent implements OnInit {
       }
       
       console.log("this.to (Local): ", this.to);
+      this.currentPage = 1; // Reset to first page
       this.loadInvoices();
     } else {
       console.error('End date is null or empty');
@@ -372,9 +382,24 @@ export class InvoiceFormComponent implements OnInit {
     }
     
     if (dateRange.start || dateRange.end) {
+      this.dateRangeSelected = true;
+      this.currentPage = 1; // Reset to first page
       this.loadInvoices();
+    } else {
+      this.dateRangeSelected = false;
     }
     
+    this.cdr.markForCheck();
+  }
+
+  clearDateFilter(): void {
+    this.from = new Date(this._currentDate);
+    this.to = new Date(this._currentDate);
+    this.from.setDate(this.from.getDate() - 30);
+    this.to.setDate(this.to.getDate() + 1);
+    this.dateRangeSelected = false;
+    this.currentPage = 1; // Reset to first page
+    this.loadInvoices();
     this.cdr.markForCheck();
   }
   
@@ -386,5 +411,4 @@ export class InvoiceFormComponent implements OnInit {
       default: return 'N/A';
     }
   }
-  
 }

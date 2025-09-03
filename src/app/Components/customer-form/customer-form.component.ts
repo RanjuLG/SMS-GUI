@@ -10,6 +10,7 @@ import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
 // Import shared components
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
@@ -27,7 +28,8 @@ export interface ExtendedCustomerDto extends GetCustomerDTO {
     CommonModule,
     ReactiveFormsModule,
     PageHeaderComponent,
-    DataTableComponent
+    DataTableComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.scss'],
@@ -49,7 +51,12 @@ export class CustomerFormComponent implements OnInit {
   from = new Date(this._currentDate);
   to = new Date(this._currentDate);
   isLoading = false;
+  dateRangeSelected = false; // Track if user has selected a date range
   selectedCustomer: ExtendedCustomerDto | null = null;
+
+  get maxDateString(): string {
+    return this.maxDate.toISOString().split('T')[0];
+  }
 
   @ViewChild('datePicker') datePicker!: ElementRef;
   @ViewChild('nicModal') nicModal!: TemplateRef<any>;
@@ -422,29 +429,118 @@ export class CustomerFormComponent implements OnInit {
     this.loadCustomers();
   }
 
-  onStartDateChange(event: any): void {
-    if (event && event.value) {
-      // Since backend expects local time, use local date (not UTC)
-      const fromDate = new Date(event.value);
-      this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+  // Date range handling methods
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      console.log("Start date changed:", dateString);
+      // Parse the date string as local date
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0); // Start of day in local time
+      } else {
+        this.from = new Date(dateString);
+      }
+      
       console.log("this.from (Local): ", this.from);
-      this.loadCustomers();
+      
+      // Check if both dates are selected to enable date filtering
+      if (this.from && this.to) {
+        this.dateRangeSelected = true;
+        this.page = 1; // Reset to first page
+        this.loadCustomers();
+      }
     } else {
-      console.error('Start date event or value is null');
+      this.from = new Date(this._currentDate);
+      this.dateRangeSelected = false;
+      console.log('Start date cleared - loading all customers');
+      this.page = 1;
+      this.loadCustomers();
     }
     this.cdr.markForCheck();
   }
 
-  onDateRangeChange(event: any): void {
-    if (event && event.value) {
-      // Since backend expects local time, use local date (not UTC)
-      const toDate = new Date(event.value);
-      this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      console.log("End date changed:", dateString);
+      // Parse the date string as local date
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day, 23, 59, 59, 999); // End of day in local time
+      } else {
+        const toDate = new Date(dateString);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999);
+      }
+      
       console.log("this.to (Local): ", this.to);
+      
+      // Check if both dates are selected to enable date filtering
+      if (this.from && this.to) {
+        this.dateRangeSelected = true;
+        this.page = 1; // Reset to first page
+        this.loadCustomers();
+      }
+    } else {
+      this.to = new Date(this._currentDate);
+      this.dateRangeSelected = false;
+      console.log('End date cleared - loading all customers');
+      this.page = 1;
+      this.loadCustomers();
+    }
+    this.cdr.markForCheck();
+  }
+
+  onDateRangeSelected(range: any): void {
+    if (range && range.start && range.end) {
+      // Parse the date strings as local dates
+      const fromParts = range.start.split('-');
+      const toParts = range.end.split('-');
+      
+      if (fromParts.length === 3) {
+        const year = parseInt(fromParts[0]);
+        const month = parseInt(fromParts[1]) - 1; // Month is 0-based
+        const day = parseInt(fromParts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0); // Start of day in local time
+      } else {
+        this.from = new Date(range.start);
+      }
+      
+      if (toParts.length === 3) {
+        const year = parseInt(toParts[0]);
+        const month = parseInt(toParts[1]) - 1; // Month is 0-based
+        const day = parseInt(toParts[2]);
+        this.to = new Date(year, month, day, 23, 59, 59, 999); // End of day in local time
+      } else {
+        const toDate = new Date(range.end);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999);
+      }
+      
+      console.log("Date range selected:", { from: this.from, to: this.to });
+      this.dateRangeSelected = true;
+      this.page = 1;
       this.loadCustomers();
     } else {
-      console.error('End date event or value is null');
+      this.dateRangeSelected = false;
+      this.from = new Date(this._currentDate);
+      this.to = new Date(this._currentDate);
+      console.log('Date range cleared - loading all customers');
+      this.page = 1;
+      this.loadCustomers();
     }
+    this.cdr.markForCheck();
+  }
+
+  clearDateFilter(): void {
+    this.from = new Date(this._currentDate);
+    this.to = new Date(this._currentDate);
+    this.dateRangeSelected = false;
+    this.page = 1;
+    this.loadCustomers();
     this.cdr.markForCheck();
   }
 

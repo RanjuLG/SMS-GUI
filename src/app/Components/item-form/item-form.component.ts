@@ -1,15 +1,13 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddItemComponent } from '../helpers/items/add-item/add-item.component';
-import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { ItemDto, ItemSearchRequest, ItemSearchResponse } from './item.model';
 import { ApiService } from '../../Services/api-service.service';
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectionStrategy } from '@angular/core';
-import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
 import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
 import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
@@ -26,7 +24,6 @@ export interface ExtendedItemDto extends ItemDto {
   imports: [
     FormsModule, 
     CommonModule, 
-    ReactiveFormsModule,
     DataTableComponent,
     PageHeaderComponent,
     ModernDateRangePickerComponent
@@ -38,7 +35,6 @@ export interface ExtendedItemDto extends ItemDto {
 
 export class ItemFormComponent implements OnInit {
   items: ExtendedItemDto[] = [];
-  searchControl = new FormControl();
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from: Date | null = null;  // Start with no date filter
@@ -92,26 +88,6 @@ export class ItemFormComponent implements OnInit {
   ngOnInit(): void {
     // Load all items by default (no date filter)
     this.loadItems();
-
-    // Enhanced search with debouncing - searches across multiple fields
-    this.searchControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((searchTerm: string) => {
-        this.searchTerm = searchTerm || '';
-        this.currentPage = 1; // Reset to first page when searching
-        console.log('Searching for:', this.searchTerm);
-        return this.searchItems();
-      })
-    ).subscribe({
-      next: (response: ItemSearchResponse) => { 
-        this.handleSearchResponse(response);
-      },
-      error: (error: any) => {
-        console.error('Failed to search items', error);
-        this.isLoading = false;
-      }
-    });
   }
   
   loadItems(): void {

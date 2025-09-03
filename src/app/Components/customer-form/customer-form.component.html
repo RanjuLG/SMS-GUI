@@ -18,12 +18,38 @@
 </app-page-header>
 
 <div class="container-mobile-fluid">
-  <!-- Mobile-Optimized Data Table with Server-side Pagination -->
+  <!-- Customer Management Card with Date Range Filter -->
   <div class="card card-mobile">
     <div class="card-header">
-      <h5 class="card-title mb-0">All Customers</h5>
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <h5 class="card-title mb-0">All Customers</h5>
+        </div>
+        <div class="col-md-6">
+          <div class="date-range-container">
+            <app-modern-date-range-picker
+              placeholder="Select date range to filter customers..."
+              [maxDate]="maxDateString"
+              (startDateChange)="onStartDateChange($event)"
+              (endDateChange)="onDateRangeChange($event)"
+              (dateRangeSelected)="onDateRangeSelected($event)">
+            </app-modern-date-range-picker>
+          </div>
+        </div>
+        <div class="col-md-2">
+          <button 
+            *ngIf="dateRangeSelected" 
+            type="button" 
+            class="btn btn-outline-secondary w-100"
+            (click)="clearDateFilter()"
+            title="Clear date filter">
+            <i class="ri-close-line"></i> Clear
+          </button>
+        </div>
+      </div>
     </div>
     <div class="card-body">
+      <!-- Mobile-Optimized Data Table with Server-side Pagination -->
       <app-data-table
         title=""
         [data]="customers"

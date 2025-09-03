@@ -1,6 +1,6 @@
 <!-- Item Management with Modern Components -->
 <app-page-header 
-  title="Item Management"
+  title="Inventory Management"
   subtitle="Manage inventory items, track item details, and maintain item records">
   
   <div slot="actions" class="header-actions">
@@ -14,10 +14,13 @@
 </app-page-header>
 
 <div class="container-fluid">
-  <!-- Search and Filter Controls -->
-  <div class="card mb-3">
-    <div class="card-body">
-      <div class="row mb-3 align-items-center">
+  <!-- Items Management Card with Date Range Filter -->
+  <div class="card">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-md-4">
+          <h5 class="card-title mb-0">All Items</h5>
+        </div>
         <div class="col-md-6">
           <div class="date-range-container">
             <app-modern-date-range-picker
@@ -29,15 +32,6 @@
             </app-modern-date-range-picker>
           </div>
         </div>
-        
-        <div class="col-md-4">
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Search items..." 
-            [formControl]="searchControl" />
-        </div>
-        
         <div class="col-md-2">
           <button 
             *ngIf="dateRangeSelected" 
@@ -50,33 +44,35 @@
         </div>
       </div>
     </div>
+    <div class="card-body">
+      <!-- Enhanced Data Table -->
+      <app-data-table
+        title=""
+        [data]="items"
+        [columns]="tableColumns"
+        [actions]="tableActions"
+        [selectable]="true"
+        [searchable]="true"
+        [showActions]="true"
+        [showAddButton]="false"
+        [loading]="isLoading"
+        [serverSidePagination]="true"
+        [pagination]="{
+          currentPage: currentPage,
+          pageSize: pageSize,
+          totalItems: totalItems,
+          totalPages: totalPages,
+          hasNextPage: hasNextPage,
+          hasPreviousPage: hasPreviousPage
+        }"
+        [pageSizeOptions]="[5, 10, 15, 20, 50]"
+        (action)="onTableAction($event)"
+        (selectionChange)="onSelectionChange($event)"
+        (pageChange)="goToPage($event)"
+        (pageSizeChange)="changePageSize($event)"
+        (sortChange)="onSortChange($event)"
+        (search)="onSearch($event)">
+      </app-data-table>
+    </div>
   </div>
-
-  <!-- Enhanced Data Table -->
-  <app-data-table
-    title="Items"
-    [data]="items"
-    [columns]="tableColumns"
-    [actions]="tableActions"
-    [selectable]="true"
-    [searchable]="false"
-    [showActions]="true"
-    [showAddButton]="false"
-    [loading]="isLoading"
-    [serverSidePagination]="true"
-    [pagination]="{
-      currentPage: currentPage,
-      pageSize: pageSize,
-      totalItems: totalItems,
-      totalPages: totalPages,
-      hasNextPage: hasNextPage,
-      hasPreviousPage: hasPreviousPage
-    }"
-    [pageSizeOptions]="[5, 10, 15, 20, 50]"
-    (action)="onTableAction($event)"
-    (selectionChange)="onSelectionChange($event)"
-    (pageChange)="goToPage($event)"
-    (pageSizeChange)="changePageSize($event)"
-    (sortChange)="onSortChange($event)">
-  </app-data-table>
 </div>

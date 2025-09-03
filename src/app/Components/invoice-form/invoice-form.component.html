@@ -19,43 +19,64 @@
 </app-page-header>
 
 <div class="container-fluid">
-  <!-- Date Range and Search Controls -->
-  <div class="card mb-3">
-    <div class="card-body">
-          <div class="row mb-3 align-items-center">
-            <div class="col-md-8 d-flex align-items-center">
-              <div class="me-2 date-range-container">
-                <app-modern-date-range-picker
-                  placeholder="Select date range..."
-                  [maxDate]="maxDateString"
-                  (startDateChange)="onStartDateChange($event)"
-                  (endDateChange)="onDateRangeChange($event)"
-                  (dateRangeSelected)="onDateRangeSelected($event)">
-                </app-modern-date-range-picker>
-              </div>
-              <input type="text" class="form-control search-nic me-2" placeholder="Search by Customer NIC..."
-                [formControl]="searchNICControl">
-              <input type="text" class="form-control search-nic" placeholder="Search by Invoice No..."
-                [formControl]="searchInvoiceNoControl">
-            </div>
+  <!-- Invoice Management Card with Date Range Filter and Integrated Search -->
+  <div class="card">
+    <div class="card-header">
+      <div class="row align-items-center">
+        <div class="col-md-3">
+          <h5 class="card-title mb-0">All Invoices</h5>
+        </div>
+        <div class="col-md-3">
+          <div class="date-range-container">
+            <app-modern-date-range-picker
+              placeholder="Select date range..."
+              [maxDate]="maxDateString"
+              (startDateChange)="onStartDateChange($event)"
+              (endDateChange)="onDateRangeChange($event)"
+              (dateRangeSelected)="onDateRangeSelected($event)">
+            </app-modern-date-range-picker>
           </div>
+        </div>
+        <div class="col-md-6 text-end">
+          <button 
+            *ngIf="dateRangeSelected" 
+            type="button" 
+            class="btn btn-outline-secondary"
+            (click)="clearDateFilter()"
+            title="Clear date filter">
+            <i class="ri-close-line"></i> Clear
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <!-- Enhanced Data Table with Integrated Search and Pagination -->
+      <app-data-table
+        title=""
+        [data]="invoices"
+        [columns]="tableColumns"
+        [actions]="[
+          { key: 'view', label: 'View', icon: 'ri-eye-line', color: 'info' },
+          { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
+        ]"
+        [searchable]="true"
+        [selectable]="true"
+        [showActions]="true"
+        [showAddButton]="false"
+        [loading]="isLoading"
+        [serverSidePagination]="true"
+        [pagination]="{
+          currentPage: currentPage,
+          totalPages: totalPages,
+          totalItems: totalRecords,
+          pageSize: pageSize
+        }"
+        (action)="onTableAction($event)"
+        (search)="onSearch($event)"
+        (pageChange)="goToPage($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+        searchPlaceholder="Search invoices...">
+      </app-data-table>
     </div>
   </div>
-
-  <!-- Enhanced Data Table -->
-  <app-data-table
-    title="Invoices"
-    [data]="invoices"
-    [columns]="tableColumns"
-    [actions]="[
-      { key: 'view', label: 'View', icon: 'ri-eye-line', color: 'info' },
-      { key: 'delete', label: 'Delete', icon: 'ri-delete-bin-line', color: 'danger' }
-    ]"
-    [searchable]="true"
-    [selectable]="true"
-    [showActions]="true"
-    [showAddButton]="false"
-    (action)="onTableAction($event)"
-    searchPlaceholder="Search invoices...">
-  </app-data-table>
 </div>

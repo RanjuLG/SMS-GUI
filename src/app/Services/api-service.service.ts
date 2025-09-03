@@ -505,6 +505,67 @@ export class ApiService {
     return this.http.get<any>(getAllUrl);
   }
 
+  getInvoicesPaginated(searchParams: {
+    page?: number,
+    pageSize?: number,
+    search?: string,
+    sortBy?: string,
+    sortOrder?: string,
+    from?: Date,
+    to?: Date,
+    customerNIC?: string,
+    status?: number,
+    invoiceTypeId?: number,
+    minAmount?: number,
+    maxAmount?: number
+  } = {}): Observable<any> {
+    if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
+
+    let params = new HttpParams()
+      .set('page', (searchParams.page || 1).toString())
+      .set('pageSize', (searchParams.pageSize || 10).toString());
+
+    if (searchParams.search) {
+      params = params.set('search', searchParams.search);
+    }
+    if (searchParams.sortBy) {
+      params = params.set('sortBy', searchParams.sortBy);
+    }
+    if (searchParams.sortOrder) {
+      params = params.set('sortOrder', searchParams.sortOrder);
+    }
+    if (searchParams.from) {
+      params = params.set('from', this.toLocalISOString(searchParams.from));
+    }
+    if (searchParams.to) {
+      params = params.set('to', this.toLocalISOString(searchParams.to));
+    }
+    if (searchParams.customerNIC) {
+      params = params.set('customerNIC', searchParams.customerNIC);
+    }
+    if (searchParams.status !== undefined) {
+      params = params.set('status', searchParams.status.toString());
+    }
+    if (searchParams.invoiceTypeId !== undefined) {
+      params = params.set('invoiceTypeId', searchParams.invoiceTypeId.toString());
+    }
+    if (searchParams.minAmount !== undefined) {
+      params = params.set('minAmount', searchParams.minAmount.toString());
+    }
+    if (searchParams.maxAmount !== undefined) {
+      params = params.set('maxAmount', searchParams.maxAmount.toString());
+    }
+
+    const paginatedUrl = `${this.configService.apiUrl}/api/invoices/paginated`;
+
+    return this.http.get<any>(paginatedUrl, { 
+      params,
+      headers: this.getHttpHeaders()
+    }).pipe(
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   getInvoiceById(invoiceId: number): Observable<InvoiceDto_> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
     const getByIdUrl = this.configService.getInvoiceEndpoint('getById', { invoiceId });
