@@ -47,3 +47,13 @@ export interface FormField {
     customValidator?: (value: any) => boolean;
   };
 }
+
+export interface ServerError {
+  code: string;
+  description: string;
+}
+
+export interface ErrorResponse {
+  message: string;
+  errors: ServerError[];
+}
