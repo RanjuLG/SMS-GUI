@@ -3,6 +3,7 @@ import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { Location } from '@angular/common';
 import { AuthService } from '../../Services/auth.service';
 import { ThemeService } from '../../Services/theme.service';
+import { CashierModeService } from '../../Services/cashier-mode.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { ExtendedCustomerDto } from '../customer-form/customer-form.component';
@@ -34,9 +35,11 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   currentTheme: 'light' | 'dark' = 'light';
   private themeSubscription?: Subscription;
+  private cashierModeSubscription?: Subscription;
   
-  // Cashier mode toggle
+  // Cashier mode state
   isCashierMode: boolean = false;
+  cashierNavItems: any[] = [];
 
   // Search properties
   searchQuery: string = '';
@@ -46,125 +49,173 @@ export class NavBarComponent implements OnInit, OnDestroy {
   selectedResultIndex: number = -1;
 
   // Available pages for search
-  allPages: SearchablePage[] = [
-    {
-      title: 'Dashboard',
-      description: 'Overview and analytics',
-      route: '/overview',
-      icon: 'ri-dashboard-line',
-      keywords: ['dashboard', 'overview', 'home', 'analytics', 'stats', 'summary']
-    },
-    {
-      title: 'Cashier Mode',
-      description: 'Simplified cashier interface',
-      route: '/cashier',
-      icon: 'ri-calculator-line',
-      keywords: ['cashier', 'simple', 'quick', 'essential', 'simplified', 'pos']
-    },
-    {
-      title: 'Create Invoice',
-      description: 'Create new loan invoice',
-      route: '/create-invoice',
-      icon: 'ri-file-add-line',
-      keywords: ['invoice', 'create', 'new', 'loan', 'bill']
-    },
-    {
-      title: 'Invoices',
-      description: 'View all invoices',
-      route: '/invoices',
-      icon: 'ri-file-list-line',
-      keywords: ['invoices', 'bills', 'loans', 'list']
-    },
-    {
-      title: 'Customers',
-      description: 'Manage customer profiles',
-      route: '/customers',
-      icon: 'ri-user-line',
-      keywords: ['customers', 'clients', 'people', 'users', 'profiles']
-    },
-    {
-      title: 'Items',
-      description: 'Manage jewelry inventory',
-      route: '/items',
-      icon: 'ri-archive-line',
-      keywords: ['items', 'inventory', 'jewelry', 'gold', 'products', 'stock']
-    },
-    {
-      title: 'Transaction History',
-      description: 'View all transactions',
-      route: '/transaction-history',
-      icon: 'ri-exchange-line',
-      keywords: ['transactions', 'history', 'payments', 'records']
-    },
-    {
-      title: 'Reports',
-      description: 'Generate reports and analytics',
-      route: '/reports',
-      icon: 'ri-file-chart-line',
-      keywords: ['reports', 'analytics', 'charts', 'statistics', 'data']
-    },
-    {
-      title: 'Customer Reports',
-      description: 'Customer-specific reports',
-      route: '/reports/by-customer',
-      icon: 'ri-user-search-line',
-      keywords: ['customer reports', 'client reports', 'individual reports']
-    },
-    {
-      title: 'Income Reports',
-      description: 'Revenue and income analytics',
-      route: '/reports/income',
-      icon: 'ri-money-dollar-circle-line',
-      keywords: ['income', 'revenue', 'earnings', 'profit', 'financial']
-    },
-    {
-      title: 'Invoice Reports',
-      description: 'Invoice analytics and trends',
-      route: '/reports/invoice',
-      icon: 'ri-file-chart-line',
-      keywords: ['invoice reports', 'billing reports', 'loan reports']
-    },
-    {
-      title: 'Pricing',
-      description: 'Manage gold rates and pricing',
-      route: '/pricing',
-      icon: 'ri-price-tag-3-line',
-      keywords: ['pricing', 'rates', 'gold rates', 'karats', 'valuation']
-    },
-    {
-      title: 'User Management',
-      description: 'Manage system users',
-      route: '/user-management',
-      icon: 'ri-team-line',
-      keywords: ['users', 'management', 'staff', 'employees', 'access']
-    },
-    {
-      title: 'Configuration',
-      description: 'System settings and configuration',
-      route: '/configuration',
-      icon: 'ri-settings-3-line',
-      keywords: ['settings', 'configuration', 'setup', 'preferences', 'admin']
-    },
-    {
-      title: 'Profile',
-      description: 'User profile and settings',
-      route: '/profile',
-      icon: 'ri-user-settings-line',
-      keywords: ['profile', 'account', 'personal', 'settings']
-    }
-  ];
+  allPages: SearchablePage[] = [];
 
   // Popular/frequently used pages
   popularPages: SearchablePage[] = [];
+
+  private getFullSearchPages(): SearchablePage[] {
+    return [
+      {
+        title: 'Dashboard',
+        description: 'Overview and analytics',
+        route: '/overview',
+        icon: 'ri-dashboard-line',
+        keywords: ['dashboard', 'overview', 'home', 'analytics', 'stats', 'summary']
+      },
+      {
+        title: 'Cashier Mode',
+        description: 'Simplified cashier interface',
+        route: '/cashier',
+        icon: 'ri-calculator-line',
+        keywords: ['cashier', 'simple', 'quick', 'essential', 'simplified', 'pos']
+      },
+      {
+        title: 'Create Invoice',
+        description: 'Create new loan invoice',
+        route: '/create-invoice',
+        icon: 'ri-file-add-line',
+        keywords: ['invoice', 'create', 'new', 'loan', 'bill']
+      },
+      {
+        title: 'Invoices',
+        description: 'View all invoices',
+        route: '/invoices',
+        icon: 'ri-file-list-line',
+        keywords: ['invoices', 'bills', 'loans', 'list']
+      },
+      {
+        title: 'Customers',
+        description: 'Manage customer profiles',
+        route: '/customers',
+        icon: 'ri-user-line',
+        keywords: ['customers', 'clients', 'people', 'users', 'profiles']
+      },
+      {
+        title: 'Items',
+        description: 'Manage jewelry inventory',
+        route: '/items',
+        icon: 'ri-archive-line',
+        keywords: ['items', 'inventory', 'jewelry', 'gold', 'products', 'stock']
+      },
+      {
+        title: 'Transaction History',
+        description: 'View all transactions',
+        route: '/transaction-history',
+        icon: 'ri-exchange-line',
+        keywords: ['transactions', 'history', 'payments', 'records']
+      },
+      {
+        title: 'Reports',
+        description: 'Generate reports and analytics',
+        route: '/reports',
+        icon: 'ri-file-chart-line',
+        keywords: ['reports', 'analytics', 'charts', 'statistics', 'data']
+      },
+      {
+        title: 'Customer Reports',
+        description: 'Customer-specific reports',
+        route: '/reports/by-customer',
+        icon: 'ri-user-search-line',
+        keywords: ['customer reports', 'client reports', 'individual reports']
+      },
+      {
+        title: 'Income Reports',
+        description: 'Revenue and income analytics',
+        route: '/reports/income',
+        icon: 'ri-money-dollar-circle-line',
+        keywords: ['income', 'revenue', 'earnings', 'profit', 'financial']
+      },
+      {
+        title: 'Invoice Reports',
+        description: 'Invoice analytics and trends',
+        route: '/reports/invoice',
+        icon: 'ri-file-chart-line',
+        keywords: ['invoice reports', 'billing reports', 'loan reports']
+      },
+      {
+        title: 'Pricing',
+        description: 'Manage gold rates and pricing',
+        route: '/pricing',
+        icon: 'ri-price-tag-3-line',
+        keywords: ['pricing', 'rates', 'gold rates', 'karats', 'valuation']
+      },
+      {
+        title: 'User Management',
+        description: 'Manage system users',
+        route: '/user-management',
+        icon: 'ri-team-line',
+        keywords: ['users', 'management', 'staff', 'employees', 'access']
+      },
+      {
+        title: 'Configuration',
+        description: 'System settings and configuration',
+        route: '/configuration',
+        icon: 'ri-settings-3-line',
+        keywords: ['settings', 'configuration', 'setup', 'preferences', 'admin']
+      },
+      {
+        title: 'Profile',
+        description: 'User profile and settings',
+        route: '/profile',
+        icon: 'ri-user-settings-line',
+        keywords: ['profile', 'account', 'personal', 'settings']
+      }
+    ];
+  }
+
+  private getCashierSearchPages(): SearchablePage[] {
+    return [
+      {
+        title: 'Cashier Dashboard',
+        description: 'Simplified cashier interface',
+        route: '/cashier',
+        icon: 'ri-dashboard-line',
+        keywords: ['cashier', 'dashboard', 'home', 'pos', 'simplified']
+      },
+      {
+        title: 'Create Invoice',
+        description: 'Create new loan invoice',
+        route: '/create-invoice',
+        icon: 'ri-file-add-line',
+        keywords: ['invoice', 'create', 'new', 'loan', 'bill']
+      },
+      {
+        title: 'Invoices',
+        description: 'View all invoices',
+        route: '/invoices',
+        icon: 'ri-file-list-line',
+        keywords: ['invoices', 'bills', 'loans', 'list']
+      },
+      {
+        title: 'Customers',
+        description: 'Manage customer profiles',
+        route: '/customers',
+        icon: 'ri-user-line',
+        keywords: ['customers', 'clients', 'people', 'users', 'profiles']
+      },
+      {
+        title: 'Inventory',
+        description: 'Manage jewelry inventory',
+        route: '/items',
+        icon: 'ri-archive-line',
+        keywords: ['items', 'inventory', 'jewelry', 'gold', 'products', 'stock']
+      }
+    ];
+  }
 
   constructor(
     private location: Location,
     private router: Router,
     private authService: AuthService,
     private themeService: ThemeService,
+    private cashierModeService: CashierModeService,
     private modalService: NgbModal,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) {
+    // Initialize search pages
+    this.allPages = this.getFullSearchPages();
+  }
 
   ngOnInit() {
     // Subscribe to theme changes
@@ -173,8 +224,20 @@ export class NavBarComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
-    // Check if we're currently in cashier mode
-    this.isCashierMode = this.router.url.includes('/cashier');
+    // Subscribe to cashier mode changes
+    this.cashierModeSubscription = this.cashierModeService.isCashierMode$.subscribe(isCashierMode => {
+      this.isCashierMode = isCashierMode;
+      if (isCashierMode) {
+        this.cashierNavItems = this.cashierModeService.getCashierNavItems();
+        // Update search results to only show cashier-relevant pages
+        this.allPages = this.getCashierSearchPages();
+      } else {
+        this.cashierNavItems = [];
+        // Restore full search pages
+        this.allPages = this.getFullSearchPages();
+      }
+      this.cdr.markForCheck();
+    });
 
     // Set popular pages (most commonly used)
     this.popularPages = [
@@ -189,6 +252,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   ngOnDestroy() {
     this.themeSubscription?.unsubscribe();
+    this.cashierModeSubscription?.unsubscribe();
   }
 
   // Methods to navigate
@@ -251,12 +315,7 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   // Toggle cashier mode
   toggleCashierMode() {
-    this.isCashierMode = !this.isCashierMode;
-    if (this.isCashierMode) {
-      this.router.navigate(['/cashier']);
-    } else {
-      this.router.navigate(['/overview']);
-    }
+    this.cashierModeService.toggleCashierMode();
   }
 
   // Get current user info (you can implement this based on your auth service)

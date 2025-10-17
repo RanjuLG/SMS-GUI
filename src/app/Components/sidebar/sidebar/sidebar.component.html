@@ -15,7 +15,7 @@
     <!-- Navigation Menu -->
     <nav class="sidebar-nav">
         <ul class="nav-list">
-            <li *ngFor="let item of menuItems" class="nav-item">
+            <li *ngFor="let item of currentMenuItems" class="nav-item">
                 <!-- Menu item without children -->
                 <a *ngIf="!item.children" 
                    [routerLink]="item.route" 

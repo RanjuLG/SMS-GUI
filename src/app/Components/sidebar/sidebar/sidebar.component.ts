@@ -5,6 +5,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../Services/auth.service';
 import { ThemeService } from '../../../Services/theme.service';
+import { CashierModeService } from '../../../Services/cashier-mode.service';
 import { Subscription } from 'rxjs';
 declare var bootstrap: any;
 import { ExtendedItemDto } from '../../item-form/item-form.component';
@@ -33,8 +34,14 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
 
   currentTheme: 'light' | 'dark' = 'light';
   private themeSubscription?: Subscription;
+  private cashierModeSubscription?: Subscription;
+  
+  // Cashier mode state
+  isCashierMode: boolean = false;
+  currentMenuItems: MenuItem[] = [];
 
-  menuItems: MenuItem[] = [
+  // Full mode menu items
+  private fullMenuItems: MenuItem[] = [
     {
       label: 'Home',
       icon: 'ri-home-2-line',
@@ -85,6 +92,37 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
     }
   ];
 
+  // Cashier mode menu items (simplified)
+  private cashierMenuItems: MenuItem[] = [
+    {
+      label: 'Dashboard',
+      icon: 'ri-dashboard-line',
+      route: '/cashier'
+    },
+    {
+      label: 'Invoice',
+      icon: 'ri-article-line',
+      route: '/invoices',
+      children: [
+        {
+          label: 'Create Invoice',
+          icon: 'ri-sticky-note-add-line',
+          route: '/create-invoice'
+        }
+      ]
+    },
+    {
+      label: 'Customers',
+      icon: 'ri-user-3-line',
+      route: '/customers'
+    },
+    {
+      label: 'Inventory',
+      icon: 'ri-archive-line',
+      route: '/items'
+    }
+  ];
+
   expandedMenus: Set<string> = new Set();
 
   constructor(
@@ -92,10 +130,14 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
     private themeService: ThemeService,
+    private cashierModeService: CashierModeService,
     private router: Router,
     private renderer: Renderer2,
     private el: ElementRef
-  ) { }
+  ) { 
+    // Initialize with full menu items
+    this.currentMenuItems = this.fullMenuItems;
+  }
 
   ngOnInit() {
     // Load expanded state from localStorage
@@ -110,10 +152,18 @@ export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
       this.updateSidebarTheme();
       this.cdr.markForCheck();
     });
+
+    // Subscribe to cashier mode changes
+    this.cashierModeSubscription = this.cashierModeService.isCashierMode$.subscribe(isCashierMode => {
+      this.isCashierMode = isCashierMode;
+      this.currentMenuItems = isCashierMode ? this.cashierMenuItems : this.fullMenuItems;
+      this.cdr.markForCheck();
+    });
   }
 
   ngOnDestroy() {
     this.themeSubscription?.unsubscribe();
+    this.cashierModeSubscription?.unsubscribe();
     
     // Clean up mobile event listeners
     window.removeEventListener('orientationchange', this.checkMobileSidebarState);

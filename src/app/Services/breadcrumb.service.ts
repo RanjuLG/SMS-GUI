@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
-import { BehaviorSubject, filter, map } from 'rxjs';
+import { BehaviorSubject, filter, map, combineLatest } from 'rxjs';
 import { BreadcrumbItem } from '../shared/components/breadcrumb/breadcrumb.component';
+import { CashierModeService } from './cashier-mode.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class BreadcrumbService {
   // Route to breadcrumb mapping for simple routes
   private routeMap: { [key: string]: BreadcrumbItem } = {
     'overview': { label: 'Overview', route: '/overview', icon: 'ri-dashboard-line' },
+    'cashier': { label: 'Cashier Dashboard', route: '/cashier', icon: 'ri-calculator-line' },
     'customers': { label: 'Customers', route: '/customers', icon: 'ri-user-3-line' },
     'items': { label: 'Inventory', route: '/items', icon: 'ri-archive-line' },
     'transaction-history': { label: 'Transactions', route: '/transaction-history', icon: 'ri-exchange-line' },
@@ -27,76 +29,107 @@ export class BreadcrumbService {
     'unauthorized': { label: 'Unauthorized', route: '/unauthorized', icon: 'ri-error-warning-line' }
   };
 
-  constructor(private router: Router, private activatedRoute: ActivatedRoute) {
-    this.router.events
-      .pipe(
-        filter(event => event instanceof NavigationEnd),
-        map(() => this.buildBreadcrumbs())
-      )
-      .subscribe(breadcrumbs => {
-        this.breadcrumbsSubject.next(breadcrumbs);
-      });
+  constructor(
+    private router: Router, 
+    private activatedRoute: ActivatedRoute, 
+    private cashierModeService: CashierModeService
+  ) {
+    // Combine router events with cashier mode changes to update breadcrumbs
+    combineLatest([
+      this.router.events.pipe(filter(event => event instanceof NavigationEnd)),
+      this.cashierModeService.isCashierMode$
+    ]).pipe(
+      map(() => this.buildBreadcrumbs())
+    ).subscribe(breadcrumbs => {
+      this.breadcrumbsSubject.next(breadcrumbs);
+    });
   }
 
   private buildBreadcrumbs(): BreadcrumbItem[] {
     const url = this.router.url;
     const urlSegments = url.split('/').filter(segment => segment);
     const breadcrumbs: BreadcrumbItem[] = [];
+    const isCashierMode = this.cashierModeService.isCashierMode;
 
-    // Always start with Home
-    breadcrumbs.push({ label: 'Home', route: '/overview', icon: 'ri-home-4-line' });
+    // Start with appropriate Home based on mode
+    if (isCashierMode) {
+      breadcrumbs.push({ label: 'Cashier', route: '/cashier', icon: 'ri-calculator-line' });
+    } else {
+      breadcrumbs.push({ label: 'Home', route: '/overview', icon: 'ri-home-4-line' });
+    }
 
     // Handle special hierarchical routes
     if (url.includes('/create-invoice')) {
-      breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      // In cashier mode, show a simplified path
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      }
       breadcrumbs.push({ label: 'Create Invoice', route: '/create-invoice', icon: 'ri-file-add-line' });
       return breadcrumbs;
     }
 
     if (url.includes('/customers/create-customer')) {
-      breadcrumbs.push({ label: 'Customers', route: '/customers', icon: 'ri-user-3-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Customers', route: '/customers', icon: 'ri-user-3-line' });
+      }
       breadcrumbs.push({ label: 'Add Customer', route: '/customers/create-customer', icon: 'ri-user-add-line' });
       return breadcrumbs;
     }
 
+    // Reports are not available in cashier mode, but handle them anyway
     if (url.includes('/reports/by-customer')) {
-      breadcrumbs.push({ label: 'Reports', route: '/reports', icon: 'ri-file-chart-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Reports', route: '/reports', icon: 'ri-file-chart-line' });
+      }
       breadcrumbs.push({ label: 'Customer Reports', route: '/reports/by-customer', icon: 'ri-user-search-line' });
       return breadcrumbs;
     }
 
     if (url.includes('/reports/transactions')) {
-      breadcrumbs.push({ label: 'Reports', route: '/reports', icon: 'ri-file-chart-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Reports', route: '/reports', icon: 'ri-file-chart-line' });
+      }
       breadcrumbs.push({ label: 'Transaction Reports', route: '/reports/transactions', icon: 'ri-line-chart-line' });
       return breadcrumbs;
     }
 
+    // Configuration routes are not available in cashier mode
     if (url.includes('/config/users')) {
-      breadcrumbs.push({ label: 'Configuration', route: '/config', icon: 'ri-tools-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Configuration', route: '/config', icon: 'ri-tools-line' });
+      }
       breadcrumbs.push({ label: 'User Management', route: '/config/users', icon: 'ri-shield-user-line' });
       return breadcrumbs;
     }
 
     if (url.includes('/config/pricings')) {
-      breadcrumbs.push({ label: 'Configuration', route: '/config', icon: 'ri-tools-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Configuration', route: '/config', icon: 'ri-tools-line' });
+      }
       breadcrumbs.push({ label: 'Pricing Settings', route: '/config/pricings', icon: 'ri-price-tag-3-line' });
       return breadcrumbs;
     }
 
     if (url.includes('/view-invoice-template/')) {
-      breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      }
       breadcrumbs.push({ label: 'Invoice Details', route: url, icon: 'ri-file-text-line' });
       return breadcrumbs;
     }
 
     if (url.includes('/view-installment-invoice-template/')) {
-      breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      }
       breadcrumbs.push({ label: 'Installment Invoice', route: url, icon: 'ri-file-list-line' });
       return breadcrumbs;
     }
 
     if (url.includes('/view-settlement-invoice-template/')) {
-      breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      if (!isCashierMode) {
+        breadcrumbs.push({ label: 'Invoices', route: '/invoices', icon: 'ri-file-list-3-line' });
+      }
       breadcrumbs.push({ label: 'Settlement Invoice', route: url, icon: 'ri-file-check-line' });
       return breadcrumbs;
     }

@@ -30,7 +30,7 @@ import { CashierDashboardComponent } from './Components/cashier-dashboard/cashie
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
-    { path: 'cashier', component: CashierDashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'cashier', component: CashierDashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier', isCashierMode: true } },
     { path: 'overview', component: OverviewComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'profile', component: ProfileComponent }, // Safe route for logged-in users without full permissions
     { path: 'customers', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},

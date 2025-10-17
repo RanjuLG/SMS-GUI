@@ -2,11 +2,18 @@
   <div class="navbar-container">
     <!-- Left side - Mobile sidebar toggle and breadcrumb -->
     <div class="navbar-left">
+      <!-- Cashier Mode Indicator -->
+      <div *ngIf="isCashierMode" class="cashier-mode-indicator">
+        <i class="ri-calculator-line"></i>
+        <span class="mode-text">Cashier Mode</span>
+      </div>
+      
       <button *ngIf="!isCashierMode" class="mobile-sidebar-toggle d-lg-none" 
               (click)="toggleSidebar()"
               (touchstart)="$event.preventDefault()"
               [attr.aria-label]="sidebarExpanded ? 'Close menu' : 'Open menu'"
-              [attr.aria-expanded]="sidebarExpanded">
+              [attr.aria-expanded]="sidebarExpanded"
+              title="Toggle Menu">
         <i [class]="sidebarExpanded ? 'ri-close-line' : 'ri-menu-line'"></i>
       </button>
       
@@ -20,8 +27,8 @@
         </button>
       </div>
 
-      <!-- Search Bar -->
-      <div class="search-container d-none d-lg-flex">
+      <!-- Search Bar (hidden in cashier mode for simplicity) -->
+      <div *ngIf="!isCashierMode" class="search-container d-none d-lg-flex">
         <div class="search-input-wrapper">
           <i class="ri-search-line search-icon"></i>
           <input type="text" 
@@ -79,6 +86,38 @@
             </button>
           </div>
         </div>
+      </div>
+      
+      <!-- Cashier Quick Navigation -->
+      <div *ngIf="isCashierMode" class="cashier-quick-nav d-none d-md-flex">
+        <button class="quick-nav-btn" 
+                routerLink="/cashier" 
+                routerLinkActive="active"
+                title="Dashboard">
+          <i class="ri-dashboard-line"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="quick-nav-btn" 
+                routerLink="/create-invoice" 
+                routerLinkActive="active"
+                title="Create Invoice">
+          <i class="ri-file-add-line"></i>
+          <span>Invoice</span>
+        </button>
+        <button class="quick-nav-btn" 
+                routerLink="/customers" 
+                routerLinkActive="active"
+                title="Customers">
+          <i class="ri-user-line"></i>
+          <span>Customers</span>
+        </button>
+        <button class="quick-nav-btn" 
+                routerLink="/items" 
+                routerLinkActive="active"
+                title="Inventory">
+          <i class="ri-archive-line"></i>
+          <span>Inventory</span>
+        </button>
       </div>
     </div>
 

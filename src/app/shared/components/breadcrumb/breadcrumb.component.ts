@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { BreadcrumbService } from '../../../Services/breadcrumb.service';
 import { ThemeService } from '../../../Services/theme.service';
+import { CashierModeService } from '../../../Services/cashier-mode.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -12,7 +13,11 @@ import { Subscription } from 'rxjs';
   template: `
     <nav aria-label="breadcrumb" class="mb-4" *ngIf="displayItems.length > 1">
       <ol class="breadcrumb rounded-3 p-3 mb-0 shadow-sm" 
-          [ngClass]="{'breadcrumb-dark': isDarkMode, 'breadcrumb-light': !isDarkMode}">
+          [ngClass]="{
+            'breadcrumb-dark': isDarkMode, 
+            'breadcrumb-light': !isDarkMode,
+            'breadcrumb-cashier': isCashierMode
+          }">
         <li 
           *ngFor="let item of displayItems; let last = last" 
           class="breadcrumb-item"
@@ -85,6 +90,32 @@ import { Subscription } from 'rxjs';
     .shadow-sm {
       box-shadow: 0 1px 2px 0 var(--shadow) !important;
     }
+
+    /* Cashier mode specific styles */
+    .breadcrumb-cashier {
+      background: linear-gradient(135deg, rgba(255, 107, 53, 0.1), rgba(247, 147, 30, 0.1)) !important;
+      border-left: 4px solid #ff6b35 !important;
+      border-color: rgba(255, 107, 53, 0.3) !important;
+    }
+
+    .breadcrumb-cashier .breadcrumb-link {
+      color: #ff4500 !important;
+      font-weight: 500;
+    }
+
+    .breadcrumb-cashier .breadcrumb-link:hover {
+      color: #ff6b35 !important;
+    }
+
+    .breadcrumb-cashier .breadcrumb-current {
+      color: #ff4500 !important;
+      font-weight: 600;
+    }
+
+    .breadcrumb-cashier .breadcrumb-item + .breadcrumb-item::before {
+      color: #ff6b35 !important;
+      font-weight: bold;
+    }
   `]
 })
 export class BreadcrumbComponent implements OnInit, OnDestroy, OnChanges {
@@ -93,18 +124,26 @@ export class BreadcrumbComponent implements OnInit, OnDestroy, OnChanges {
   
   displayItems: BreadcrumbItem[] = [];
   isDarkMode = false;
+  isCashierMode = false;
   private breadcrumbSubscription?: Subscription;
   private themeSubscription?: Subscription;
+  private cashierModeSubscription?: Subscription;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
-    private themeService: ThemeService
+    private themeService: ThemeService,
+    private cashierModeService: CashierModeService
   ) {}
 
   ngOnInit() {
     // Subscribe to theme changes
     this.themeSubscription = this.themeService.currentTheme$.subscribe(theme => {
       this.isDarkMode = theme === 'dark';
+    });
+
+    // Subscribe to cashier mode changes
+    this.cashierModeSubscription = this.cashierModeService.isCashierMode$.subscribe(isCashierMode => {
+      this.isCashierMode = isCashierMode;
     });
 
     if (this.autoGenerate) {
@@ -123,6 +162,7 @@ export class BreadcrumbComponent implements OnInit, OnDestroy, OnChanges {
   ngOnDestroy() {
     this.breadcrumbSubscription?.unsubscribe();
     this.themeSubscription?.unsubscribe();
+    this.cashierModeSubscription?.unsubscribe();
   }
 
   // Update items when input changes
