@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 
 @Component({
   selector: 'app-cashier-dashboard',
@@ -20,7 +22,7 @@ export class CashierDashboardComponent implements OnInit {
   todaysRevenue: number = 0;
   activeLoans: number = 0;
 
-  constructor() {}
+  constructor(private modalService: NgbModal) {}
 
   ngOnInit() {
     this.updateDateTime();
@@ -64,5 +66,33 @@ export class CashierDashboardComponent implements OnInit {
     this.todaysTransactions = 12;
     this.todaysRevenue = 45000;
     this.activeLoans = 25;
+  }
+
+  // Open Add Customer Modal
+  openAddCustomerModal() {
+    const modalRef = this.modalService.open(AddCustomerComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      keyboard: false
+    });
+
+    modalRef.componentInstance.customer = null; // For adding new customer
+
+    modalRef.componentInstance.saveCustomer.subscribe((newCustomer: any) => {
+      // Handle the new customer data here if needed
+      console.log('New customer added:', newCustomer);
+      // You could refresh customer list or show a success message
+    });
+
+    modalRef.result.then(
+      (result) => {
+        // Modal closed successfully
+        console.log('Modal closed:', result);
+      },
+      (dismissed) => {
+        // Modal dismissed
+        console.log('Modal dismissed:', dismissed);
+      }
+    );
   }
 }

@@ -50,7 +50,8 @@ export const routes: Routes = [
     { path: 'config/users', component: UserManagementComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'unauthorized', component: UnauthorizedComponent },
     { path: 'auth/sign-up', component: SignUpComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
-    {path:'customers/create-customer',component: AddCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    // Note: AddCustomerComponent is now used as a modal, not a route
+    // {path:'customers/create-customer',component: AddCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'config/pricings',component: KaratValueComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports',component: ReportsComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
