@@ -1,7 +1,7 @@
 <!-- Cashier Dashboard - Simplified Interface -->
 <div class="cashier-dashboard">
   <!-- Header Section -->
-  <div class="dashboard-header">
+  <!-- <div class="dashboard-header">
     <div class="greeting-section">
       <h1 class="greeting">{{ greeting }}!</h1>
       <p class="date-time">
@@ -9,10 +9,10 @@
         <span class="time">{{ currentTime }}</span>
       </p>
     </div>
-  </div>
+  </div> -->
 
   <!-- Quick Stats Row -->
-  <div class="quick-stats">
+  <!-- <div class="quick-stats">
     <div class="stat-card">
       <div class="stat-icon">
         <i class="ri-exchange-line"></i>
@@ -42,7 +42,7 @@
         <div class="stat-label">Active Loans</div>
       </div>
     </div>
-  </div>
+  </div> -->
 
   <!-- Essential Actions Grid -->
   <div class="essential-actions">
@@ -52,63 +52,7 @@
     </h2>
     
     <div class="actions-grid">
-      <!-- Create Invoice -->
-      <div class="action-card primary" routerLink="/create-invoice">
-        <div class="action-icon">
-          <i class="ri-file-add-line"></i>
-        </div>
-        <div class="action-content">
-          <h3>Create Invoice</h3>
-          <p>Generate new loan invoices</p>
-        </div>
-        <div class="action-arrow">
-          <i class="ri-arrow-right-line"></i>
-        </div>
-      </div>
-
-      <!-- Quick Customer Search -->
-      <div class="action-card secondary" routerLink="/customers">
-        <div class="action-icon">
-          <i class="ri-user-search-line"></i>
-        </div>
-        <div class="action-content">
-          <h3>Find Customer</h3>
-          <p>Search customer records</p>
-        </div>
-        <div class="action-arrow">
-          <i class="ri-arrow-right-line"></i>
-        </div>
-      </div>
-
-      <!-- Transaction History -->
-      <div class="action-card tertiary" routerLink="/transaction-history">
-        <div class="action-icon">
-          <i class="ri-history-line"></i>
-        </div>
-        <div class="action-content">
-          <h3>Recent Transactions</h3>
-          <p>View payment history</p>
-        </div>
-        <div class="action-arrow">
-          <i class="ri-arrow-right-line"></i>
-        </div>
-      </div>
-
-      <!-- Gold Pricing -->
-      <div class="action-card accent" routerLink="/config/pricings">
-        <div class="action-icon">
-          <i class="ri-price-tag-3-line"></i>
-        </div>
-        <div class="action-content">
-          <h3>Gold Rates</h3>
-          <p>Current pricing info</p>
-        </div>
-        <div class="action-arrow">
-          <i class="ri-arrow-right-line"></i>
-        </div>
-      </div>
-
-      <!-- Cash Balance -->
+      <!-- Cash Balance - First thing to check when starting work -->
       <div class="action-card success" routerLink="/cash-balance">
         <div class="action-icon">
           <i class="ri-wallet-3-line"></i>
@@ -122,7 +66,63 @@
         </div>
       </div>
 
-      <!-- Add Customer -->
+      <!-- Gold Pricing - Check rates before transactions -->
+      <div class="action-card accent" routerLink="/config/pricings">
+        <div class="action-icon">
+          <i class="ri-price-tag-3-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Gold Rates</h3>
+          <p>Current pricing info</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Quick Customer Search - Most common operation -->
+      <div class="action-card secondary" routerLink="/customers">
+        <div class="action-icon">
+          <i class="ri-user-search-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Find Customer</h3>
+          <p>Search customer records</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Create Invoice - Primary business function -->
+      <div class="action-card primary" routerLink="/create-invoice">
+        <div class="action-icon">
+          <i class="ri-file-add-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Create Invoice</h3>
+          <p>Generate new loan invoices</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Transaction History - View recent activity -->
+      <div class="action-card tertiary" routerLink="/transaction-history">
+        <div class="action-icon">
+          <i class="ri-history-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Recent Transactions</h3>
+          <p>View payment history</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Add Customer - Less frequent but important -->
       <div class="action-card info" routerLink="/customers/create-customer">
         <div class="action-icon">
           <i class="ri-user-add-line"></i>
