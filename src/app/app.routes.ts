@@ -26,9 +26,11 @@ import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { IncomeReportComponent } from './Components/helpers/reports/income-report/income-report.component';
 import { ProfileComponent } from './Components/profile/profile.component';
 import { UnifiedTransactionHistoryComponent } from './Components/unified-transaction-history/unified-transaction-history.component';
+import { CashierDashboardComponent } from './Components/cashier-dashboard/cashier-dashboard.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
+    { path: 'cashier', component: CashierDashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'overview', component: OverviewComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
     { path: 'profile', component: ProfileComponent }, // Safe route for logged-in users without full permissions
     { path: 'customers', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},

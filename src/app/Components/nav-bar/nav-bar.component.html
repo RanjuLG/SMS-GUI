@@ -2,7 +2,7 @@
   <div class="navbar-container">
     <!-- Left side - Mobile sidebar toggle and breadcrumb -->
     <div class="navbar-left">
-      <button class="mobile-sidebar-toggle d-lg-none" 
+      <button *ngIf="!isCashierMode" class="mobile-sidebar-toggle d-lg-none" 
               (click)="toggleSidebar()"
               (touchstart)="$event.preventDefault()"
               [attr.aria-label]="sidebarExpanded ? 'Close menu' : 'Open menu'"
@@ -117,6 +117,16 @@
               [attr.title]="currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'"
               [attr.aria-label]="currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'">
         <i [class]="currentTheme === 'light' ? 'ri-moon-line' : 'ri-sun-line'"></i>
+      </button>
+
+      <!-- Cashier Mode Toggle -->
+      <button class="cashier-mode-toggle" 
+              (click)="toggleCashierMode()" 
+              [class.active]="isCashierMode"
+              [attr.title]="isCashierMode ? 'Switch to Full Mode' : 'Switch to Cashier Mode'"
+              [attr.aria-label]="isCashierMode ? 'Switch to Full Mode' : 'Switch to Cashier Mode'">
+        <i class="ri-calculator-line"></i>
+        <span class="toggle-text">{{ isCashierMode ? 'Full' : 'Cashier' }}</span>
       </button>
 
       <!-- User Menu -->

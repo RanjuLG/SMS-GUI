@@ -10,6 +10,22 @@
   background-color: var(--secondary-bg);
   transition: background-color 0.3s ease;
   position: relative;
+
+  // Cashier mode styles
+  &.cashier-mode {
+    .main-content {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+
+    .topbar {
+      .navbar-left {
+        .mobile-sidebar-toggle {
+          display: none !important;
+        }
+      }
+    }
+  }
 }
 
 // Sidebar Styles with enhanced mobile support

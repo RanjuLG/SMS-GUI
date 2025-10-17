@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
 import { NavBarComponent } from "./Components/nav-bar/nav-bar.component";
 import { FooterComponent } from './Components/footer/footer.component';
 import { AuthService } from './Services/auth.service';
@@ -10,6 +10,7 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './Components/sidebar/sidebar/sidebar.component';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -31,14 +32,17 @@ export class AppComponent implements OnInit, OnDestroy {
   sidebarExpanded = true;
   isLoading = false;
   loadingMessage = 'Loading...';
+  isCashierMode = false;
   
   private sidebarSubscription?: Subscription;
+  private routerSubscription?: Subscription;
 
   constructor(
     private authService: AuthService,
     private themeService: ThemeService,
     private breadcrumbService: BreadcrumbService,
-    public sidebarService: SidebarService
+    public sidebarService: SidebarService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -61,10 +65,21 @@ export class AppComponent implements OnInit, OnDestroy {
         this.sidebarExpanded = expanded;
       }
     );
+
+    // Listen for route changes to detect cashier mode
+    this.routerSubscription = this.router.events
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
+      .subscribe((event: NavigationEnd) => {
+        this.isCashierMode = event.url.includes('/cashier');
+      });
+
+    // Initial check for cashier mode
+    this.isCashierMode = this.router.url.includes('/cashier');
   }
 
   ngOnDestroy() {
     this.sidebarSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
   }
 
   onSidebarToggle(expanded: boolean) {

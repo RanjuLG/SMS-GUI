@@ -34,6 +34,9 @@ export class NavBarComponent implements OnInit, OnDestroy {
 
   currentTheme: 'light' | 'dark' = 'light';
   private themeSubscription?: Subscription;
+  
+  // Cashier mode toggle
+  isCashierMode: boolean = false;
 
   // Search properties
   searchQuery: string = '';
@@ -50,6 +53,13 @@ export class NavBarComponent implements OnInit, OnDestroy {
       route: '/overview',
       icon: 'ri-dashboard-line',
       keywords: ['dashboard', 'overview', 'home', 'analytics', 'stats', 'summary']
+    },
+    {
+      title: 'Cashier Mode',
+      description: 'Simplified cashier interface',
+      route: '/cashier',
+      icon: 'ri-calculator-line',
+      keywords: ['cashier', 'simple', 'quick', 'essential', 'simplified', 'pos']
     },
     {
       title: 'Create Invoice',
@@ -163,8 +173,12 @@ export class NavBarComponent implements OnInit, OnDestroy {
       this.cdr.markForCheck();
     });
 
+    // Check if we're currently in cashier mode
+    this.isCashierMode = this.router.url.includes('/cashier');
+
     // Set popular pages (most commonly used)
     this.popularPages = [
+      this.allPages.find(p => p.route === '/cashier')!,
       this.allPages.find(p => p.route === '/overview')!,
       this.allPages.find(p => p.route === '/create-invoice')!,
       this.allPages.find(p => p.route === '/customers')!,
@@ -233,6 +247,16 @@ export class NavBarComponent implements OnInit, OnDestroy {
   // Toggle theme
   toggleTheme() {
     this.themeService.toggleTheme();
+  }
+
+  // Toggle cashier mode
+  toggleCashierMode() {
+    this.isCashierMode = !this.isCashierMode;
+    if (this.isCashierMode) {
+      this.router.navigate(['/cashier']);
+    } else {
+      this.router.navigate(['/overview']);
+    }
   }
 
   // Get current user info (you can implement this based on your auth service)

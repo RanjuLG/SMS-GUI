@@ -1,18 +1,18 @@
-<div class="app-layout">
+<div class="app-layout" [class.cashier-mode]="isCashierMode">
   <!-- Mobile Sidebar Overlay -->
-  <div *ngIf="isLoggedIn" 
+  <div *ngIf="isLoggedIn && !isCashierMode" 
        class="sidebar-overlay" 
        [class.show]="sidebarExpanded"
        (click)="closeMobileSidebar()"
        (touchstart)="closeMobileSidebar()"></div>
 
   <!-- Sidebar -->
-  <div *ngIf="isLoggedIn" class="sidebar-wrapper" [class.sidebar-expanded]="sidebarExpanded">
+  <div *ngIf="isLoggedIn && !isCashierMode" class="sidebar-wrapper" [class.sidebar-expanded]="sidebarExpanded">
     <app-sidebar (sidebarToggle)="onSidebarToggle($event)"></app-sidebar>
   </div>
 
   <!-- Main Content Area -->
-  <div class="main-content" [class.content-expanded]="!isLoggedIn || !sidebarExpanded">
+  <div class="main-content" [class.content-expanded]="!isLoggedIn || !sidebarExpanded || isCashierMode">
     <!-- Top Navigation -->
     <header *ngIf="isLoggedIn" class="topbar">
       <app-nav-bar 
