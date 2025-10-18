@@ -4,14 +4,14 @@ import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule, MatHint } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { NgxPaginationModule } from 'ngx-pagination';
+import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-table',
   standalone: true,
   imports: [CommonModule, 
     FormsModule, 
-    NgxPaginationModule,
+    DataTableComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatHint,
@@ -21,49 +21,21 @@ import { NgxPaginationModule } from 'ngx-pagination';
   styleUrl: './table.component.scss'
 })
 export class TableComponent {
-@Input() transactions: any[] = [];
-  @Input() transactionsPerPage: number = 10;
-  @Input() transactionsPerPageOptions: number[] = [5, 10, 15, 20];
-  @Input() page: number = 1;
-  @Input() maxDate: Date = new Date();
+  @Input() data: any[] = [];
+  @Input() columns: any[] = [];
+  @Input() actions: any[] = [];
+  @Input() title: string = '';
+  @Input() searchable: boolean = true;
+  @Input() selectable: boolean = false;
 
-  @Output() deleteTransaction = new EventEmitter<number>();
-  @Output() deleteSelectedTransactions = new EventEmitter<void>();
-  @Output() pageChange = new EventEmitter<number>();
-  @Output() toggleSelection = new EventEmitter<boolean>();
-  @Output() dateRangeChange = new EventEmitter<{ from: Date, to: Date }>();
+  @Output() actionClick = new EventEmitter<{action: string, item: any}>();
+  @Output() selectionChange = new EventEmitter<any[]>();
 
-  searchControl = new FormControl();
-  fromDate: Date = new Date();
-  toDate: Date = new Date();
-
-  toggleAllSelections(event: Event) {
-    const checked = (event.target as HTMLInputElement).checked;
-    this.toggleSelection.emit(checked);
+  onTableAction(event: {action: string, item: any}) {
+    this.actionClick.emit(event);
   }
 
-  onDeleteTransaction(transactionId: number) {
-    this.deleteTransaction.emit(transactionId);
-  }
-
-  onDateRangeChange(event: any): void {
-    const { start, end } = event.value;
-    this.fromDate = start;
-    this.toDate = end;
-    this.dateRangeChange.emit({ from: start, to: end });
-  }
-
-  onItemsPerPageChange(event: Event) {
-    this.transactionsPerPage = +(event.target as HTMLSelectElement).value;
-    this.pageChange.emit(this.page);
-  }
-
-  getStartIndex(): number {
-    return (this.page - 1) * this.transactionsPerPage + 1;
-  }
-
-  getEndIndex(): number {
-    const endIndex = this.page * this.transactionsPerPage;
-    return endIndex > this.transactions.length ? this.transactions.length : endIndex;
+  onSelectionChange(selectedItems: any[]) {
+    this.selectionChange.emit(selectedItems);
   }
 }

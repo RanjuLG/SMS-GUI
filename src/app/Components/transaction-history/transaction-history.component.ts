@@ -3,17 +3,17 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service'; 
 import { DateService } from '../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
 import { TransactionReportDto } from '../reports/reports.model';
+
+// Import shared components
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
 
 export interface ExtendedTrasactionDto extends TransactionReportDto {
@@ -26,13 +26,10 @@ export interface ExtendedTrasactionDto extends TransactionReportDto {
   imports: [
     CommonModule, 
     FormsModule, 
-    NgxPaginationModule,
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatHint,
-    MatFormFieldModule,
-    MatInputModule
-  
+    PageHeaderComponent,
+    DataTableComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './transaction-history.component.html',
   styleUrls: ['./transaction-history.component.scss'],
@@ -42,15 +39,71 @@ export class TransactionHistoryComponent implements OnInit {
   transactions: ExtendedTrasactionDto[] = [];
   editingIndex: number | null = null;
   page: number = 1;
-  transactionsPerPage: number = 10;
-  transactionsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  transactionsPerPage: number = 20;
+  transactionsPerPageOptions: number[] = [10, 20, 50, 100];
   searchControl = new FormControl();
   transactionIds?: number[];
   transactionIds_delete?: number[];
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
+  to = new Date(this._currentDate);
+  loading: boolean = false;
+
+  // Table configuration for the modern DataTableComponent
+  tableColumns: TableColumn[] = [
+    {
+      key: 'createdAt',
+      label: 'Date',
+      type: 'date',
+      sortable: true
+    },
+    {
+      key: 'customer.customerName',
+      label: 'Customer Name',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customer.customerNIC',
+      label: 'Customer NIC',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'subTotal',
+      label: 'Sub Total (Rs.)',
+      type: 'currency',
+      sortable: true
+    },
+    {
+      key: 'interestRate',
+      label: 'Interest Rate (%)',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'totalAmount',
+      label: 'Total Amount (Rs.)',
+      type: 'currency',
+      sortable: true
+    }
+  ];
+
+  tableActions: TableAction[] = [
+    {
+      key: 'view',
+      label: 'View',
+      icon: 'ri-eye-line',
+      color: 'info'
+    },
+    {
+      key: 'delete',
+      label: 'Delete',
+      icon: 'ri-delete-bin-line',
+      color: 'danger'
+    }
+  ];
   
 
   constructor(
@@ -93,6 +146,7 @@ export class TransactionHistoryComponent implements OnInit {
   
 
   loadTransactions(): void {
+    this.loading = true;
     this.apiService.getTransactions(this.from,this.to).subscribe({
       next: (transactions: ExtendedTrasactionDto[]) => {
         this.transactions = transactions.map(transaction => ({
@@ -101,13 +155,64 @@ export class TransactionHistoryComponent implements OnInit {
           selected: false,
           customerNIC: transaction.customer.customerNIC
         }));
+        this.loading = false;
         this.cdr.markForCheck(); // Trigger change detection
         console.log(this.transactions);
       },
       error: (error: any) => {
         console.error('Failed to load transactions', error);
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
+  }
+
+  // Handle table actions (view, delete)
+  handleTableAction(event: { action: string, item: ExtendedTrasactionDto }): void {
+    const { action, item } = event;
+    
+    switch (action) {
+      case 'view':
+        this.viewTransaction(item);
+        break;
+      case 'delete':
+        this.deleteTransaction(item.transactionId);
+        break;
+    }
+  }
+
+  // Handle selection changes from data table
+  onSelectionChange(selectedItems: ExtendedTrasactionDto[]): void {
+    // Update selected state in transactions array
+    this.transactions.forEach(transaction => {
+      transaction.selected = selectedItems.some(selected => selected.transactionId === transaction.transactionId);
+    });
+    this.cdr.markForCheck();
+  }
+
+  // View transaction details
+  viewTransaction(transaction: ExtendedTrasactionDto): void {
+    Swal.fire({
+      title: 'Transaction Details',
+      html: `
+        <div class="text-start">
+          <p><strong>Date:</strong> ${transaction.createdAt}</p>
+          <p><strong>Customer:</strong> ${transaction.customer.customerName}</p>
+          <p><strong>NIC:</strong> ${transaction.customer.customerNIC}</p>
+          <p><strong>Sub Total:</strong> Rs. ${transaction.subTotal}</p>
+          <p><strong>Interest Rate:</strong> ${transaction.interestRate}%</p>
+          <p><strong>Total Amount:</strong> Rs. ${transaction.totalAmount}</p>
+        </div>
+      `,
+      icon: 'info',
+      confirmButtonText: 'Close'
+    });
+  }
+
+  // Search functionality
+  onSearch(searchTerm: string): void {
+    // The search will be handled by the existing searchControl logic
+    this.searchControl.setValue(searchTerm);
   }
 
   openCreateTransactionModal() {
@@ -207,27 +312,76 @@ export class TransactionHistoryComponent implements OnInit {
   }
 
   
-  onStartDateChange(event: any): void{
-    this.from = new Date(event.value)
-    console.log("this.from: ", this.from);
-
-
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        this.from = new Date(dateString);
+      }
+      console.log("this.from: ", this.from);
+    } else {
+      console.error('Start date string is null or empty');
+    }
+    this.cdr.markForCheck();
   }
-  onDateRangeChange(event: any): void {
-   
-    if (event && event.value) 
-    {
-      const {end } = event.value;
-      
-        this.to = new Date(event.value);
+
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        this.to = new Date(dateString);
         this.to.setDate(this.to.getDate() + 1);
-        
-        console.log("this.to: ", this.to);
-        this.loadTransactions();
-  
-    } 
-    else {
-      console.error('Event or event value is null');
+      }
+      
+      console.log("this.to: ", this.to);
+      this.loadTransactions();
+    } else {
+      console.error('End date string is null or empty');
+    }
+    this.cdr.markForCheck();
+  }
+
+  onDateRangeSelected(range: any): void {
+    if (range && range.start && range.end) {
+      // Parse start date as local date
+      const startParts = range.start.split('-');
+      if (startParts.length === 3) {
+        const year = parseInt(startParts[0]);
+        const month = parseInt(startParts[1]) - 1; // Month is 0-based
+        const day = parseInt(startParts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        this.from = new Date(range.start);
+      }
+      
+      // Parse end date as local date
+      const endParts = range.end.split('-');
+      if (endParts.length === 3) {
+        const year = parseInt(endParts[0]);
+        const month = parseInt(endParts[1]) - 1; // Month is 0-based
+        const day = parseInt(endParts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        this.to = new Date(range.end);
+        this.to.setDate(this.to.getDate() + 1);
+      }
+      
+      console.log("Date range selected - from:", this.from, "to:", this.to);
+      this.loadTransactions();
+    } else {
+      console.error('Date range is incomplete');
     }
     this.cdr.markForCheck();
   }

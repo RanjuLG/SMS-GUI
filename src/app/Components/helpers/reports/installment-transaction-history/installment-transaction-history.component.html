@@ -20,41 +20,14 @@
             </div>
           </div>
           <div class="card-body">
-            <div class="table-responsive table-card mt-3 mb-1">
-              <table class="table table-hover">
-                <thead>
-                  <tr class="bg-light text-muted">
-                    <th scope="col">Date</th>
-                    <th scope="col">Invoice No</th>
-                    <th scope="col">Customer NIC</th>
-                    <th scope="col">Principle Amount</th>
-                    <th scope="col">Interest Amount</th>
-                    <th scope="col">Total Amount (Rs.)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let transaction of installmenttransactions | paginate: { itemsPerPage: installmentTransactionsPerPage, currentPage: installmentPage }">
-                    <td>{{ transaction.createdAt | date }}</td>
-                    <td>{{ transaction.invoice.invoiceNo }}</td>
-                    <td>{{ transaction.customer.customerNIC }}</td>
-                    <td>{{ transaction.subTotal }}</td>
-                    <td>{{ transaction.interestAmount }}</td>
-                    <td>{{ transaction.totalAmount }}</td>
-                  </tr>
-                </tbody>
-              </table>
-              <div *ngIf="installmenttransactions.length === 0" class="alert alert-warning">
-                No installment transactions found for the selected month.
-              </div>
-            </div>
-            <div class="d-flex justify-content-between align-items-center mb-3">
-              <select class="form-select" [(ngModel)]="installmentTransactionsPerPage">
-                <option *ngFor="let option of installmentTransactionsPerPageOptions" [value]="option">{{ option }}</option>
-              </select>
-              <span class="entries-info">
-              Showing {{ getInstallmentStartIndex() }} to {{ getInstallmentEndIndex() }} of {{ installmenttransactions.length }} entries
-              </span>
-              <pagination-controls (pageChange)="installmentPage = $event"></pagination-controls>
+            <app-data-table
+              [data]="installmenttransactions"
+              [columns]="tableColumns"
+              title="All Installment Transactions">
+            </app-data-table>
+            
+            <div *ngIf="installmenttransactions.length === 0" class="alert alert-warning">
+              No installment transactions found for the selected month.
             </div>
           </div>
         </div>

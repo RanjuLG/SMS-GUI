@@ -2,7 +2,7 @@ import { Component, Input, Output, EventEmitter, ChangeDetectorRef, ViewChild } 
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
-import { CreateCustomerDto } from '../../../customer-form/customer.model';
+import { CreateCustomerDTO, GetCustomerDTO } from '../../../customer-form/customer.model';
 import { ApiService } from '../../../../Services/api-service.service';
 import { CommonModule } from '@angular/common';
 
@@ -14,11 +14,11 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./add-customer.component.scss']
 })
 export class AddCustomerComponent {
-  @Input() customer: CreateCustomerDto | null = null;
-  @Output() saveCustomer = new EventEmitter<CreateCustomerDto>();
+  @Input() customer: GetCustomerDTO | null = null;
+  @Output() saveCustomer = new EventEmitter<GetCustomerDTO>();
   customerForm: FormGroup;
   nicPhotoFile: File | null = null;  // To store the uploaded NIC file
-
+  nicPhotoUrl: string | null = null;  // To display the current NIC photo URL
   // ViewChild to reference the file input element
   @ViewChild('fileInput') fileInput: any;
   
@@ -32,16 +32,17 @@ export class AddCustomerComponent {
       customerNIC: ['', Validators.required],
       customerName: ['', Validators.required],
       customerAddress: ['', Validators.required],
-      customerContactNo: ['', Validators.required],
+      customerContactNo: [''],
       status: [1, Validators.required],
-       nicPhoto: [null],
-      // Additional Form Controls for file upload if needed
+      nicPhoto: [null],
     });
   }
 
   ngOnInit() {
     if (this.customer) {
       this.customerForm.patchValue(this.customer);
+      // Note: nicPhotoPath property doesn't exist in new DTO, handle photo via API call if needed
+      this.nicPhotoUrl = null;
     }
   }
 
@@ -49,40 +50,24 @@ export class AddCustomerComponent {
   onFileChange(event: any) {
     if (event.target.files && event.target.files.length > 0) {
       this.nicPhotoFile = event.target.files[0];  // Store the selected file
+      this.nicPhotoUrl = null;  // Clear the current photo preview
       this.cdr.detectChanges();  // Trigger change detection to update the view
     }
   }
    // Remove the NIC photo
    removeNicPhoto() {
-    this.nicPhotoFile = null;  // Clear the selected file
-
-    // Reset the file input field
+    this.nicPhotoFile = null;  // Clear the uploaded file
+    this.nicPhotoUrl = null;  // Clear the current photo preview
     if (this.fileInput) {
       this.fileInput.nativeElement.value = '';  // Reset the file input value to null
     }
-
     this.cdr.detectChanges();  // Update the view to reflect the change
   }
 
   onSubmit() {
     if (this.customerForm.valid) {
-      const customerDto: CreateCustomerDto = this.customerForm.value;
-
-      // Create FormData object to send along with file
-              const formData = new FormData();
-        formData.append('customerNIC', customerDto.customerNIC);
-        formData.append('customerName', customerDto.customerName);
-        formData.append('customerAddress', customerDto.customerAddress);
-        formData.append('customerContactNo', customerDto.customerContactNo);
-
-        if (this.nicPhotoFile) {
-          formData.append('nicPhoto', this.nicPhotoFile);  // Append file only if present
-        } else {
-          formData.append('nicPhoto', '');  // Add an empty string or skip this
-        }
-
-
-      // Show confirmation and process the form data
+      const formValues = this.customerForm.value;
+      
       Swal.fire({
         title: 'Save Changes',
         text: 'Are you sure you want to save these changes?',
@@ -93,8 +78,19 @@ export class AddCustomerComponent {
       }).then((result) => {
         if (result.isConfirmed) {
           if (this.customer) {
-            // Edit existing customer
-            this.apiService.updateCustomer(this.customer.customerId, customerDto,this.nicPhotoFile).subscribe({
+            // Update existing customer
+            const updateData: any = {
+              customerNIC: formValues.customerNIC,
+              customerName: formValues.customerName,
+              customerAddress: formValues.customerAddress,
+              customerContactNo: formValues.customerContactNo
+            };
+            
+            if (this.nicPhotoFile) {
+              updateData.customerNICPhoto = this.nicPhotoFile;
+            }
+            
+            this.apiService.updateCustomer(this.customer.customerId, updateData).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
                 this.activeModal.close();
@@ -107,7 +103,15 @@ export class AddCustomerComponent {
             });
           } else {
             // Create new customer
-            this.apiService.createCustomer(customerDto, this.nicPhotoFile).subscribe({
+            const createData: CreateCustomerDTO = {
+              customerNIC: formValues.customerNIC,
+              customerName: formValues.customerName,
+              customerAddress: formValues.customerAddress,
+              customerContactNo: formValues.customerContactNo,
+              customerNICPhoto: this.nicPhotoFile || undefined
+            };
+            
+            this.apiService.createCustomer(createData).subscribe({
               next: (response) => {
                 this.saveCustomer.emit(response);
                 this.activeModal.close();

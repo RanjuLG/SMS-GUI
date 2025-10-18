@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../../../Services/api-service.service'; 
 import { DateService } from '../../../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -14,13 +13,14 @@ import { MatInputModule } from '@angular/material/input';
 import { TransactionReportDto, TransactionType } from '../../../reports/reports.model';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-installment-transaction-history',
   standalone: true,
   imports: [CommonModule, 
     FormsModule, 
-    NgxPaginationModule,
+    DataTableComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatHint,
@@ -37,10 +37,15 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
   transactions: TransactionReportDto[] = [];
   installmenttransactions: TransactionReportDto[] = [];
   
-  transactionsPerPage: number = 5;
-  installmentTransactionsPerPage: number = 5;
-  installmentTransactionsPerPageOptions: number[] = [1, 2, 5, 10];
-  installmentPage: number = 1;
+  tableColumns = [
+    { key: 'createdAt', label: 'Date' },
+    { key: 'invoiceNo', label: 'Invoice No' },
+    { key: 'customerName', label: 'Customer Name' },
+    { key: 'customerNIC', label: 'Customer NIC' },
+    { key: 'subTotal', label: 'Principle Amount' },
+    { key: 'interestAmount', label: 'Interest Amount' },
+    { key: 'totalAmount', label: 'Total Amount' }
+  ];
   
   totalInstallmentAmount: number = 0; // New property to hold total installment amount
 
@@ -51,8 +56,8 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     private cdr: ChangeDetectorRef ) {}
 
   ngOnInit() {
-    this.from.setDate(this.from.getDate() - 30);
-    this.to.setDate(this.to.getDate() + 1);
+    //this.from.setDate(this.from.getDate() - 30);
+    //this.to.setDate(this.to.getDate() + 1);
     this.loadTransactions();
     this.cdr.detectChanges();
   }
@@ -65,7 +70,9 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
             ...transaction,
             createdAt: this.dateService.formatDateTime(transaction.createdAt),
             selected: false,
-            customerNIC: transaction.customer.customerNIC
+            customerNIC: transaction.customer.customerNIC,
+            customerName: transaction.customer.customerName,
+            invoiceNo: transaction.invoice.invoiceNo
           }));
           
         this.addToInstallmentTransactions(filteredTransactions);
@@ -99,30 +106,47 @@ export class InstallmentTransactionHistoryComponent implements OnInit {
     const month = this.from.toLocaleString('default', { month: 'long' });
     
     const exportData = this.installmenttransactions.map(transaction => ({
-      Date: transaction.createdAt,
-      'Invoice No': transaction.invoice.invoiceNo,
-      'Customer NIC': transaction.customer.customerNIC,
-      'Principle Amount': transaction.subTotal,
-      'Interest Amount': transaction.interestAmount,
-      'Total Amount (Rs.)': transaction.totalAmount
+    Date: new Date(transaction.createdAt).toLocaleDateString(),
+    'Invoice No': transaction.invoice.invoiceNo,
+    'Date Generated':new Date(transaction.invoice.dateGenerated).toLocaleDateString(),
+    'Customer Name': transaction.customer.customerName,
+    'Customer NIC': transaction.customer.customerNIC,
+    'Customer Contact No.': transaction.customer.customerContactNo,
+    'Customer Address': transaction.customer.customerAddress,
+    'Principle Amount': transaction.subTotal,
+    'Interest Amount': transaction.interestAmount,
+    'Total Amount (Rs.)': transaction.totalAmount
     }));
 
-    const titleRow = [{ Date: `Installment Transactions Report`, 'Invoice No': year, 'Customer NIC': month }];
-    const headerRow = [{ Date: 'Date', 'Invoice No': 'Invoice No', 'Customer NIC': 'Customer NIC', 'Principle Amount': 'Principle Amount', 'Interest Amount': 'Interest Amount', 'Total Amount (Rs.)': 'Total Amount (Rs.)' }];
+    const titleRow = [{ Date: `Loan Transactions Report`, 'Invoice No': year, 'Date Generated': '',  'Customer Name': '','Customer NIC': '','Customer Contact No.': '','Customer Address': '', 'Principle Amount': '', 'Interest Amount': '', 'Total Amount (Rs.)': '' }];
+  
+    // Add table header row
+    const headerRow = [{
+      Date: 'Date', 
+      'Invoice No': 'Invoice No',
+      'Date Generated': '', 
+      'Customer Name': 'Customer Name', 
+      'Customer NIC': 'Customer NIC',
+      'Customer Contact No.': 'Customer Contact No.',
+      'Customer Address': 'Customer Address', 
+      'Principle Amount': 'Principle Amount', 
+      'Interest Amount': 'Interest Amount', 
+      'Total Amount (Rs.)': 'Total Amount (Rs.)',
+    }];
     const exportDataWithTitleAndHeader = [...titleRow, ...headerRow, ...exportData];
     
     const worksheet = XLSX.utils.json_to_sheet(exportDataWithTitleAndHeader, { skipHeader: true });
     const workbook = { Sheets: { 'Installment Transactions': worksheet }, SheetNames: ['Installment Transactions'] };
     const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
     const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-    saveAs(blob, `Installment_Transactions_${year}-${month}.xlsx`);
-  }
 
-  getInstallmentStartIndex(): number {
-    return (this.installmentPage - 1) * this.installmentTransactionsPerPage + 1;
-  }
-
-  getInstallmentEndIndex(): number {
-    return Math.min(this.installmentPage * this.installmentTransactionsPerPage, this.installmenttransactions.length);
+    const today = new Date();
+    let filename = '';
+    if (year === 2000) {
+      filename = `Installment_Transactions_All-Time_${today.toLocaleDateString()}.xlsx`;
+    } else {
+      filename = `Installment_Transactions_${year}-${month}.xlsx`;
+    }
+    saveAs(blob, filename);
   }
 }

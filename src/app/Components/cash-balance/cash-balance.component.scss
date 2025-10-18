@@ -1,19 +1,26 @@
-/* cash-balance.component.scss */
+/* cash-balance.component.scss - Enhanced Theme Support */
 .table thead th {
-    background-color: #f8f9fa;
-    color: #6c757d;
+    background-color: var(--secondary-bg);
+    color: var(--secondary-text);
+    border-color: var(--border-color);
   }
   
   .table tbody tr.bg-light td {
-    background-color: #f8f9fa;
+    background-color: var(--tertiary-bg);
+    color: var(--primary-text);
     font-weight: bold;
+    border-color: var(--border-color);
   }
   
   .card {
     border-radius: 0.25rem;
-    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    box-shadow: 0 0.125rem 0.25rem var(--light-shadow);
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    color: var(--primary-text);
   }
+  
   h4{
-
     font-size: large;
+    color: var(--primary-text);
   }

@@ -1,51 +1,299 @@
+/* Pricing Component Modern Styling */
+
+/* Root Variables for Consistent Theming */
+:root {
+  --pricing-primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --pricing-success-gradient: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%);
+  --pricing-warning-gradient: linear-gradient(135deg, #f7971e 0%, #ffd200 100%);
+  --pricing-info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  --pricing-danger-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  --pricing-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+  --pricing-shadow-light: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --pricing-border-radius: 20px;
+  --pricing-border-radius-sm: 12px;
+  
+  /* Text colors */
+  --pricing-text-primary: #2d3748;
+  --pricing-text-secondary: #4a5568;
+  --pricing-text-light: rgba(255, 255, 255, 0.95);
+  
+  /* Background colors */
+  --pricing-bg: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --pricing-card-bg: rgba(255, 255, 255, 0.95);
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] {
+  --pricing-shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.4);
+  --pricing-shadow-light: 0 8px 24px rgba(0, 0, 0, 0.2);
+  
+  /* Dark mode backgrounds */
+  --pricing-bg: linear-gradient(135deg, #0f1419 0%, #1a1f29 100%);
+  --pricing-card-bg: rgba(26, 32, 44, 0.95);
+  
+  /* Dark mode text */
+  --pricing-text-primary: #f7fafc;
+  --pricing-text-secondary: #e2e8f0;
+  
+  /* Adjust gradients for dark theme */
+  --pricing-success-gradient: linear-gradient(135deg, #4a9428 0%, #96d4bd 100%);
+  --pricing-info-gradient: linear-gradient(135deg, #3d8bec 0%, #00d9ec 100%);
+  --pricing-danger-gradient: linear-gradient(135deg, #de81e9 0%, #e34a5a 100%);
+}
+
+/* Main Container */
+.container-fluid {
+  background: var(--pricing-bg);
+  min-height: 100vh;
+  padding: 1.5rem;
+  transition: background 0.3s ease;
+}
+
+/* Modern Card Styling */
 .card {
-  border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  background: var(--pricing-card-bg);
+  border-radius: var(--pricing-border-radius);
+  box-shadow: var(--pricing-shadow-light);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  position: relative;
+  overflow: hidden;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--pricing-primary-gradient);
+    transition: height 0.3s ease;
+  }
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--pricing-shadow-hover);
+    
+    &::before {
+      height: 6px;
+    }
+  }
+}
+
+.card-body {
+  padding: 2rem;
+  position: relative;
 }
 
 .card-title {
-  font-size: 1.25rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--pricing-text-primary);
+  margin-bottom: 1rem;
+  transition: color 0.3s ease;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-label {
   font-weight: 500;
+  color: var(--pricing-text-primary);
+  margin-bottom: 0.5rem;
+  transition: color 0.3s ease;
 }
 
-.table thead th {
-  background-color: #f8f9fa;
-  color: #6c757d;
+.form-control {
+  border-radius: var(--pricing-border-radius-sm);
+  border: 2px solid transparent;
+  background: var(--pricing-card-bg);
+  color: var(--pricing-text-primary);
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: linear-gradient(white, white) padding-box,
+                var(--pricing-primary-gradient) border-box;
+  }
+  
+  &::placeholder {
+    color: var(--pricing-text-secondary);
+    opacity: 0.7;
+  }
 }
 
-.table tbody tr:hover {
-  background-color: #f1f3f5;
-}
-
+/* Button Styling - Simplified for consistency with PageHeader */
 .btn {
-  font-size: 0.875rem;
+  border-radius: var(--pricing-border-radius-sm);
   font-weight: 500;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  position: relative;
+  
+  i {
+    margin-right: 0.5rem;
+  }
+}
+
+.btn-primary {
+  background: var(--pricing-primary-gradient);
+  color: white;
+}
+
+.btn-success {
+  background: var(--pricing-success-gradient);
+  color: white;
+}
+
+.btn-info {
+  background: var(--pricing-info-gradient);
+  color: white;
+}
+
+.btn-danger {
+  background: var(--pricing-danger-gradient);
+  color: white;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Table Enhancements */
+.table {
+  background: transparent;
+  
+  thead th {
+    background: var(--pricing-primary-gradient);
+    color: white;
+    border: none;
+    font-weight: 500;
+    padding: 1rem;
+    position: relative;
+    
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    }
+  }
+  
+  tbody tr {
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+      transform: scale(1.005);
+    }
+    
+    td {
+      padding: 1rem;
+      border-color: rgba(255, 255, 255, 0.1);
+      color: var(--pricing-text-primary);
+      transition: color 0.3s ease;
+    }
+  }
+}
+
+/* Search Controls */
+.search-karat {
+  width: 300px;
+  max-width: 100%;
 }
 
 .form-select {
-  max-width: 100px;
-}
-.search-karat {
-  width: 225px; /* Set width independently */
+  border-radius: var(--pricing-border-radius-sm);
+  border: 2px solid transparent;
+  background: var(--pricing-card-bg);
+  color: var(--pricing-text-primary);
+  transition: all 0.3s ease;
+  
+  &:focus {
+    border-color: transparent;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    background: linear-gradient(white, white) padding-box,
+                var(--pricing-primary-gradient) border-box;
+  }
 }
 
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+/* Responsive Design */
 @media (max-width: 576px) {
-  .table-responsive {
-      overflow-x: scroll;
+  .container-fluid {
+    padding: 1rem;
   }
-
-  .card-header .btn {
-      width: 100%; /* Buttons take full width on mobile */
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    
+    .btn {
+      width: 100%;
       margin-bottom: 0.5rem;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
   }
-
-  .d-flex {
-      flex-direction: column; /* Buttons stack vertically on small screens */
+  
+  .search-karat {
+    width: 100%;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+    border-radius: var(--pricing-border-radius-sm);
   }
 }
 
 @media (min-width: 768px) {
   .form-select {
-      max-width: 150px;
+    max-width: 200px;
+  }
+  
+  .header-actions {
+    flex-direction: row;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-fluid {
+    padding: 2rem;
   }
 }

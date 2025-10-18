@@ -1,222 +1,710 @@
-aside.sidebar {
-    width: 250px;
-    background-color: #4360ac;
-    color: white;
-    transition: width 0.3s ease;
-    height: 100vh; /* Ensure the sidebar takes up the full viewport height */
-    overflow-y: auto; /* Enable scrolling when the content overflows */
-    overflow-x: hidden;
-    &.collapsed {
-        width: 60px;
+.modern-sidebar {
+  position: relative;
+  width: 80px;
+  height: 100vh;
+  background: var(--sidebar-bg);
+  color: var(--primary-text);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  box-shadow: 2px 0 10px var(--shadow);
+  z-index: 1000;
+  border-right: 1px solid var(--border-color);
 
-        .nav-link {
-            padding: 10px;
-            justify-content: center;
-            width: 60px;
-        }
+  // Enhanced mobile responsiveness
+  @media (max-width: 991.98px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--mobile-sidebar-width);
+    z-index: 1050;
+    transform: translateX(-100%);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+    
+    // Optimize for mobile performance
+    will-change: transform;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+    perspective: 1000px;
+    
+    // Prevent text selection and callouts on mobile
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    
+    // Ensure smooth animations
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
 
-        .nav-link:hover {
-            background-color: #ffffff33;
-            width: auto;
-        }
-
-        .nav-link i {
-            margin-right: 0;
-        }
+    &.expanded {
+      -webkit-transform: translateX(0);
+      -moz-transform: translateX(0);
+      -ms-transform: translateX(0);
+      transform: translateX(0);
+      width: var(--mobile-sidebar-width);
     }
+  }
 
-    .sidebar-logo {
-        height: 80px;
-        transition: opacity 0.3s ease;
-        opacity: 1;
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    width: var(--tablet-sidebar-width);
+
+    &.expanded {
+      width: var(--tablet-sidebar-width);
     }
+  }
 
-    .collapsed .sidebar-logo {
-        opacity: 0;
+  @media (min-width: 992px) {
+    position: relative;
+    transform: translateX(0);
+    width: 80px;
+
+    &.expanded {
+      width: 260px;
     }
+  }
 
-    .icon-large {
-        font-size: 1.1rem;
-    }
-
-    .toggle-btn-wrapper {
-        flex-grow: 1;
-        display: flex;
-        align-items: start;
-        height: 40px;
-    }
-
-    .collapsed .toggle-btn-wrapper {
-        align-items: start;
-    }
-
-    .toggle-btn-wrapper {
-        justify-content: flex-end;
-    }
-
-    .toggle-btn {
-        padding: 10px;
-        background-color: transparent;
-        border-radius: 5px;
+  // Light theme styling
+  &:not([data-theme="dark"]) {
+    background: var(--sidebar-bg);
+    color: var(--primary-text);
+    
+    .nav-link, .nav-toggle {
+      color: var(--primary-text);
+      
+      &:hover {
+        background: var(--tertiary-bg);
+        color: var(--primary-text);
+      }
+      
+      &.active {
+        background: var(--brand-primary);
         color: white;
-        transition: background-color 0.3s;
-        box-shadow: none;
-
-        &:hover {
-            background-color: #ffffff66;
-        }
+        border-right: 3px solid var(--brand-primary);
+      }
     }
-
-    .nav-link {
-        color: white;
-        display: flex;
-        align-items: center;
-        padding: 10px;
-        margin-top: 7px; /* Add space above the nav-link */
-        margin-bottom: 7px; /* Add space below the nav-link */
-        transition: background-color 0.3s, padding 0.3s, box-shadow 0.3s;
-        border-radius: 20px 0 0 20px; /* Rounded on the left and straight on the right */
-         margin-left: 3px; /* Adjust spacing as needed */
+    
+    .sidebar-header {
+      border-bottom: 1px solid var(--border-color);
+      
+      .sidebar-toggle-btn {
+        background: var(--tertiary-bg);
+        color: var(--primary-text);
         
-        i {
-            color: white;
-            transition: color 0.3s;
-            margin-right: 10px;
+        &:hover {
+          background: var(--brand-primary);
+          color: white;
         }
+      }
+    }
+    
+    .sidebar-footer, .sidebar-footer-compact {
+      border-top: 1px solid var(--border-color);
+      
+      .user-section {
+        background: var(--tertiary-bg);
+      }
+      
+      .logout-btn, .logout-btn-compact {
+        background: var(--tertiary-bg);
+        border: 1px solid var(--border-color);
+        color: var(--primary-text);
+        
+        &:hover {
+          background: var(--brand-danger);
+          color: white;
+        }
+      }
+    }
+  }
 
-        &:hover, &.active-link {
-            background-color: white;
-            color: #4360ac;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1); /* Adds depth on hover or active */
+  // Dark theme styling
+  &[data-theme="dark"] {
+    background: var(--sidebar-bg);
+    color: var(--primary-text);
+    
+    .nav-link, .nav-toggle {
+      color: var(--primary-text);
+      
+      &:hover {
+        background: var(--tertiary-bg);
+        color: var(--primary-text);
+      }
+      
+      &.active {
+        background: var(--brand-primary);
+        color: white;
+        border-right: 3px solid var(--brand-primary);
+      }
+    }
+    
+    .sidebar-header {
+      border-bottom: 1px solid var(--border-color);
+      
+      .sidebar-toggle-btn {
+        background: var(--tertiary-bg);
+        color: var(--primary-text);
+        
+        &:hover {
+          background: var(--brand-primary);
+          color: white;
+        }
+      }
+    }
+    
+    .sidebar-footer, .sidebar-footer-compact {
+      border-top: 1px solid var(--border-color);
+      
+      .user-section {
+        background: var(--tertiary-bg);
+      }
+      
+      .logout-btn, .logout-btn-compact {
+        background: var(--tertiary-bg);
+        border: 1px solid var(--border-color);
+        color: var(--primary-text);
+        
+        &:hover {
+          background: var(--brand-danger);
+          color: white;
+        }
+      }
+    }
+  }
 
-            i {
-                color: #4360ac; /* Icon color turns blue on hover or active */
+  // Sidebar Header with mobile optimization
+  .sidebar-header {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--mobile-header-height);
+
+    @media (min-width: 768px) {
+      min-height: var(--tablet-header-height);
+      padding: 1.25rem 1rem;
+    }
+
+    @media (min-width: 992px) {
+      min-height: var(--desktop-header-height);
+      padding: 1.5rem 1rem;
+    }
+
+    .logo-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      opacity: 1;
+      animation: fadeIn 0.3s ease;
+
+      .logo {
+        width: 36px;
+        height: 36px;
+        border-radius: 8px;
+        object-fit: cover;
+
+        @media (min-width: 768px) {
+          width: 40px;
+          height: 40px;
+        }
+      }
+
+      .logo-text {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--primary-text);
+        white-space: nowrap;
+
+        @media (min-width: 768px) {
+          font-size: 1.25rem;
+        }
+      }
+    }
+
+    .sidebar-toggle-btn {
+      background: var(--tertiary-bg);
+      border: none;
+      color: var(--primary-text);
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1.1rem;
+
+      @media (min-width: 768px) {
+        font-size: 1.2rem;
+      }
+
+      &:hover {
+        background: var(--brand-primary);
+        color: white;
+        transform: scale(1.05);
+      }
+
+      &:focus {
+        outline: 2px solid var(--brand-primary);
+        outline-offset: 2px;
+      }
+
+      // Touch feedback for mobile
+      @media (max-width: 767.98px) {
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+
+  // Navigation with mobile optimization
+  .sidebar-nav {
+    flex: 1;
+    padding: 0.5rem 0;
+    overflow-y: auto;
+    height: calc(100vh - var(--mobile-header-height) - 120px);
+
+    @media (min-width: 768px) {
+      padding: 1rem 0;
+      height: calc(100vh - var(--tablet-header-height) - 130px);
+    }
+
+    @media (min-width: 992px) {
+      height: calc(100vh - var(--desktop-header-height) - 140px);
+    }
+
+    .nav-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-item {
+      margin-bottom: 0.125rem;
+
+      @media (min-width: 768px) {
+        margin-bottom: 0.25rem;
+      }
+    }
+
+    .nav-link,
+    .nav-toggle {
+      display: flex;
+      align-items: center;
+      padding: 1rem;
+      color: var(--primary-text);
+      text-decoration: none;
+      transition: all 0.2s ease;
+      border: none;
+      background: none;
+      width: 100%;
+      cursor: pointer;
+      position: relative;
+      min-height: var(--touch-target-min);
+      font-size: 0.875rem;
+
+      @media (min-width: 768px) {
+        padding: 0.875rem 1rem;
+        font-size: 0.9rem;
+      }
+
+      &:hover {
+        background: var(--tertiary-bg);
+        color: var(--primary-text);
+        
+        @media (min-width: 992px) {
+          transform: translateX(4px);
+        }
+      }
+
+      &.active {
+        background: var(--brand-primary);
+        color: white;
+        border-right: 3px solid var(--brand-primary);
+
+        &::before {
+          content: '';
+          position: absolute;
+          left: 0;
+          top: 0;
+          height: 100%;
+          width: 4px;
+          background: var(--brand-primary);
+        }
+      }
+
+      // Touch feedback for mobile
+      @media (max-width: 767.98px) {
+        &:active {
+          background: var(--tertiary-bg);
+          transform: scale(0.98);
+        }
+      }
+
+      .nav-icon {
+        font-size: 1.125rem;
+        min-width: 24px;
+        text-align: center;
+
+        @media (min-width: 768px) {
+          font-size: 1.25rem;
+        }
+      }
+
+      .nav-label {
+        margin-left: 0.875rem;
+        font-weight: 500;
+        white-space: nowrap;
+        opacity: 1;
+        animation: fadeIn 0.3s ease;
+
+        @media (min-width: 768px) {
+          margin-left: 1rem;
+        }
+      }
+
+      .nav-arrow {
+        margin-left: auto;
+        font-size: 0.875rem;
+        transition: transform 0.2s ease;
+
+        @media (min-width: 768px) {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    // Submenu with mobile optimization
+    .nav-submenu {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: var(--secondary-bg);
+
+      &.expanded {
+        max-height: 400px;
+      }
+
+      .nav-subitem {
+        .nav-sublink {
+          display: flex;
+          align-items: center;
+          padding: 0.875rem 1rem 0.875rem 2.5rem;
+          color: var(--secondary-text);
+          text-decoration: none;
+          transition: all 0.2s ease;
+          font-size: 0.8rem;
+          min-height: var(--touch-target-min);
+
+          @media (min-width: 768px) {
+            padding: 0.75rem 1rem 0.75rem 3rem;
+            font-size: 0.9rem;
+          }
+
+          &:hover {
+            background: var(--tertiary-bg);
+            color: var(--primary-text);
+            
+            @media (min-width: 768px) {
+              padding-left: 3.5rem;
             }
+          }
+
+          &.active {
+            background: var(--brand-primary);
+            color: white;
+          }
+
+          // Touch feedback for mobile
+          @media (max-width: 767.98px) {
+            &:active {
+              background: var(--tertiary-bg);
+              transform: scale(0.98);
+            }
+          }
+
+          .nav-subicon {
+            font-size: 0.9rem;
+            min-width: 18px;
+
+            @media (min-width: 768px) {
+              font-size: 1rem;
+              min-width: 20px;
+            }
+          }
+
+          .nav-sublabel {
+            margin-left: 0.5rem;
+            white-space: nowrap;
+
+            @media (min-width: 768px) {
+              margin-left: 0.75rem;
+            }
+          }
         }
+      }
     }
+  }
 
-    .collapsed .nav-link i {
-        margin-right: 0;
+  // Collapsed state styles for desktop
+  @media (min-width: 992px) {
+    &:not(.expanded) {
+      .nav-link {
+        justify-content: center;
+        padding: 0.875rem;
+
+        .nav-label,
+        .nav-arrow {
+          display: none;
+        }
+      }
     }
+  }
 
-    .nested-items {
-        list-style: none;
-        padding-left: 20px;
-    }
+  // Sidebar Footer with mobile optimization
+  .sidebar-footer {
+    padding: 0.75rem;
+    border-top: 1px solid var(--border-color);
+    animation: fadeIn 0.3s ease;
 
-    .user-logo {
-        width: 30px;
-        height: 30px;
+    @media (min-width: 768px) {
+      padding: 1rem;
     }
 
     .user-section {
-        position: relative;
-        bottom: 0;
-        right: 0;
-        width: 100%;
-        padding: 10px;
-        display: flex;
-        justify-content: flex-start;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+      padding: 0.625rem;
+      background: var(--tertiary-bg);
+      border-radius: 12px;
+
+      @media (min-width: 768px) {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+      }
+
+      .user-avatar {
+        .avatar-img {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          object-fit: cover;
+          border: 2px solid var(--border-color);
+
+          @media (min-width: 768px) {
+            width: 40px;
+            height: 40px;
+          }
+        }
+      }
+
+      .user-info {
+        .user-name {
+          font-weight: 600;
+          font-size: 0.8rem;
+          color: var(--primary-text);
+          line-height: 1.2;
+
+          @media (min-width: 768px) {
+            font-size: 0.9rem;
+          }
+        }
+
+        .user-role {
+          font-size: 0.7rem;
+          color: var(--secondary-text);
+          line-height: 1.2;
+
+          @media (min-width: 768px) {
+            font-size: 0.75rem;
+          }
+        }
+      }
     }
 
-    .user-section img {
-        position: static;
+    .logout-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      width: 100%;
+      padding: 0.875rem;
+      background: var(--tertiary-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--primary-text);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: var(--touch-target-min);
+
+      @media (min-width: 768px) {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+      }
+
+      &:hover {
+        background: var(--brand-danger);
+        color: white;
+        transform: translateY(-1px);
+      }
+
+      &:focus {
+        outline: 2px solid var(--brand-primary);
+        outline-offset: 2px;
+      }
+
+      // Touch feedback for mobile
+      @media (max-width: 767.98px) {
+        &:active {
+          transform: scale(0.98);
+        }
+      }
+
+      i {
+        font-size: 1rem;
+
+        @media (min-width: 768px) {
+          font-size: 1.1rem;
+        }
+      }
     }
+  }
 
-    .btn:hover {
-        background-color: #ffffff33;
-    }
-
-    body.dark-mode {
-        background-color: #333;
-    }
-
-    .nav-link.active-link {
-        background-color: white;
-        color: #4360ac;
-    }
-}
-
-
-/* Customize the tooltip container */
-.tooltip {
-    background-color: transparent;
-    opacity: 0.9;
-}
-
-.tooltip .tooltip-inner {
-    background-color: #4360ac;
-    color: #ffffff;
-    padding: 10px 14px;
-    font-size: 0.9rem;
-    font-family: 'Poppins', sans-serif;
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.tooltip .tooltip-arrow {
-    border-top-color: #4360ac;
-    width: 1rem;
-    height: 1rem;
-}
-
-.tooltip.show {
-    opacity: 1;
-    transition: opacity 0.3s ease, transform 0.3s ease;
-    transform: translateY(0);
-}
-
-.sign-out-btn {
-    color: white;
-    background-color: transparent;
-    border: none;
+  .sidebar-footer-compact {
+    padding: 0.75rem;
+    border-top: 1px solid var(--border-color);
     display: flex;
-    align-items: center;
+    justify-content: center;
+
+    @media (min-width: 768px) {
+      padding: 1rem;
+    }
+
+    .logout-btn-compact {
+      background: var(--tertiary-bg);
+      border: none;
+      color: var(--primary-text);
+      width: var(--touch-target-min);
+      height: var(--touch-target-min);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 1rem;
+
+      @media (min-width: 768px) {
+        font-size: 1.1rem;
+      }
+
+      &:hover {
+        background: var(--brand-danger);
+        color: white;
+        transform: scale(1.05);
+      }
+
+      &:focus {
+        outline: 2px solid var(--brand-primary);
+        outline-offset: 2px;
+      }
+
+      // Touch feedback for mobile
+      @media (max-width: 767.98px) {
+        &:active {
+          transform: scale(0.95);
+        }
+      }
+    }
+  }
+
+  // Animations
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  // Custom Scrollbar with mobile support
+  .sidebar-nav {
+    &::-webkit-scrollbar {
+      width: 4px;
+
+      @media (min-width: 768px) {
+        width: 6px;
+      }
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+
+      &:hover {
+        background: var(--secondary-text);
+      }
+    }
+  }
+
+  // Enhanced mobile pull-to-refresh prevention
+  @media (max-width: 767.98px) {
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
+  }
 }
 
-.collapsed .sign-out-btn span {
-    display: none;
+// Tooltip styles for collapsed state (desktop only)
+@media (min-width: 992px) {
+  .tooltip {
+    z-index: 1060;
+
+    .tooltip-inner {
+      background: var(--primary-text);
+      color: var(--primary-bg);
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px var(--shadow);
+    }
+
+    &.bs-tooltip-end .tooltip-arrow::before {
+      border-right-color: var(--primary-text);
+    }
+  }
 }
 
-.collapsed .sign-out-btn:hover span {
-    display: inline-block;
-    background-color: #ffffff33;
-    border-radius: 5px;
-    padding: 0 10px;
-}
+// Mobile-specific accessibility improvements
+@media (max-width: 767.98px) {
+  .modern-sidebar {
+    // Ensure touch targets are large enough
+    .nav-link,
+    .nav-toggle,
+    .nav-sublink,
+    .sidebar-toggle-btn,
+    .logout-btn,
+    .logout-btn-compact {
+      min-height: 48px; // WCAG AA compliant touch target size
+    }
 
-
-/* WebKit browsers (Chrome, Edge, Safari) */
-aside.sidebar {
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: #888 #4360ac; /* Firefox */
-}
-
-/* Scrollbar track (background) */
-aside.sidebar::-webkit-scrollbar {
-    width: 8px; /* Adjust the scrollbar width */
-}
-
-/* Scrollbar track (background) */
-aside.sidebar::-webkit-scrollbar-track {
-    background-color: #4360ac; /* Same as the sidebar background */
-    border-radius: 10px; /* Rounded track corners */
-}
-
-/* Scrollbar handle (thumb) */
-aside.sidebar::-webkit-scrollbar-thumb {
-    background-color: #ffffff; /* Customize the color */
-    border-radius: 10px; /* Rounded scrollbar corners */
-    border: 2px solid #4360ac; /* Adds spacing between the thumb and track */
-}
-
-/* Scrollbar handle on hover */
-aside.sidebar::-webkit-scrollbar-thumb:hover {
-    background-color: #ffffff; /* Darker on hover */
-}
-
-/* Customizing the scrollbar in Firefox */
-aside.sidebar {
-    scrollbar-width: thin; /* Thin scrollbar */
-    scrollbar-color: #ffffff #4360ac; /* Thumb color and background */
+    // Improve focus visibility on mobile
+    button:focus,
+    a:focus {
+      outline: 3px solid var(--brand-primary);
+      outline-offset: 2px;
+    }
+  }
 }

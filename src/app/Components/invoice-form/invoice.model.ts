@@ -7,6 +7,7 @@ export interface Invoice {
     customerNIC: string;
     contactNo: string;
     itemDescription: string;
+    itemRemarks: string;
     amount: number;
     dateGenerated: string;
     paymentStatus: boolean;
@@ -27,6 +28,7 @@ export interface InvoiceDto {
     customerNIC: string;
     contactNo: string;
     itemDescription: string;
+    itemRemarks: string;
     amount: number;
     dateGenerated: string;
     paymentStatus: boolean;
@@ -61,6 +63,7 @@ export interface InvoiceDto_ {
     customerNIC: string;
     contactNo: string;
     itemDescription: string;
+    itemRemarks: string;
     amount: number;
     dateGenerated: string;
     paymentStatus: boolean;
@@ -72,7 +75,9 @@ export interface InvoiceDto_ {
     loanPeriod: number;
 }
 export interface Item {
+    [x: string]: any;
     itemDescription: string;
+    itemRemarks: string;
     itemId:number;
     itemCaratage: number;
     itemWeight: number;
@@ -123,6 +128,7 @@ export interface UpdateInvoiceDto {
     customerNIC: string;
     contactNo: string;
     itemDescription: string;
+    itemRemarks: string;
     amount: number;
     dateGenerated: string;
     paymentStatus: boolean;

@@ -1,20 +1,39 @@
-<div class="main-layout d-flex">
-  <div *ngIf="isLoggedIn" class="sidebar-container">
-    <app-sidebar></app-sidebar>
+<div class="app-layout" [class.cashier-mode]="isCashierMode">
+  <!-- Mobile Sidebar Overlay -->
+  <div *ngIf="isLoggedIn && !isCashierMode" 
+       class="sidebar-overlay" 
+       [class.show]="sidebarExpanded"
+       (click)="closeMobileSidebar()"
+       (touchstart)="closeMobileSidebar()"></div>
+
+  <!-- Sidebar -->
+  <div *ngIf="isLoggedIn && !isCashierMode" class="sidebar-wrapper" [class.sidebar-expanded]="sidebarExpanded">
+    <app-sidebar (sidebarToggle)="onSidebarToggle($event)"></app-sidebar>
   </div>
 
-  <!-- Place the navbar outside the sidebar for a more structured layout -->
-  <div class="content-container flex-fill d-flex flex-column">
-    <div class="nav-bar-wrapper" *ngIf="isLoggedIn">
-      <app-nav-bar></app-nav-bar>
+  <!-- Main Content Area -->
+  <div class="main-content" [class.content-expanded]="!isLoggedIn || !sidebarExpanded || isCashierMode">
+    <!-- Top Navigation -->
+    <header *ngIf="isLoggedIn" class="topbar">
+      <app-nav-bar 
+        [sidebarExpanded]="sidebarExpanded"
+        (sidebarToggle)="onSidebarToggle($event)">
+      </app-nav-bar>
+    </header>
 
-    </div>
+    <!-- Page Content -->
+    <main class="page-content">
+      <div class="container-fluid">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
 
-    <div class="content flex-grow-1 p-4">
-      <router-outlet></router-outlet>
-    </div>
-
-    <!-- Footer fixed at the bottom with flex-shrink-0 -->
-    <app-footer class="footer flex-shrink-0"></app-footer>
+    <!-- Footer -->
+    <footer class="app-footer">
+      <app-footer></app-footer>
+    </footer>
   </div>
+
+  <!-- Loading Overlay -->
+  <app-loading-spinner [show]="isLoading" [message]="loadingMessage"></app-loading-spinner>
 </div>

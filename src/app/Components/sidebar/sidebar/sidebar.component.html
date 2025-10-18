@@ -1,85 +1,99 @@
-<aside [ngClass]="{'collapsed': !expanded}" class="sidebar d-flex flex-column vh-100">
-    <div class="p-4 mb-4 d-flex align-items-center">
-        <!--  
-        <img src="GoldCashLogo.png" alt="Gold Cash" class="sidebar-logo" *ngIf="expanded"> -->
-
-        <!-- Toggle Button (Center Aligned) -->
-        <div class="toggle-btn-wrapper ">
-            <button class="btn toggle-btn" (click)="toggleSidebar()">
-                <i *ngIf="!expanded" class="ri-menu-line" ></i> <!-- Menu icon -->
-                <i *ngIf="expanded" class="ri-close-line"></i> <!-- Close icon -->
-            </button>
+<aside class="modern-sidebar" [class.expanded]="expanded" (click)="$event.stopPropagation()">
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+        <div class="logo-container" *ngIf="expanded">
+            <img src="GoldCashLogo.png" alt="Gold Cash" class="logo">
+            <span class="logo-text">Gold Cash</span>
         </div>
-    </div>
-
-    <ul class="nav flex-column flex-1 pl-4">
         
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/overview" routerLinkActive="active-link" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Home">
-                <i class="ri-home-2-line icon-large"></i>
-                <span *ngIf="expanded">Home</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/invoices" routerLinkActive="active-link" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Invoice">
-                <i class="ri-article-line icon-large"></i>
-                <span *ngIf="expanded">Invoice</span>
-            </a>
-            <ul *ngIf="expanded" class="nested-items">
-                <li><a class="nav-link" routerLink="/create-invoice" routerLinkActive="active-link"><i
-                            class="ri-sticky-note-add-line icon-large"></i>Create Invoice</a></li>
-            </ul>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/customers" routerLinkActive="active-link" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Customers">
-                <i class="ri-user-3-line icon-large"></i>
-                <span *ngIf="expanded">Customers</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/items" routerLinkActive="active-link" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Inventory">
-                <i class="ri-archive-line icon-large"></i>
-                <span *ngIf="expanded">Inventory</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" routerLink="/reports" routerLinkActive="active-link" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Reports">
-                <i class="ri-file-chart-line icon-large"></i>
-                <span *ngIf="expanded">Reports</span>
-            </a>
-        </li>
-
-        <li class="nav-item">
-            <a class="nav-link" (click)="expandSidebar()" routerLinkActive="active-link" data-bs-toggle="tooltip"
-                data-bs-placement="right" data-bs-original-title="Configuration">
-                <i class="ri-tools-line icon-large"></i>
-                <span *ngIf="expanded">Configuration</span>
-            </a>
-            <ul *ngIf="expanded" class="nested-items">
-                <li><a class="nav-link" routerLink="/config/pricings" routerLinkActive="active-link" ><i
-                            class="ri-price-tag-3-line icon-large"></i>Pricings</a></li>
-                <li><a class="nav-link" routerLink="/config/users" routerLinkActive="active-link"><i
-                            class="ri-shield-user-line icon-large"></i>Users</a></li>
-            </ul>
-        </li>
-    </ul>
-<!--
-    <div class="d-flex ms-auto align-items-center p-3 user-section">
-        <img src="nav-bar/user-logo.png" alt="User Image" class="rounded-circle me-2 user-logo" (click)="expandSidebar()">
-        <button class="btn sign-out-btn" (click)="signOut()">
-            <i class="ri-logout-box-line"></i>
-            <span class="ms-2" *ngIf="expanded">Sign Out</span>
+        <button class="sidebar-toggle-btn" (click)="toggleSidebar()" 
+                [attr.aria-label]="expanded ? 'Collapse sidebar' : 'Expand sidebar'">
+            <i [class]="expanded ? 'ri-menu-fold-line' : 'ri-menu-unfold-line'"></i>
         </button>
     </div>
-    -->
+
+    <!-- Navigation Menu -->
+    <nav class="sidebar-nav">
+        <ul class="nav-list">
+            <li *ngFor="let item of currentMenuItems" class="nav-item">
+                <!-- Menu item without children -->
+                <a *ngIf="!item.children" 
+                   [routerLink]="item.route" 
+                   routerLinkActive="active"
+                   class="nav-link"
+                   [attr.title]="!expanded ? item.label : null">
+                    <i [class]="item.icon + ' nav-icon'"></i>
+                    <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+                </a>
+
+                <!-- Menu item with children -->
+                <div *ngIf="item.children" class="nav-group">
+                    <!-- If parent has a route, make it clickable -->
+                    <a *ngIf="item.route" 
+                       [routerLink]="item.route" 
+                       routerLinkActive="active"
+                       class="nav-link nav-toggle" 
+                       [attr.title]="!expanded ? item.label : null">
+                        <i [class]="item.icon + ' nav-icon'"></i>
+                        <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+                        <i *ngIf="expanded" 
+                           [class]="isMenuExpanded(item.label) ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'" 
+                           class="nav-arrow"
+                           (click)="$event.preventDefault(); $event.stopPropagation(); toggleMenu(item.label)"></i>
+                    </a>
+                    <!-- If parent has no route, use button -->
+                    <button *ngIf="!item.route"
+                            class="nav-link nav-toggle" 
+                            (click)="expanded ? toggleMenu(item.label) : expandSidebar()"
+                            [attr.title]="!expanded ? item.label : null">
+                        <i [class]="item.icon + ' nav-icon'"></i>
+                        <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+                        <i *ngIf="expanded" 
+                           [class]="isMenuExpanded(item.label) ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'" 
+                           class="nav-arrow"></i>
+                    </button>
+
+                    <!-- Submenu -->
+                    <ul class="nav-submenu" 
+                        [class.expanded]="expanded && isMenuExpanded(item.label)"
+                        *ngIf="expanded">
+                        <li *ngFor="let child of item.children" class="nav-subitem">
+                            <a [routerLink]="child.route" 
+                               routerLinkActive="active"
+                               class="nav-sublink">
+                                <i [class]="child.icon + ' nav-subicon'"></i>
+                                <span class="nav-sublabel">{{ child.label }}</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer" *ngIf="expanded">
+        <div class="user-section">
+            <div class="user-avatar">
+                <img src="nav-bar/user-logo.png" alt="User" class="avatar-img">
+            </div>
+            <div class="user-info">
+                <div class="user-name">Current User</div>
+                <div class="user-role">Administrator</div>
+            </div>
+        </div>
+        
+        <button class="logout-btn" (click)="signOut()" title="Sign Out">
+            <i class="ri-logout-box-line"></i>
+            <span>Sign Out</span>
+        </button>
+    </div>
+
+    <!-- Compact footer for collapsed state -->
+    <div class="sidebar-footer-compact" *ngIf="!expanded">
+        <button class="logout-btn-compact" (click)="signOut()" title="Sign Out">
+            <i class="ri-logout-box-line"></i>
+        </button>
+    </div>
 </aside>
 

@@ -24,13 +24,19 @@ import { ReportByCustomerComponent } from './Components/helpers/reports/report-b
 import { SettlementInvoiceTemplateComponent } from './Components/helpers/invoices/settlement-invoice-template/settlement-invoice-template.component';
 import { DashboardComponent } from './Components/dashboard/dashboard.component';
 import { IncomeReportComponent } from './Components/helpers/reports/income-report/income-report.component';
+import { ProfileComponent } from './Components/profile/profile.component';
+import { UnifiedTransactionHistoryComponent } from './Components/unified-transaction-history/unified-transaction-history.component';
+import { CashierDashboardComponent } from './Components/cashier-dashboard/cashier-dashboard.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
+    { path: 'cashier', component: CashierDashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier', isCashierMode: true } },
     { path: 'overview', component: OverviewComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
+    { path: 'profile', component: ProfileComponent }, // Safe route for logged-in users without full permissions
     { path: 'customers', component: CustomerFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'items',component: ItemFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    { path: 'transaction-history', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'transaction-history', component: UnifiedTransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'transaction-history-legacy', component: TransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path: 'invoices',component: InvoiceFormComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
    // { path: 'create-initial-invoice', component: CreateInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
    // { path: 'create-installment-invoice', component: CreateInstallmentPaymentInvoiceComponent, canActivate: [AuthGuard], data: { role: 'Cashier' } },
@@ -44,11 +50,11 @@ export const routes: Routes = [
     { path: 'config/users', component: UserManagementComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
     { path: 'unauthorized', component: UnauthorizedComponent },
     { path: 'auth/sign-up', component: SignUpComponent, canActivate: [AuthGuard], data: { role: 'Admin' } },
-    {path:'customers/create-customer',component: AddCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    // Note: AddCustomerComponent is now used as a modal, not a route
+    // {path:'customers/create-customer',component: AddCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'config/pricings',component: KaratValueComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports',component: ReportsComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-    {path:'reports/transactions',component: IncomeReportComponent, canActivate: [AuthGuard], data: { role: 'Admin' }},
+    {path:'reports/transactions',component: UnifiedTransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'create-invoice',component: DashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
-
 ];

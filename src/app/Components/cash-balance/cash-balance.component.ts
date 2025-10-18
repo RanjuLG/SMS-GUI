@@ -4,7 +4,8 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { CreateBalanceComponent } from '../helpers/cash-balance/create-balance/create-balance.component';
 import { FormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
+import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
 
 interface Balance {
   date: string;
@@ -16,7 +17,7 @@ interface Balance {
 @Component({
   selector: 'app-cash-balance',
   standalone: true,
-  imports: [CommonModule, FormsModule,NgxPaginationModule],
+  imports: [CommonModule, FormsModule, DataTableComponent, PageHeaderComponent],
   templateUrl: './cash-balance.component.html',
   styleUrls: ['./cash-balance.component.scss']
 })
@@ -58,6 +59,39 @@ export class CashBalanceComponent {
     }
   ];
 
+  tableColumns = [
+    { key: 'date', label: 'Date' },
+    { key: 'notes5000', label: 'Rs. 5000' },
+    { key: 'notes2000', label: 'Rs. 2000' },
+    { key: 'notes1000', label: 'Rs. 1000' },
+    { key: 'notes500', label: 'Rs. 500' },
+    { key: 'notes100', label: 'Rs. 100' },
+    { key: 'notes50', label: 'Rs. 50' },
+    { key: 'notes20', label: 'Rs. 20' },
+    { key: 'notes10', label: 'Rs. 10' },
+    { key: 'notes5', label: 'Rs. 5' },
+    { key: 'notes2', label: 'Rs. 2' },
+    { key: 'notes1', label: 'Rs. 1' },
+    { key: 'totalAmount', label: 'Total Amount' }
+  ];
+
+  get processedBalances() {
+    return this.balances.map(balance => ({
+      ...balance,
+      notes5000: balance.notes[5000],
+      notes2000: balance.notes[2000],
+      notes1000: balance.notes[1000],
+      notes500: balance.notes[500],
+      notes100: balance.notes[100],
+      notes50: balance.notes[50],
+      notes20: balance.notes[20],
+      notes10: balance.notes[10],
+      notes5: balance.notes[5],
+      notes2: balance.notes[2],
+      notes1: balance.notes[1]
+    }));
+  }
+
   constructor(private modalService: NgbModal) {}
 
   openEnterBalanceModal() {
@@ -70,6 +104,18 @@ export class CashBalanceComponent {
     }).catch((error) => {
       // Handle dismiss reason if needed
     });
+  }
+
+  onTableAction(event: { action: string, item: any }) {
+    const index = this.balances.findIndex(b => b.date === event.item.date);
+    switch(event.action) {
+      case 'edit':
+        this.editBalance(index);
+        break;
+      case 'delete':
+        this.deleteBalance(index);
+        break;
+    }
   }
 
   deleteBalance(index: number) {
@@ -139,19 +185,5 @@ export class CashBalanceComponent {
   selectAllBalances(event: Event) {
     const checkbox = event.target as HTMLInputElement;
     this.balances.forEach(balance => balance.selected = checkbox.checked);
-  }
-
-  page: number = 1;
-  itemsPerPage: number = 10;  // Default number of items per page
-  itemsPerPageOptions: number[] = [1,5, 10, 15, 20];  // Options for items per page
-
-
-  getStartIndex(): number {
-    return (this.page - 1) * this.itemsPerPage + 1;
-  }
-
-  getEndIndex(): number {
-    const endIndex = this.page * this.itemsPerPage;
-    return endIndex > this.balances.length ? this.balances.length : endIndex;
   }
 }

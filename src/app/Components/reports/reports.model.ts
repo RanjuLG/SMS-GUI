@@ -1,4 +1,5 @@
-import { GetCustomerDTO } from "../transaction-history/transaction.model";
+import { TransactionCustomerDTO } from "../transaction-history/transaction.model";
+import { GetCustomerDTO } from "../customer-form/customer.model";
 
 export interface ReportByCustomer {
     customerId: number;
@@ -43,7 +44,18 @@ export interface ReportByCustomer {
     customer: GetCustomerDTO;
     invoice: InvoiceReportDto;
     installments: Installment[];
+    loan: LoanReportDto | null;
   }
+  export interface LoanReportDto {
+    loanId: number;
+    loanPeriodId?: number; // Optional since it can be null
+    startDate: string;
+    endDate: string;
+    amountPaid: number;
+    outstandingAmount: number;
+    isSettled: boolean;
+  }
+  
   export interface InvoiceReportDto {
     invoiceId: number;
     invoiceTypeId: number;
@@ -92,8 +104,20 @@ export interface ReportByCustomer {
 
 
 export interface Overview {
-  totalActiveLoans?: number;
+  totalCustomers?: number;
+  totalItems?: number;
+  totalTransactions?: number;
   totalInvoices?: number;
+  totalTransactionAmount?: number;
+  totalOutstandingAmount?: number;
+  activeLoans?: number;
+  settledLoans?: number;
+  monthlyTransactions?: any[];
+  transactionsByType?: any[];
+  topCustomers?: any[];
+  
+  // Legacy properties for backward compatibility
+  totalActiveLoans?: number;
   revenueGenerated?: number;
   inventoryCount?: number;
   customerCount?: number;

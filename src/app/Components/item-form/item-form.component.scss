@@ -1,20 +1,26 @@
+// Consistent styling with other pages
 .card {
   border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem var(--shadow);
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--primary-text);
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: 500;
+  color: var(--primary-text);
 }
 
 .table thead th {
-  background-color: #f8f9fa;
-  color: #6c757d;
+  background-color: var(--secondary-bg);
+  color: var(--secondary-text);
+  border-color: var(--border-color);
 }
 
 .table tbody tr:hover {
-  background-color: #f1f3f5;
+  background-color: var(--hover-bg);
 }
 
 .table .badge {
@@ -28,15 +34,7 @@
 
 .btn-outline-warning,
 .btn-outline-danger {
-  color: #6c757d;
-}
-
-#searchResultList {
-  max-width: 100%;
-}
-
-.form-select {
-  max-width: 100px;
+  color: var(--secondary-text);
 }
 
 .pagination-controls {
@@ -45,39 +43,64 @@
   }
 }
 
-.search-nic {
-  width: 225px; /* Set width independently */
+// Date Range Container
+.date-range-container {
+  width: 100%;
 }
 
-.d-flex > div {
-  display: flex;
-  align-items: center;
+// Form Controls
+.form-control {
+  border-radius: 0.375rem;
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease-in-out;
+  
+  &:focus {
+    border-color: var(--brand-primary);
+    box-shadow: 0 0 0 0.2rem rgba(var(--brand-primary-rgb), 0.25);
+    outline: none;
+  }
 }
 
-.me-2 {
-  margin-right: 0.5rem; /* Space between the date range picker and search box */
+// Clear Filter Button
+.btn-outline-secondary {
+  border-color: var(--border-color);
+  color: var(--secondary-text);
+  
+  &:hover {
+    background-color: var(--secondary-bg);
+    border-color: var(--border-color);
+    color: var(--primary-text);
+  }
 }
 
-.w-100 {
-  width: 100%; /* Ensure date range picker takes full width of its container */
+// Responsive Design
+@media (max-width: 768px) {
+  .row.mb-3 {
+    .col-md-6,
+    .col-md-4,
+    .col-md-2 {
+      margin-bottom: 0.75rem;
+    }
+  }
 }
 
+// Status Labels
 .status-label {
-  padding: 0.1rem 0.3rem; /* Reduced padding */
-  font-size: 0.8rem; /* Smaller font size */
+  padding: 0.1rem 0.3rem;
+  font-size: 0.8rem;
   border-radius: 0.25rem;
   color: #fff;
   font-weight: 500;
 }
 
 .status-redeemed {
-  background-color: #5b71b9; /* Primary color */
+  background-color: var(--brand-primary);
 }
 
 .status-defaulted {
-  background-color: #29badb; /* Danger color */
+  background-color: var(--brand-info);
 }
 
 .status-in-stock {
-  background-color: #67b173; /* Danger color */
+  background-color: var(--brand-success);
 }

@@ -1,0 +1,58 @@
+<!-- Customer Management with Modern Components -->
+<app-page-header 
+  title="Customer Management"
+  subtitle="Manage your customers, view details, and maintain customer records">
+  
+  <div slot="actions" class="header-actions">
+    <button type="button" class="btn btn-primary" (click)="openAddCustomerModal()">
+      <i class="ri-add-line align-bottom me-1"></i> Add Customer
+    </button>
+    <button type="button" class="btn btn-danger ms-2" (click)="deleteSelectedCustomers()">
+      <i class="ri-delete-bin-2-line"></i> Delete Selected
+    </button>
+  </div>
+</app-page-header>
+
+<div class="container-fluid">
+  <!-- Enhanced Data Table with Server-side Pagination -->
+  <app-data-table
+    title="Customers"
+    [data]="customers"
+    [columns]="tableColumns"
+    [actions]="tableActions"
+    [searchable]="true"
+    [selectable]="true"
+    [showActions]="true"
+    [showAddButton]="false"
+    [pageSize]="itemsPerPage"
+    [pageSizeOptions]="itemsPerPageOptions"
+    [loading]="loading"
+    [pagination]="pagination"
+    [serverSidePagination]="true"
+    (search)="onSearch($event)"
+    (add)="openAddCustomerModal()"
+    (action)="handleTableAction($event)"
+    (selectionChange)="onSelectionChange($event)"
+    (pageChange)="onPageChange($event)"
+    (pageSizeChange)="onPageSizeChange($event)"
+    (sortChange)="onSortChange($event)">
+  </app-data-table>
+</div>
+
+<!-- NIC Photo Modal -->
+<ng-template #nicModal let-modal>
+  <div class="modal-header">
+    <h5 class="modal-title">Customer NIC Photo</h5>
+    <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss('Cross click')"></button>
+  </div>
+  <div class="modal-body text-center">
+    <img *ngIf="selectedCustomer?.nicPhotoPath" [src]="selectedCustomer?.nicPhotoPath" alt="NIC Photo" class="img-fluid rounded">
+    <div *ngIf="!selectedCustomer?.nicPhotoPath" class="py-5">
+      <i class="ri-image-line text-muted large-icon"></i>
+      <p class="text-muted mt-2">No NIC photo available for this customer.</p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="modal.dismiss('Close')">Close</button>
+  </div>
+</ng-template>

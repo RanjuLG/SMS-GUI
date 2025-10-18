@@ -1,0 +1,57 @@
+/* Breadcrumb Dark Mode Styles */
+.breadcrumb-dark {
+  background-color: var(--secondary-bg) !important;
+  
+  .breadcrumb-item {
+    color: var(--secondary-text) !important;
+    
+    &.active {
+      color: var(--primary-text) !important;
+    }
+    
+    &::before {
+      color: var(--secondary-text) !important;
+    }
+  }
+  
+  a {
+    color: var(--brand-primary) !important;
+    
+    &:hover {
+      color: var(--brand-primary) !important;
+      opacity: 0.8;
+    }
+  }
+}
+
+.breadcrumb-light {
+  background-color: var(--secondary-bg) !important;
+  
+  .breadcrumb-item {
+    color: var(--secondary-text) !important;
+    
+    &.active {
+      color: var(--primary-text) !important;
+    }
+    
+    &::before {
+      color: var(--secondary-text) !important;
+    }
+  }
+  
+  a {
+    color: var(--brand-primary) !important;
+    
+    &:hover {
+      color: var(--brand-primary) !important;
+      opacity: 0.8;
+    }
+  }
+}
+
+/* Ensure proper theme variable inheritance */
+:host {
+  .breadcrumb {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}

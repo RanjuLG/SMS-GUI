@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../../../Services/api-service.service'; 
 import { DateService } from '../../../../Services/date-service.service';
 import { ChangeDetectorRef } from '@angular/core';
@@ -16,13 +15,14 @@ import { MatInputModule } from '@angular/material/input';
 import {TransactionReportDto,TransactionType } from '../../../reports/reports.model';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
+import { DataTableComponent } from '../../../../shared/components/data-table/data-table.component';
 
 @Component({
   selector: 'app-initial-transaction-history',
   standalone: true,
   imports: [CommonModule, 
     FormsModule, 
-    NgxPaginationModule,
+    DataTableComponent,
     ReactiveFormsModule,
     MatDatepickerModule,
     MatHint,
@@ -40,22 +40,25 @@ export class InitialTransactionHistoryComponent {
  
   transactions: TransactionReportDto[] = [];
   loanIssuetransactions: TransactionReportDto[] = [];
-  transactionsPerPageOptions: number[] = [1,2,5,10];
-/// Separate items per page for each table
-transactionsPerPage: number = 5;
-loanTransactionsPerPage: number = 5;
-
-
-loanPage:number = 1;
+  
+  tableColumns = [
+    { key: 'createdAt', label: 'Date' },
+    { key: 'invoiceNo', label: 'Invoice No' },
+    { key: 'customerName', label: 'Customer Name' },
+    { key: 'customerNIC', label: 'Customer NIC' },
+    { key: 'subTotal', label: 'Principle Amount' },
+    { key: 'interestAmount', label: 'Interest Amount' },
+    { key: 'totalAmount', label: 'Total Amount' }
+  ];
   
   searchControl = new FormControl();
   transactionIds?: number[];
   transactionIds_delete?: number[];
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
-    // Add these properties to hold the calculated sums
-    totalTransactionAmount: number = 0;
-    totalLoanIssuanceAmount: number = 0;
+  // Add these properties to hold the calculated sums
+  totalTransactionAmount: number = 0;
+  totalLoanIssuanceAmount: number = 0;
 
   constructor(
     private modalService: NgbModal, 
@@ -71,8 +74,8 @@ ngOnChanges(changes: SimpleChanges): void {
   }
 }
   ngOnInit() {
-    console.log(this.from," : ",this.to)
-    this.loadTransactions();
+  //  console.log(this.from," : ",this.to)
+   // this.loadTransactions();
   }
   
 
@@ -89,6 +92,9 @@ ngOnChanges(changes: SimpleChanges): void {
         this.transactions = transactions.map(transaction => ({
           ...transaction,
           createdAt: new Date(transaction.createdAt).toISOString(),  // Convert Date to string
+          customerName: transaction.customer.customerName,
+          customerNIC: transaction.customer.customerNIC,
+          invoiceNo: transaction.invoice.invoiceNo
         }));
   
         // Filter and add only Loan Issuance transactions
@@ -142,22 +148,32 @@ calculateTotalAmount(transactions: TransactionReportDto[]): number {
   }
 
   
-  onStartDateChange(event: any): void{
-    this.from = new Date(event.value)
-    console.log("this.from: ", this.from);
-
-
+  onStartDateChange(event: any): void {
+    if (event && event.value) {
+      // Since backend expects local time, use local date (not UTC)
+      const fromDate = new Date(event.value);
+      this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+      
+      console.log("this.from (Local): ", this.from);
+     
+    } else {
+      console.error('Start date event or value is null');
+    }
+    this.cdr.markForCheck();
   }
+
   onDateRangeChange(event: any): void {
    
     if (event && event.value) 
     {
       const {end } = event.value;
       
-        this.to = new Date(event.value);
+        // Since backend expects local time, use local date (not UTC)
+        const toDate = new Date(event.value);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 0, 0, 0);
         this.to.setDate(this.to.getDate() + 1);
         
-        console.log("this.to: ", this.to);
+        console.log("this.to (Local): ", this.to);
         this.loadTransactions();
   
     } 
@@ -168,16 +184,6 @@ calculateTotalAmount(transactions: TransactionReportDto[]): number {
   }
 
 // Pagination Index Helpers
-getLoanStartIndex(): number {
-  return (this.loanPage - 1) * this.loanTransactionsPerPage + 1;
-  
-  
-}
-
-getLoanEndIndex(): number {
-  return Math.min(this.loanPage * this.loanTransactionsPerPage, this.loanIssuetransactions.length);
-}
-
 exportToExcel(): void {
   console.log("export trans: ",this.loanIssuetransactions)
   // Extract year and month from the 'from' date
@@ -186,26 +192,51 @@ exportToExcel(): void {
 
   // Prepare the data to be exported
   const exportData = this.loanIssuetransactions.map(transaction => ({
-    Date: transaction.createdAt,
+    Date: new Date(transaction.createdAt).toLocaleDateString(),
     'Invoice No': transaction.invoice.invoiceNo,
+    'Date Generated':new Date(transaction.invoice.dateGenerated).toLocaleDateString(),
+    'Customer Name': transaction.customer.customerName,
     'Customer NIC': transaction.customer.customerNIC,
+    'Customer Contact No.': transaction.customer.customerContactNo,
+    'Customer Address': transaction.customer.customerAddress,
     'Principle Amount': transaction.subTotal,
     'Interest Amount': transaction.interestAmount,
-    'Total Amount (Rs.)': transaction.totalAmount
+    'Total Amount (Rs.)': transaction.totalAmount,
+    'Amount Paid (Rs.)':transaction.loan?.amountPaid,
+    'Outstanding Amount (Rs.)':transaction.loan?.outstandingAmount
   }));
 
   // Add a title row with year and month in separate columns
-  const titleRow = [{ Date: `Loan Transactions Report`, 'Invoice No': year, 'Customer NIC': month, 'Principle Amount': '', 'Interest Amount': '', 'Total Amount (Rs.)': '' }];
-  
-  // Add table header row
-  const headerRow = [{
-    Date: 'Date', 
-    'Invoice No': 'Invoice No', 
-    'Customer NIC': 'Customer NIC', 
-    'Principle Amount': 'Principle Amount', 
-    'Interest Amount': 'Interest Amount', 
-    'Total Amount (Rs.)': 'Total Amount (Rs.)'
-  }];
+  const titleRow = [{
+    Date: `Loan Transactions Report`,
+     'Invoice No': '',
+     'Date Generated': '', 
+     'Customer Name': '',
+     'Customer NIC': '',
+     'Customer Contact No.': '',
+     'Customer Address': '',
+      'Principle Amount': '', 
+     'Interest Amount': '',
+      'Total Amount (Rs.)': '' ,
+      'Amount Paid (Rs.)':'',
+      'Outstanding Amount (Rs.)':''
+     }];
+
+ // Add table header row
+ const headerRow = [{
+   Date: 'Date', 
+   'Invoice No': 'Invoice No',
+   'Date Generated':'Date Generated',
+   'Customer Name': 'Customer Name', 
+   'Customer NIC': 'Customer NIC',
+   'Customer Contact No.': 'Customer Contact No.',
+   'Customer Address': 'Customer Address', 
+   'Principle Amount': 'Principle Amount', 
+   'Interest Amount': 'Interest Amount', 
+   'Total Amount (Rs.)': 'Total Amount (Rs.)',
+   'Amount Paid (Rs.)': 'Amount Paid (Rs.)',
+   'Outstanding Amount (Rs.)': 'Outstanding Amount (Rs.)'
+ }];
 
   // Merge title row, header row, and actual data
   const exportDataWithTitleAndHeader = [...titleRow, ...headerRow, ...exportData];
@@ -220,7 +251,14 @@ exportToExcel(): void {
 
   // Save the file using file-saver
   const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
-  saveAs(blob, `Loan_Transactions_${year}-${month}.xlsx`);
+  const today = new Date();
+    let filename = '';
+    if (year === 2000) {
+      filename = `Loan_Transactions_All-Time_${today.toLocaleDateString()}.xlsx`;
+    } else {
+      filename = `Loan_Transactions_${year}-${month}.xlsx`;
+    }
+    saveAs(blob, filename);
 }
 
 

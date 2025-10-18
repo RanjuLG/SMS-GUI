@@ -1,0 +1,41 @@
+// Server error display styling
+.alert-danger {
+  border-radius: 8px;
+  border: 1px solid #f5c6cb;
+  background-color: #f8d7da;
+  color: #721c24;
+  
+  .alert-heading {
+    color: #721c24;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  ul {
+    padding-left: 1.2rem;
+    
+    li {
+      margin-bottom: 0.25rem;
+      
+      strong {
+        color: #721c24;
+      }
+    }
+  }
+}
+
+// Animation for error appearance
+.alert-danger {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -1,14 +1,26 @@
-import { ChangeDetectorRef, Component, AfterViewInit, Renderer2, ElementRef } from '@angular/core';
+import { ChangeDetectorRef, Component, AfterViewInit, Renderer2, ElementRef, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import Swal from 'sweetalert2';
 import { AuthService } from '../../../Services/auth.service';
+import { ThemeService } from '../../../Services/theme.service';
+import { CashierModeService } from '../../../Services/cashier-mode.service';
+import { Subscription } from 'rxjs';
 declare var bootstrap: any;
 import { ExtendedItemDto } from '../../item-form/item-form.component';
 import { AddItemComponent } from '../../helpers/items/add-item/add-item.component';
 import { AddCustomerComponent } from '../../helpers/customer/add-customer/add-customer.component';
 import { ExtendedCustomerDto } from '../../customer-form/customer-form.component';
+
+interface MenuItem {
+  label: string;
+  icon: string;
+  route?: string;
+  children?: MenuItem[];
+  action?: string;
+}
+
 @Component({
   selector: 'app-sidebar',
   standalone: true,
@@ -16,48 +28,268 @@ import { ExtendedCustomerDto } from '../../customer-form/customer-form.component
   templateUrl: './sidebar.component.html',
   styleUrls: ['./sidebar.component.scss']
 })
-export class SidebarComponent implements AfterViewInit {
-  expanded = false;
-  dropdowns = {
-    invoiceDropdown: false,
-    customerDropdown: false,
-    itemDropdown: false,
-    reportDropdown: false,
-    configDropdown: false,
-  };
+export class SidebarComponent implements AfterViewInit, OnInit, OnDestroy {
+  @Input() expanded = true;
+  @Output() sidebarToggle = new EventEmitter<boolean>();
+
+  currentTheme: 'light' | 'dark' = 'light';
+  private themeSubscription?: Subscription;
+  private cashierModeSubscription?: Subscription;
+  
+  // Cashier mode state
+  isCashierMode: boolean = false;
+  currentMenuItems: MenuItem[] = [];
+
+  // Full mode menu items
+  private fullMenuItems: MenuItem[] = [
+    {
+      label: 'Home',
+      icon: 'ri-home-2-line',
+      route: '/overview'
+    },
+    {
+      label: 'Invoice',
+      icon: 'ri-article-line',
+      route: '/invoices',
+      children: [
+        {
+          label: 'Create Invoice',
+          icon: 'ri-sticky-note-add-line',
+          route: '/create-invoice'
+        }
+      ]
+    },
+    {
+      label: 'Customers',
+      icon: 'ri-user-3-line',
+      route: '/customers'
+    },
+    {
+      label: 'Inventory',
+      icon: 'ri-archive-line',
+      route: '/items'
+    },
+    {
+      label: 'Reports',
+      icon: 'ri-file-chart-line',
+      route: '/reports'
+    },
+    {
+      label: 'Configuration',
+      icon: 'ri-tools-line',
+      children: [
+        {
+          label: 'Pricings',
+          icon: 'ri-price-tag-3-line',
+          route: '/config/pricings'
+        },
+        {
+          label: 'Users',
+          icon: 'ri-shield-user-line',
+          route: '/config/users'
+        }
+      ]
+    }
+  ];
+
+  // Cashier mode menu items (simplified)
+  private cashierMenuItems: MenuItem[] = [
+    {
+      label: 'Dashboard',
+      icon: 'ri-dashboard-line',
+      route: '/cashier'
+    },
+    {
+      label: 'Invoice',
+      icon: 'ri-article-line',
+      route: '/invoices',
+      children: [
+        {
+          label: 'Create Invoice',
+          icon: 'ri-sticky-note-add-line',
+          route: '/create-invoice'
+        }
+      ]
+    },
+    {
+      label: 'Customers',
+      icon: 'ri-user-3-line',
+      route: '/customers'
+    },
+    {
+      label: 'Inventory',
+      icon: 'ri-archive-line',
+      route: '/items'
+    }
+  ];
+
+  expandedMenus: Set<string> = new Set();
 
   constructor(
     private modalService: NgbModal,
     private cdr: ChangeDetectorRef,
     private authService: AuthService,
+    private themeService: ThemeService,
+    private cashierModeService: CashierModeService,
     private router: Router,
     private renderer: Renderer2,
     private el: ElementRef
-  ) { }
+  ) { 
+    // Initialize with full menu items
+    this.currentMenuItems = this.fullMenuItems;
+  }
+
+  ngOnInit() {
+    // Load expanded state from localStorage
+    const savedExpanded = localStorage.getItem('sidebarExpanded');
+    if (savedExpanded !== null) {
+      this.expanded = JSON.parse(savedExpanded);
+    }
+
+    // Subscribe to theme changes
+    this.themeSubscription = this.themeService.currentTheme$.subscribe(theme => {
+      this.currentTheme = theme;
+      this.updateSidebarTheme();
+      this.cdr.markForCheck();
+    });
+
+    // Subscribe to cashier mode changes
+    this.cashierModeSubscription = this.cashierModeService.isCashierMode$.subscribe(isCashierMode => {
+      this.isCashierMode = isCashierMode;
+      this.currentMenuItems = isCashierMode ? this.cashierMenuItems : this.fullMenuItems;
+      this.cdr.markForCheck();
+    });
+  }
+
+  ngOnDestroy() {
+    this.themeSubscription?.unsubscribe();
+    this.cashierModeSubscription?.unsubscribe();
+    
+    // Clean up mobile event listeners
+    window.removeEventListener('orientationchange', this.checkMobileSidebarState);
+  }
+
+  private updateSidebarTheme() {
+    const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+    if (sidebarElement) {
+      if (this.currentTheme === 'dark') {
+        this.renderer.setAttribute(sidebarElement, 'data-theme', 'dark');
+      } else {
+        this.renderer.removeAttribute(sidebarElement, 'data-theme');
+      }
+    }
+  }
 
   ngAfterViewInit(): void {
     const tooltipElements = this.el.nativeElement.querySelectorAll('[data-bs-toggle="tooltip"]');
 
     tooltipElements.forEach((element: HTMLElement) => {
-        // Initialize Bootstrap tooltips manually
-        new bootstrap.Tooltip(element, {
-            placement: 'right',
-            trigger: 'hover'
-        });
+      // Initialize Bootstrap tooltips manually
+      new bootstrap.Tooltip(element, {
+        placement: 'right',
+        trigger: 'hover'
+      });
     });
-}
-
-  toggleSidebar(): void {
-    this.expanded = !this.expanded;
+    
+    // Handle mobile-specific sidebar behavior
+    this.setupMobileSidebarHandling();
   }
-  expandSidebar(): void {
-    if(!this.expanded){
-      this.expanded = true;
+  
+  private setupMobileSidebarHandling(): void {
+    // Add touch event listeners for better mobile handling
+    const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+    if (sidebarElement) {
+      // Prevent text selection on mobile when interacting with sidebar
+      sidebarElement.addEventListener('touchstart', (e: TouchEvent) => {
+        if (window.innerWidth <= 991.98) {
+          e.preventDefault();
+        }
+      }, { passive: false });
+      
+      // Handle touch end events for better responsiveness
+      sidebarElement.addEventListener('touchend', (e: TouchEvent) => {
+        if (window.innerWidth <= 991.98) {
+          // Small delay to prevent double-taps
+          setTimeout(() => {
+            this.checkMobileSidebarState();
+          }, 50);
+        }
+      });
+    }
+    
+    // Listen for orientation changes on mobile
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => {
+        this.checkMobileSidebarState();
+      }, 300);
+    });
+  }
+  
+  private checkMobileSidebarState(): void {
+    // Ensure sidebar state is consistent on mobile
+    if (window.innerWidth <= 991.98) {
+      const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+      const sidebarWrapper = document.querySelector('.sidebar-wrapper');
+      const overlay = document.querySelector('.sidebar-overlay');
+      
+      if (sidebarElement && sidebarWrapper) {
+        if (this.expanded) {
+          sidebarElement.classList.add('expanded');
+          sidebarWrapper.classList.add('sidebar-expanded');
+          if (overlay) overlay.classList.add('show');
+        } else {
+          sidebarElement.classList.remove('expanded');
+          sidebarWrapper.classList.remove('sidebar-expanded');
+          if (overlay) overlay.classList.remove('show');
+        }
+      }
     }
   }
 
-  toggleDropdown(dropdown: keyof typeof this.dropdowns): void {
-    this.dropdowns[dropdown] = !this.dropdowns[dropdown];
+  toggleSidebar(): void {
+    this.expanded = !this.expanded;
+    this.sidebarToggle.emit(this.expanded);
+    localStorage.setItem('sidebarExpanded', JSON.stringify(this.expanded));
+    
+    // Force DOM update for mobile devices
+    setTimeout(() => {
+      const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+      if (sidebarElement) {
+        if (this.expanded) {
+          sidebarElement.classList.add('expanded');
+        } else {
+          sidebarElement.classList.remove('expanded');
+        }
+      }
+    }, 10);
+  }
+
+  expandSidebar(): void {
+    if (!this.expanded) {
+      this.expanded = true;
+      this.sidebarToggle.emit(this.expanded);
+      localStorage.setItem('sidebarExpanded', JSON.stringify(this.expanded));
+      
+      // Force DOM update for mobile devices
+      setTimeout(() => {
+        const sidebarElement = this.el.nativeElement.querySelector('.modern-sidebar');
+        if (sidebarElement) {
+          sidebarElement.classList.add('expanded');
+        }
+      }, 10);
+    }
+  }
+
+  toggleMenu(menuLabel: string): void {
+    if (this.expandedMenus.has(menuLabel)) {
+      this.expandedMenus.delete(menuLabel);
+    } else {
+      this.expandedMenus.add(menuLabel);
+    }
+  }
+
+  isMenuExpanded(menuLabel: string): boolean {
+    return this.expandedMenus.has(menuLabel);
   }
 
   openAddCustomerModal(): void {
@@ -76,10 +308,6 @@ export class SidebarComponent implements AfterViewInit {
     });
   }
 
-  toggleTheme(): void {
-    document.getElementById('DarkThemeToggle')?.click();
-  }
-
   signOut() {
     try {
       this.authService.logout();
@@ -90,5 +318,4 @@ export class SidebarComponent implements AfterViewInit {
       Swal.fire('Logout Error', 'An issue occurred while logging out. Please try again.', 'error');
     }
   }
-  
 }

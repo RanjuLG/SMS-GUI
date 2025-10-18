@@ -1,70 +1,51 @@
 <div class="modal-header">
-  <h5 class="modal-title">{{ item ? 'Edit Item' : 'Add Item' }}</h5>
+  <h6 class="modal-title">{{ item ? 'Edit Item' : 'Add Item' }}</h6>
   <button type="button" class="btn-close" aria-label="Close" (click)="onCancel()"></button>
 </div>
 <div class="modal-body">
   <form [formGroup]="itemForm" (ngSubmit)="onSubmit()">
-    <h5 class="section-title">Item Details</h5>
-    <div class="row">
-      <div class="col-lg-6 col-md-12">
-        <div class="form-group">
-          <label for="customerNIC">Customer NIC</label>
-          <input id="customerNIC" class="form-control" formControlName="customerNIC" required
-            [readonly]="item !== null" />
-        </div>
+    <div class="row g-2">
+      <div class="col-md-6">
+        <label for="customerNIC" class="form-label">Customer NIC</label>
+        <input id="customerNIC" class="form-control form-control-sm" formControlName="customerNIC" required [readonly]="item !== null" />
       </div>
-      <div class="col-lg-6 col-md-12">
-        <div class="form-group">
-          <label for="itemDescription">Item Description</label>
-          <input id="itemDescription" class="form-control" formControlName="itemDescription" required />
-        </div>
+      <div class="col-md-6">
+        <label for="itemDescription" class="form-label">Item Description</label>
+        <input id="itemDescription" class="form-control form-control-sm" formControlName="itemDescription" required />
       </div>
-      <div class="col-lg-6 col-md-12">
-        <div class="form-group">
-          <label for="itemRemarks">Item Remarks</label>
-          <input id="itemRemarks" class="form-control" formControlName="itemRemarks" />
-        </div>
+      <div class="col-md-12">
+        <label for="itemRemarks" class="form-label">Item Remarks</label>
+        <input id="itemRemarks" class="form-control form-control-sm" formControlName="itemRemarks" />
       </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="form-group">
-          <label for="itemCaratage">Karatage</label>
-          <input type="number" step="1" id="itemCaratage" class="form-control" formControlName="itemCaratage"
-            required />
-        </div>
+      <div class="col-md-3">
+        <label for="itemCaratage" class="form-label">Karatage</label>
+        <input type="number" step="1" id="itemCaratage" class="form-control form-control-sm" formControlName="itemCaratage" required />
       </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="form-group">
-          <label for="itemWeight">Net Wt (g)</label>
-          <input type="number" step="0.001" id="itemWeight" class="form-control" formControlName="itemWeight"
-            required />
-        </div>
+      <div class="col-md-3">
+        <label for="itemWeight" class="form-label">Net Wt (g)</label>
+        <input type="number" step="0.001" id="itemWeight" class="form-control form-control-sm" formControlName="itemWeight" required />
       </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="form-group">
-          <label for="itemGoldWeight">Gold Wt (g)</label>
-          <input type="number" step="0.001" id="itemGoldWeight" class="form-control" formControlName="itemGoldWeight"
-            required />
-        </div>
+      <div class="col-md-3">
+        <label for="itemGoldWeight" class="form-label">Gold Wt (g)</label>
+        <input type="number" step="0.001" id="itemGoldWeight" class="form-control form-control-sm" formControlName="itemGoldWeight" required />
       </div>
-      <div class="col-lg-3 col-md-6">
-        <div class="form-group">
-          <label for="itemValue">Item Value</label>
-          <input type="number" id="itemValue" class="form-control" formControlName="itemValue" />
-        </div>
+      <div class="col-md-3">
+        <label for="itemValue" class="form-label">Item Value</label>
+        <input type="number" id="itemValue" class="form-control form-control-sm" formControlName="itemValue" />
       </div>
-      <div class="col-lg-3 col-md-6 mb-3">
-        <label for="status" class="form-group">Status</label>
-        <select id="status" formControlName="status" class="form-control">
+      <div class="col-md-6">
+        <label for="status" class="form-label">Status</label>
+        <select id="status" formControlName="status" class="form-select form-select-sm">
           <option value="1">In Stock</option>
           <option value="2">Redeemed</option>
           <option value="3">Defaulted</option>
         </select>
       </div>
     </div>
-    <div class="modal-footer">
-      <div class="hstack gap-2 justify-content-end">
-        <button type="submit" class="btn btn-primary">{{ item ? 'Save Changes' : 'Add Item' }}</button>
-      </div>
+    <div class="modal-footer mt-3">
+      <div class="d-flex gap-2 justify-content-end">
+      <button type="submit" class="btn btn-primary btn-sm w-100">{{ item ? 'Save Changes' : 'Add Item' }}</button>
+    </div>
     </div>
   </form>
 </div>

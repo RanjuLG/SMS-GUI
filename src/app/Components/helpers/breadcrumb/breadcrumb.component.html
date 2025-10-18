@@ -1,13 +1,11 @@
 <div class="d-flex justify-content-sm-end">
-
     <nav aria-label="breadcrumb">
-        <ol class="breadcrumb">
+        <ol class="breadcrumb" [ngClass]="{'breadcrumb-dark': isDarkMode, 'breadcrumb-light': !isDarkMode}">
           <li class="breadcrumb-item"><a routerLink="/overview">Home</a></li>
           <!-- 
           <li class="breadcrumb-item"><a href="#">Library</a></li>
           <li class="breadcrumb-item active" aria-current="page">Data</li>
           -->
         </ol>
-      </nav>
-
+    </nav>
 </div>

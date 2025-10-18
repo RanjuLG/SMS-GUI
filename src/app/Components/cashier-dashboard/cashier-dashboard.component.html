@@ -1,0 +1,167 @@
+<!-- Cashier Dashboard - Simplified Interface -->
+<app-page-header 
+  title="Cashier Dashboard"
+  subtitle="Simplified interface for quick transactions"
+  [showActions]="false">
+</app-page-header>
+
+<div class="cashier-dashboard">
+  <!-- Header Section -->
+  <!-- <div class="dashboard-header">
+    <div class="greeting-section">
+      <h1 class="greeting">{{ greeting }}!</h1>
+      <p class="date-time">
+        <span class="date">{{ currentDate }}</span>
+        <span class="time">{{ currentTime }}</span>
+      </p>
+    </div>
+  </div> -->
+
+  <!-- Quick Stats Row -->
+  <!-- <div class="quick-stats">
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="ri-exchange-line"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-number">{{ todaysTransactions }}</div>
+        <div class="stat-label">Today's Transactions</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="ri-money-rupee-circle-line"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-number">₹{{ todaysRevenue | number }}</div>
+        <div class="stat-label">Today's Revenue</div>
+      </div>
+    </div>
+    
+    <div class="stat-card">
+      <div class="stat-icon">
+        <i class="ri-file-list-line"></i>
+      </div>
+      <div class="stat-info">
+        <div class="stat-number">{{ activeLoans }}</div>
+        <div class="stat-label">Active Loans</div>
+      </div>
+    </div>
+  </div> -->
+
+  <!-- Essential Actions Grid -->
+  <div class="essential-actions">
+    <h2 class="section-title">
+      <i class="ri-calculator-line"></i>
+      Cashier Operations
+    </h2>
+    
+    <div class="actions-grid">
+      <!-- Cash Balance - First thing to check when starting work -->
+      <div class="action-card success" routerLink="/cash-balance">
+        <div class="action-icon">
+          <i class="ri-wallet-3-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Cash Balance</h3>
+          <p>Current cash status</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Gold Pricing - Check rates before transactions -->
+      <div class="action-card accent" routerLink="/config/pricings">
+        <div class="action-icon">
+          <i class="ri-price-tag-3-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Gold Rates</h3>
+          <p>Current pricing info</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Quick Customer Search - Most common operation -->
+      <div class="action-card secondary" routerLink="/customers">
+        <div class="action-icon">
+          <i class="ri-user-search-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Find Customer</h3>
+          <p>Search customer records</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Create Invoice - Primary business function -->
+      <div class="action-card primary" routerLink="/create-invoice">
+        <div class="action-icon">
+          <i class="ri-file-add-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Create Invoice</h3>
+          <p>Generate new loan invoices</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Transaction History - View recent activity -->
+      <div class="action-card tertiary" routerLink="/transaction-history">
+        <div class="action-icon">
+          <i class="ri-history-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Recent Transactions</h3>
+          <p>View payment history</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+
+      <!-- Add Customer - Less frequent but important -->
+      <div class="action-card info" (click)="openAddCustomerModal()">
+        <div class="action-icon">
+          <i class="ri-user-add-line"></i>
+        </div>
+        <div class="action-content">
+          <h3>Add Customer</h3>
+          <p>Register new customer</p>
+        </div>
+        <div class="action-arrow">
+          <i class="ri-arrow-right-line"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Access Toolbar -->
+  <div class="quick-toolbar">
+    <div class="toolbar-section">
+      <h3>Quick Access</h3>
+      <div class="quick-buttons">
+        <button class="quick-btn" routerLink="/invoices" title="View All Invoices">
+          <i class="ri-file-list-3-line"></i>
+          <span>Invoices</span>
+        </button>
+        <button class="quick-btn" routerLink="/items" title="Manage Items">
+          <i class="ri-archive-line"></i>
+          <span>Items</span>
+        </button>
+        <button class="quick-btn" routerLink="/reports" title="Reports">
+          <i class="ri-bar-chart-line"></i>
+          <span>Reports</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

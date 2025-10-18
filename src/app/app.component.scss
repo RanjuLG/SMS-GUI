@@ -1,42 +1,374 @@
 :host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.app-layout {
   display: flex;
-  height: 100vh; /* Ensures layout stretches to the full viewport height */
+  height: 100vh;
+  background-color: var(--secondary-bg);
+  transition: background-color 0.3s ease;
+  position: relative;
+
+  // Cashier mode styles
+  &.cashier-mode {
+    .main-content {
+      margin-left: 0 !important;
+      width: 100% !important;
+    }
+
+    .topbar {
+      .navbar-left {
+        .mobile-sidebar-toggle {
+          display: none !important;
+        }
+      }
+    }
+  }
 }
 
-.main-layout {
-  display: flex;
-  width: 100%;
+// Sidebar Styles with enhanced mobile support
+.sidebar-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--mobile-sidebar-width);
+  z-index: 1000;
+  transition: all 0.3s ease;
+  transform: translateX(-100%);
+  box-shadow: none;
+  will-change: transform; // Optimize for mobile performance
+
+  &.sidebar-expanded {
+    transform: translateX(0);
+    box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+  }
+
+  // Tablet breakpoint
+  @media (min-width: 768px) {
+    width: var(--tablet-sidebar-width);
+    box-shadow: 2px 0 10px var(--shadow);
+  }
+
+  // Desktop breakpoint
+  @media (min-width: 992px) {
+    position: relative;
+    transform: translateX(0);
+    width: 80px;
+    box-shadow: 2px 0 10px var(--shadow);
+    will-change: auto; // Reset for desktop
+
+    &.sidebar-expanded {
+      width: 250px;
+    }
+  }
+  
+  // Enhanced mobile interaction
+  @media (max-width: 991.98px) {
+    // Ensure proper touch handling
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    
+    &.sidebar-expanded {
+      -webkit-transform: translateX(0);
+      -moz-transform: translateX(0);
+      -ms-transform: translateX(0);
+      transform: translateX(0);
+    }
+  }
 }
 
-.sidebar-container {
-  flex-shrink: 0; /* Ensures sidebar does not shrink when the layout is resized */
-  height: 100%; /* Make the sidebar container stretch to full height */
+// Mobile overlay for sidebar
+.sidebar-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  -webkit-tap-highlight-color: transparent; // Remove tap highlight on mobile
+  
+  &.show {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  @media (min-width: 992px) {
+    display: none;
+  }
+  
+  // Ensure proper touch handling on mobile
+  @media (max-width: 991.98px) {
+    touch-action: none; // Prevent scrolling when overlay is active
+  }
 }
 
-.content-container {
-  flex-grow: 1; /* Ensures content container expands to take up remaining space */
+// Main Content Styles with mobile optimization
+.main-content {
+  flex: 1;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
+  transition: all 0.3s ease;
+  margin-left: 0;
+  width: 100%;
+  overflow-x: hidden;
+
+  @media (min-width: 992px) {
+    margin-left: 80px;
+
+    &.content-expanded {
+      margin-left: 0;
+    }
+  }
 }
 
-.content {
-  flex-grow: 1; /* Ensures the content grows to take up all available space */
-  padding: 1rem;
-  background-color: #f8f9fa; /* Light background to distinguish content area */
-  overflow-y: auto; /* Enables scrolling for the content */
+// Topbar Styles with mobile optimization
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px 0 var(--shadow), 0 1px 2px 0 var(--shadow);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  height: var(--mobile-header-height);
+
+  @media (min-width: 768px) {
+    height: var(--tablet-header-height);
+  }
+
+  @media (min-width: 992px) {
+    height: var(--desktop-header-height);
+  }
 }
 
-.footer {
-  background-color: #f8f9fa;
-  padding: 1rem 0;
-  width: 100%; /* Full width */
-  font-size: small;
-  color: #4360ac;
-  z-index: 0; /* Lowest z-index */
-  position: relative; /* Remains within the flow at the bottom */
+// Page Content Styles with mobile optimization
+.page-content {
+  flex: 1;
+  padding: var(--mobile-spacing);
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--primary-bg);
+  min-height: calc(100vh - var(--mobile-header-height) - 60px);
+  transition: background-color 0.3s ease;
+  -webkit-overflow-scrolling: touch;
+
+  @media (min-width: 768px) {
+    padding: var(--tablet-spacing);
+    min-height: calc(100vh - var(--tablet-header-height) - 70px);
+  }
+
+  @media (min-width: 992px) {
+    padding: 1.5rem;
+    min-height: calc(100vh - var(--desktop-header-height) - 80px);
+  }
+
+  .container-fluid {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+
+    @media (min-width: 1400px) {
+      max-width: 1400px;
+    }
+  }
 }
 
-a {
-  color: #0843d8;
-  text-decoration: none !important;
+// Footer Styles with mobile optimization
+.app-footer {
+  margin-top: auto;
+  background: var(--navbar-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 0.75rem 0;
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+  z-index: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+
+  @media (min-width: 768px) {
+    padding: 1rem 0;
+    font-size: 0.875rem;
+  }
+}
+
+// Enhanced Responsive Design
+@media (max-width: 991.98px) {
+  .sidebar-wrapper {
+    &.sidebar-expanded {
+      box-shadow: 2px 0 20px rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+  }
+}
+
+// Mobile-specific optimizations
+@media (max-width: 767.98px) {
+  .page-content {
+    padding: 0.75rem;
+  }
+
+  .topbar {
+    height: var(--mobile-header-height);
+  }
+
+  // Ensure content doesn't go under notches on mobile
+  @supports (padding-top: env(safe-area-inset-top)) {
+    .topbar {
+      padding-top: env(safe-area-inset-top);
+    }
+  }
+}
+
+// Small mobile devices
+@media (max-width: 575.98px) {
+  .page-content {
+    padding: 0.5rem;
+  }
+
+  .sidebar-wrapper {
+    width: calc(100vw - 2rem);
+    max-width: var(--mobile-sidebar-width);
+  }
+}
+
+// Landscape orientation on mobile
+@media (max-width: 896px) and (orientation: landscape) {
+  .page-content {
+    padding: 0.5rem;
+    min-height: calc(100vh - var(--mobile-header-height) - 40px);
+  }
+
+  .app-footer {
+    padding: 0.5rem 0;
+    font-size: 0.7rem;
+  }
+}
+
+// iPad specific optimizations
+@media (min-width: 768px) and (max-width: 1024px) {
+  .sidebar-wrapper {
+    width: var(--tablet-sidebar-width);
+
+    &.sidebar-expanded {
+      width: var(--tablet-sidebar-width);
+    }
+  }
+
+  .page-content {
+    padding: var(--tablet-spacing);
+  }
+}
+
+// High DPI displays (Retina)
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .app-layout {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+// Dark mode support handled by CSS variables
+// Smooth transitions for all layout changes
+* {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
+
+// Enhanced animations with mobile optimization
+.fade-in {
+  animation: fadeIn 0.3s ease-in;
+}
+
+.slide-in {
+  animation: slideInFromLeft 0.3s ease-out;
+}
+
+.slide-up {
+  animation: slideUpFromBottom 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpFromBottom {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Custom scrollbar with mobile support
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary-text);
+}
+
+// Mobile scrollbar (when supported)
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--secondary-bg);
+}
+
+// Focus management for accessibility
+.app-layout {
+  a:focus,
+  button:focus,
+  input:focus,
+  select:focus,
+  textarea:focus {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+  }
+}
+
+// Prevent overscroll on mobile
+.page-content {
+  overscroll-behavior: contain;
+}
+
+// Mobile safe area support
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .app-footer {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  }
 }

@@ -1,24 +1,24 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, OnChanges } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { CreateInvoiceComponent } from '../helpers/invoices/create-invoice/create-invoice.component';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
 import { InvoiceDto } from './invoice.model';
 import { DateService } from '../../Services/date-service.service';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import {RouterLink} from '@angular/router'
+import {RouterLink} from '@angular/router';
+import { DataTableComponent } from '../../shared/components/data-table/data-table.component';
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
-export interface ExtendedInvoiceDto extends InvoiceDto {
+export interface ExtendedInvoiceDto extends Omit<InvoiceDto, 'loanPeriod'> {
   selected?: boolean;
+  invoiceType?: string;
+  loanPeriod?: string | number;
 }
 
 @Component({
@@ -27,29 +27,44 @@ export interface ExtendedInvoiceDto extends InvoiceDto {
   imports: [
     FormsModule, 
     CommonModule, 
-    NgxPaginationModule,
+    DataTableComponent,
     ReactiveFormsModule,
-    MatDatepickerModule,
-    MatHint,
-    MatFormFieldModule,
-    MatInputModule,
-    RouterLink
+    RouterLink,
+    PageHeaderComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './invoice-form.component.html',
   styleUrls: ['./invoice-form.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class InvoiceFormComponent implements OnInit {
+export class InvoiceFormComponent implements OnInit, OnChanges {
   invoices: ExtendedInvoiceDto[] = [];
-  page: number = 1;
-  invoicesPerPage: number = 10;
-  invoicesPerPageOptions: number[] = [1, 5, 10, 15, 20];
-  searchNICControl = new FormControl();
-  searchInvoiceNoControl = new FormControl();
+  tableColumns = [
+    { key: 'invoiceNo', label: 'Invoice No.' },
+    { key: 'invoiceType', label: 'Invoice Type' },
+    { key: 'customerNIC', label: 'Customer NIC' },
+    { key: 'loanPeriod', label: 'Loan Period (months)' },
+    { key: 'dateGenerated', label: 'Date' }
+  ];
+
+  // Pagination properties
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
+  totalRecords = 0;
+  isLoading = false;
+
+  // Search and filter properties
+  searchQuery = '';
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
+  to = new Date(this._currentDate);
+  dateRangeSelected = false;
+
+  get maxDateString(): string {
+    return this.maxDate.toISOString().split('T')[0];
+  }
 
   constructor(
     private modalService: NgbModal,
@@ -60,87 +75,92 @@ export class InvoiceFormComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Set default date range to last 30 days
     this.from.setDate(this.from.getDate() - 30);
     this.to.setDate(this.to.getDate() + 1);
     this.loadInvoices();
-
-    this.searchNICControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((nic: string) => {
-        if (!nic) {
-          return this.apiService.getInvoices(this.from,this.to); // Return all invoices if NIC is empty
-        }
-        return this.apiService.getInvoicesByCustomerNIC(nic).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
-        );
-      })
-    ).subscribe({
-      next: (result: any[]) => { 
-        console.log(result)// Use 'any' type here if your API response does not have a consistent type
-        this.invoices = result.map(invoice => ({
-          ...invoice,
-          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false,
-          customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
-      },
-      error: (error: any) => {
-        console.error('Failed to fetch invoices by NIC', error);
-      }
-    });
-
-    this.searchInvoiceNoControl.valueChanges.pipe(
-      debounceTime(300),
-      distinctUntilChanged(),
-      switchMap((invoiceNo: string) => {
-        if (!invoiceNo) {
-          return this.apiService.getInvoices(this.from,this.to); // Return all invoices if Invoice No is empty
-        }
-        return this.apiService.getInvoiceByInvoiceNo(invoiceNo).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
-        );
-      })
-    ).subscribe({
-      next: (result: any[]) => { // Use 'any' type here if your API response does not have a consistent type
-        this.invoices = result.map(invoice => ({
-          ...invoice,
-          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false,
-          customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
-      },
-      error: (error: any) => {
-        console.error('Failed to fetch invoices by Invoice No', error);
-      }
-    });
   }
-  
-  loadInvoices() {
-    this.apiService.getInvoices(this.from, this.to).subscribe({
-      next: (data: InvoiceDto[]) => {
-        this.invoices = data.map(invoice => ({
-          ...invoice,
-          dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
-          selected: false,
-          customerNIC: invoice.customerNIC,
-          invoiceNo: invoice.invoiceNo
-        }));
-  
-        console.log("invoices: ", this.invoices);
-        this.cdr.markForCheck(); // Trigger change detection
+
+  ngOnChanges(): void {
+    this.loadInvoices();
+  }
+
+  loadInvoices(): void {
+    this.isLoading = true;
+    this.cdr.markForCheck();
+
+    const searchParams = {
+      page: this.currentPage,
+      pageSize: this.pageSize,
+      search: this.searchQuery || undefined,
+      from: this.from,
+      to: this.to,
+      sortBy: 'dateGenerated',
+      sortOrder: 'desc'
+    };
+
+    this.apiService.getInvoicesPaginated(searchParams).subscribe({
+      next: (response: any) => {
+        console.log('Invoice pagination response:', response);
+        
+        if (response && response.data) {
+          this.invoices = response.data.map((invoice: any) => ({
+            ...invoice,
+            dateGenerated: this.dateService.formatDateTime(invoice.dateGenerated),
+            selected: false,
+            customerNIC: invoice.customerNIC,
+            invoiceNo: invoice.invoiceNo,
+            invoiceType: this.getInvoiceType(invoice.invoiceTypeId),
+            loanPeriod: invoice.loanPeriod ? invoice.loanPeriod : 'N/A'
+          }));
+
+          // Update pagination metadata
+          this.currentPage = response.currentPage || 1;
+          this.totalPages = response.totalPages || 1;
+          this.totalRecords = response.totalRecords || 0;
+          this.pageSize = response.pageSize || 10;
+        } else {
+          this.invoices = [];
+          this.totalPages = 1;
+          this.totalRecords = 0;
+        }
+
+        this.isLoading = false;
+        this.cdr.markForCheck();
       },
       error: (error) => {
         console.error('Error fetching invoices:', error);
+        this.isLoading = false;
+        this.invoices = [];
+        this.totalPages = 1;
+        this.totalRecords = 0;
+        this.cdr.markForCheck();
       }
     });
   }
-  
 
+  onSearch(searchQuery: string): void {
+    this.searchQuery = searchQuery;
+    this.currentPage = 1; // Reset to first page
+    this.loadInvoices();
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages && page !== this.currentPage) {
+      this.currentPage = page;
+      this.loadInvoices();
+    }
+  }
+
+  onPageSizeChange(newSize: number): void {
+    this.pageSize = newSize;
+    this.currentPage = 1; // Reset to first page when changing page size
+    this.loadInvoices();
+  }
+
+  get currentPageValue(): number {
+    return this.currentPage;
+  }
   openCreateInvoiceModal() {
     const modalRef = this.modalService.open(CreateInvoiceComponent, { size: 'lg' });
     modalRef.result.then((result) => {
@@ -151,6 +171,7 @@ export class InvoiceFormComponent implements OnInit {
       console.log('Create invoice modal dismissed:', error);
     });
   }
+
   openCreateInvoiceWindow() {
     // Construct the URL to the CreateInvoiceComponent route
     const url = `${window.location.origin}/create-invoice`;
@@ -187,7 +208,6 @@ export class InvoiceFormComponent implements OnInit {
       }
     });
   }
-  
 
   deleteInvoice(invoiceId: number) {
     console.log("invo id: ",invoiceId )
@@ -255,18 +275,24 @@ export class InvoiceFormComponent implements OnInit {
     });
   }
 
-  getStartIndex(): number {
-    return (this.page - 1) * this.invoicesPerPage + 1;
-  }
-
-  getEndIndex(): number {
-    const endIndex = this.page * this.invoicesPerPage;
-    return endIndex > this.invoices.length ? this.invoices.length : endIndex;
+  onTableAction(event: { action: string, item: any }) {
+    switch(event.action) {
+      case 'view':
+        this.viewInvoice(event.item.invoiceId, event.item.invoiceTypeId);
+        break;
+      case 'edit':
+        this.editInvoice(event.item.invoiceId);
+        break;
+      case 'delete':
+        this.deleteInvoice(event.item.invoiceId);
+        break;
+    }
   }
 
   viewInvoiceTemplate() {
     this.router.navigate(['/view-invoice-template/37']);
   }
+
   viewInvoice(invoiceId: number,invoiceTypeId:number) {
     if(invoiceTypeId == 1){
       this.router.navigate([`/view-invoice-template/${invoiceId}`]);
@@ -277,35 +303,103 @@ export class InvoiceFormComponent implements OnInit {
     else if(invoiceTypeId==3){
       this.router.navigate([`/view-settlement-invoice-template/${invoiceId}`]);
     }
-   
   }
-  onStartDateChange(event: any): void {
-    if (event && event.value) {
-      // Create a new UTC date for 'from'
-      const fromDate = new Date(event.value);
-      this.from = new Date(Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0));
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        const fromDate = new Date(dateString);
+        this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+      }
       
-      console.log("this.from (UTC): ", this.from);
+      console.log("this.from (Local): ", this.from);
+      this.currentPage = 1; // Reset to first page
       this.loadInvoices();
     } else {
-      console.error('Start date event or value is null');
+      console.error('Start date is null or empty');
     }
     this.cdr.markForCheck();
   }
   
-  onDateRangeChange(event: any): void {
-    if (event && event.value) {
-      // Create a new UTC date for 'to', and set it to the start of the next day at midnight (12:00 AM)
-      const toDate = new Date(event.value);
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      // Parse date string as local date (YYYY-MM-DD format)
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        const toDate = new Date(dateString);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      }
       
-      // Set 'to' to the next day at 12:00 AM UTC
-      this.to = new Date(Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0));
-      
-      console.log("this.to (UTC): ", this.to);  // This should log the correct 12:00 AM time
+      console.log("this.to (Local): ", this.to);
+      this.currentPage = 1; // Reset to first page
       this.loadInvoices();
     } else {
-      console.error('End date event or value is null');
+      console.error('End date is null or empty');
     }
+    this.cdr.markForCheck();
+  }
+
+  onDateRangeSelected(dateRange: { start: string | null; end: string | null }): void {
+    console.log('Date range selected:', dateRange);
+    
+    if (dateRange.start) {
+      // Parse start date as local date
+      const parts = dateRange.start.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0);
+      } else {
+        const fromDate = new Date(dateRange.start);
+        this.from = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0);
+      }
+    }
+    
+    if (dateRange.end) {
+      // Parse end date as local date
+      const parts = dateRange.end.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day + 1, 0, 0, 0); // +1 day for end date
+      } else {
+        const toDate = new Date(dateRange.end);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0);
+      }
+    }
+    
+    if (dateRange.start || dateRange.end) {
+      this.dateRangeSelected = true;
+      this.currentPage = 1; // Reset to first page
+      this.loadInvoices();
+    } else {
+      this.dateRangeSelected = false;
+    }
+    
+    this.cdr.markForCheck();
+  }
+
+  clearDateFilter(): void {
+    this.from = new Date(this._currentDate);
+    this.to = new Date(this._currentDate);
+    this.from.setDate(this.from.getDate() - 30);
+    this.to.setDate(this.to.getDate() + 1);
+    this.dateRangeSelected = false;
+    this.currentPage = 1; // Reset to first page
+    this.loadInvoices();
     this.cdr.markForCheck();
   }
   
@@ -317,5 +411,4 @@ export class InvoiceFormComponent implements OnInit {
       default: return 'N/A';
     }
   }
-  
 }

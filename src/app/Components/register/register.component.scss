@@ -1,18 +1,23 @@
 .container {
-    background-color: #f8f9fa;
+    background-color: var(--primary-bg);
+    color: var(--primary-text);
   }
   
   .card {
     border-radius: 12px;
+    background-color: var(--card-bg);
+    border-color: var(--border-color);
+    box-shadow: 0 0.5rem 1rem var(--shadow);
+    color: var(--primary-text);
   }
   
   .btn-success {
-    background-color: #28a745;
-    border-color: #28a745;
-  }
-  
-  .btn-success:hover {
-    background-color: #218838;
-    border-color: #1e7e34;
+    background-color: var(--brand-success);
+    border-color: var(--brand-success);
+    
+    &:hover {
+      background-color: var(--success-border);
+      border-color: var(--success-border);
+    }
   }
   

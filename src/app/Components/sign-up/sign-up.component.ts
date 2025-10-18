@@ -4,6 +4,7 @@ import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators }
 import { AuthService } from '../../Services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import Swal from 'sweetalert2';
+import { ServerError } from '../../shared/models/common.models';
 
 @Component({
   selector: 'app-sign-up',
@@ -18,6 +19,7 @@ export class SignUpComponent implements OnInit {
   submitted = false;
   fieldTextType = false;
   year: number = new Date().getFullYear();
+  serverErrors: ServerError[] = [];
 
   constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) { }
 
@@ -31,6 +33,13 @@ export class SignUpComponent implements OnInit {
     }, {
       validator: this.mustMatch('password', 'confirmPassword')
     });
+
+    // Clear server errors when user starts typing
+    this.signUpForm.valueChanges.subscribe(() => {
+      if (this.serverErrors.length > 0) {
+        this.serverErrors = [];
+      }
+    });
   }
 
   get f() {
@@ -39,6 +48,7 @@ export class SignUpComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+    this.serverErrors = []; // Clear previous server errors
 
     if (this.signUpForm.invalid) {
       return;
@@ -49,7 +59,14 @@ export class SignUpComponent implements OnInit {
     const password = this.f['password'].value;
     const role = this.f['role'].value;
 
-    this.authService.register(username, email, password, role).subscribe({
+    const userData = {
+      username,
+      email,
+      password,
+      roles: [role]
+    };
+
+    this.authService.register(userData).subscribe({
       next: () => {
         // Display success SweetAlert2 popup
         Swal.fire({
@@ -64,20 +81,57 @@ export class SignUpComponent implements OnInit {
         });
       },
       error: (err) => {
-        // Display error SweetAlert2 popup
-        Swal.fire({
-          icon: 'error',
-          title: 'Registration Failed',
-          text: 'An error occurred during registration. Please try again later.',
-          confirmButtonText: 'OK',
-        });
-        console.error('Registration failed', err.errors);  // Optional logging
+        console.error('Registration failed', err);
+        
+        // Handle different error response structures
+        if (err.error && err.error.errors && Array.isArray(err.error.errors)) {
+          // Server returned structured errors
+          this.serverErrors = err.error.errors;
+          this.displayStructuredErrors(err.error.message || 'Registration Failed', this.serverErrors);
+        } else if (err.error && err.error.message) {
+          // Server returned a simple error message
+          this.displaySimpleError('Registration Failed', err.error.message);
+        } else if (err.message) {
+          // HTTP error with message
+          this.displaySimpleError('Registration Failed', err.message);
+        } else {
+          // Fallback error
+          this.displaySimpleError('Registration Failed', 'An error occurred during registration. Please try again later.');
+        }
       }
     });
   }
 
   toggleFieldTextType() {
     this.fieldTextType = !this.fieldTextType;
+  }
+
+  /**
+   * Display structured errors with detailed descriptions
+   */
+  displayStructuredErrors(title: string, errors: ServerError[]) {
+    const errorMessages = errors.map(error => 
+      `</strong> ${error.description}`
+    ).join('<br>');
+
+    Swal.fire({
+      icon: 'error',
+      title: title,
+      html: errorMessages,
+      confirmButtonText: 'OK',
+    });
+  }
+
+  /**
+   * Display simple error message
+   */
+  displaySimpleError(title: string, message: string) {
+    Swal.fire({
+      icon: 'error',
+      title: title,
+      text: message,
+      confirmButtonText: 'OK',
+    });
   }
 
   mustMatch(controlName: string, matchingControlName: string) {

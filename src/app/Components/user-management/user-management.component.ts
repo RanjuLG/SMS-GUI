@@ -3,7 +3,6 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
 import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy } from '@angular/core';
@@ -18,8 +17,13 @@ import { HttpClient } from '@angular/common/http';
 import { User } from './user.model';
 import { EditUserComponent } from '../helpers/users/edit-user/edit-user.component';
 
+// Import shared components
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
+
 export interface ExtendedUserDto extends User {
   selected?: boolean;
+  roleDisplay?: string; // Add this for display purposes
 }
 
 
@@ -30,22 +34,67 @@ export interface ExtendedUserDto extends User {
     RouterModule,
     FormsModule, 
     CommonModule, 
-    NgxPaginationModule, 
     ReactiveFormsModule, 
-    JsonPipe,
     MatDatepickerModule,
-    MatHint,
-    MatFormFieldModule, // Import Material Form Field Module
-    MatInputModule,],
+    MatFormFieldModule,
+    MatInputModule,
+    PageHeaderComponent,
+    DataTableComponent
+  ],
   templateUrl: './user-management.component.html',
   styleUrl: './user-management.component.scss'
 })
 export class UserManagementComponent implements OnInit {
   users: ExtendedUserDto[] = [];
   selectedUsers: ExtendedUserDto[] = [];
-  itemsPerPage: number = 10;
+  itemsPerPage: number = 20;
   page: number = 1;
-  itemsPerPageOptions: number[] = [5, 10, 20, 50];
+  itemsPerPageOptions: number[] = [10, 20, 50, 100];
+  loading: boolean = false;
+  searchTerm: string = '';
+
+  // Table configuration for the modern DataTableComponent
+  tableColumns: TableColumn[] = [
+    {
+      key: 'id',
+      label: 'ID',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'userName',
+      label: 'Username',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'email',
+      label: 'Email',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'roleDisplay',
+      label: 'Role',
+      type: 'badge',
+      sortable: true
+    }
+  ];
+
+  tableActions: TableAction[] = [
+    {
+      key: 'edit',
+      label: 'Edit',
+      icon: 'ri-edit-box-line',
+      color: 'warning'
+    },
+    {
+      key: 'delete',
+      label: 'Delete',
+      icon: 'ri-delete-bin-line',
+      color: 'danger'
+    }
+  ];
 
   constructor(private apiService: ApiService, private cdr: ChangeDetectorRef,private modalService: NgbModal, ) {}
 
@@ -54,13 +103,92 @@ export class UserManagementComponent implements OnInit {
   }
 
   loadUserDetails(): void {
+    this.loading = true;
+    console.log("Starting to load user details...");
+    
     this.apiService.getUsers().subscribe({
-      next: (users: ExtendedUserDto[]) => {
-        this.users = users;
-        console.log("Users loaded: ", this.users);
+      next: (response: any) => {
+        console.log("Raw API Response: ", response);
+        console.log("Response type: ", typeof response);
+        console.log("Response keys: ", Object.keys(response || {}));
+        
+        // Extract users from the data property of the response
+        const users = response.data || [];
+        console.log("Extracted users array: ", users);
+        console.log("Users array length: ", users.length);
+        
+        this.users = users.map((user: any) => ({
+          ...user,
+          selected: false,
+          roles: Array.isArray(user.roles) ? user.roles : user.roles ? [user.roles] : [],
+          roleDisplay: Array.isArray(user.roles) 
+            ? (user.roles.length > 0 ? user.roles[0] : 'No role')
+            : user.roles || 'No role'
+        }));
+        
+        this.loading = false;
+        console.log("Final processed users: ", this.users);
+        console.log("Component users array length: ", this.users.length);
       },
       error: (error) => {
         console.error('Error fetching user details:', error);
+        console.error('Error status:', error.status);
+        console.error('Error message:', error.message);
+        this.loading = false;
+      }
+    });
+  }
+
+  // Handle table actions (edit, delete)
+  handleTableAction(event: { action: string, item: ExtendedUserDto }): void {
+    const { action, item } = event;
+    
+    switch (action) {
+      case 'edit':
+        this.editUser(item);
+        break;
+      case 'delete':
+        this.deleteUser(item);
+        break;
+    }
+  }
+
+  // Handle selection changes from data table
+  onSelectionChange(selectedItems: ExtendedUserDto[]): void {
+    this.selectedUsers = selectedItems;
+    // Update selected state in users array
+    this.users.forEach(user => {
+      user.selected = selectedItems.some(selected => selected.id === user.id);
+    });
+  }
+
+  // Add new user (navigate to sign-up)
+  addUser(): void {
+    // This will be handled by the router navigation in the template
+  }
+
+  // Delete individual user
+  deleteUser(user: ExtendedUserDto): void {
+    Swal.fire({
+      title: 'Delete User',
+      text: `Are you sure you want to delete user '${user.userName}'?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dc3545',
+      confirmButtonText: 'Yes, delete it',
+      cancelButtonText: 'Cancel'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiService.deleteUsers([user.id]).subscribe({
+          next: () => {
+            this.loadUserDetails();
+            Swal.fire('Deleted!', 'User has been deleted.', 'success');
+          },
+          error: (error) => {
+            console.error('Error deleting user:', error);
+            Swal.fire('Error!', 'Failed to delete user. Please try again.', 'error');
+          }
+        });
       }
     });
   }

@@ -1,20 +1,25 @@
 .card {
   border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem var(--shadow);
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--primary-text);
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: 500;
+  color: var(--primary-text);
 }
 
 .table thead th {
-  background-color: #f8f9fa;
-  color: #6c757d;
+  background-color: var(--secondary-bg);
+  color: var(--secondary-text);
+  border-color: var(--border-color);
 }
 
 .table tbody tr:hover {
-  background-color: #f1f3f5;
+  background-color: var(--hover-bg);
 }
 
 .table .badge {
@@ -28,7 +33,7 @@
 
 .btn-outline-warning,
 .btn-outline-danger {
-  color: #6c757d;
+  color: var(--secondary-text);
 }
 
 #searchResultList {

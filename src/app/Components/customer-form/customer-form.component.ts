@@ -1,24 +1,22 @@
-import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild,TemplateRef  } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, AfterViewInit, ElementRef, ViewChild, TemplateRef } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddCustomerComponent } from '../helpers/customer/add-customer/add-customer.component';
 import { FormsModule, ReactiveFormsModule, FormControl } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { NgxPaginationModule } from 'ngx-pagination';
 import { ApiService } from '../../Services/api-service.service';
-import { CustomerDto } from './customer.model';
+import { Customer, GetCustomerDTO, CreateCustomerDTO, UpdateCustomerDTO, PaginatedResponse, CustomerSearchRequest } from './customer.model';
 import { DateService } from '../../Services/date-service.service';
-import { JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy } from '@angular/core';
 import { debounceTime, distinctUntilChanged, switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
-import {MatDatepickerModule} from '@angular/material/datepicker';
-import { MatHint } from '@angular/material/form-field';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { RouterLink } from '@angular/router';
+import { ModernDateRangePickerComponent } from '../helpers/modern-date-range-picker/modern-date-range-picker.component';
 
-export interface ExtendedCustomerDto extends CustomerDto {
+// Import shared components
+import { PageHeaderComponent } from '../../shared/components/page-header/page-header.component';
+import { DataTableComponent, TableColumn, TableAction } from '../../shared/components/data-table/data-table.component';
+
+export interface ExtendedCustomerDto extends GetCustomerDTO {
   selected?: boolean;
 }
 
@@ -26,16 +24,12 @@ export interface ExtendedCustomerDto extends CustomerDto {
   selector: 'app-customer-form',
   standalone: true,
   imports: [
-    FormsModule, 
-    CommonModule, 
-    NgxPaginationModule, 
-    ReactiveFormsModule, 
-    JsonPipe,
-    MatDatepickerModule,
-    MatHint,
-    MatFormFieldModule, // Import Material Form Field Module
-    MatInputModule, 
-    RouterLink
+    FormsModule,
+    CommonModule,
+    ReactiveFormsModule,
+    PageHeaderComponent,
+    DataTableComponent,
+    ModernDateRangePickerComponent
   ],
   templateUrl: './customer-form.component.html',
   styleUrls: ['./customer-form.component.scss'],
@@ -44,80 +38,238 @@ export interface ExtendedCustomerDto extends CustomerDto {
 export class CustomerFormComponent implements OnInit {
   customers: ExtendedCustomerDto[] = [];
   page: number = 1;
-  itemsPerPage: number = 10;
-  itemsPerPageOptions: number[] = [1, 5, 10, 15, 20];
+  itemsPerPage: number = 20; // Increased default page size to show more customers
+  itemsPerPageOptions: number[] = [10, 20, 50, 100]; // Updated options for better pagination
   searchControl = new FormControl();
+  pagination: any = null;
+  loading: boolean = false;
+  searchTerm: string = '';
+  sortBy: string = 'createdAt';
+  sortOrder: string = 'desc';
   private readonly _currentDate = new Date();
   readonly maxDate = new Date(this._currentDate);
   from = new Date(this._currentDate);
-  to = new Date(this._currentDate)
-  // Declare selectedCustomer property
+  to = new Date(this._currentDate);
+  isLoading = false;
+  dateRangeSelected = false; // Track if user has selected a date range
   selectedCustomer: ExtendedCustomerDto | null = null;
+
+  get maxDateString(): string {
+    return this.maxDate.toISOString().split('T')[0];
+  }
+
   @ViewChild('datePicker') datePicker!: ElementRef;
-  @ViewChild('nicModal') nicModal!: TemplateRef<any>; // Reference to NIC modal
+  @ViewChild('nicModal') nicModal!: TemplateRef<any>;
+
+  // Table configuration for the existing DataTableComponent
+  tableColumns: TableColumn[] = [
+    {
+      key: 'customerId',
+      label: 'ID',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerName',
+      label: 'Customer Name',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerNIC',
+      label: 'NIC',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerContactNo',
+      label: 'Phone',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'customerAddress',
+      label: 'Address',
+      type: 'text',
+      sortable: true
+    },
+    {
+      key: 'createdAt',
+      label: 'Joining Date',
+      type: 'date',
+      sortable: true
+    }
+  ];
+
+  tableActions: TableAction[] = [
+    {
+      key: 'view',
+      label: 'View NIC',
+      icon: 'ri-eye-line',
+      color: 'info'
+    },
+    {
+      key: 'edit',
+      label: 'Edit',
+      icon: 'ri-edit-box-line',
+      color: 'warning'
+    },
+    {
+      key: 'delete',
+      label: 'Delete',
+      icon: 'ri-delete-bin-line',
+      color: 'danger'
+    }
+  ];
+
   constructor(
-    private modalService: NgbModal, 
-    private apiService: ApiService, 
+    private modalService: NgbModal,
+    private apiService: ApiService,
     private dateService: DateService,
-    private cdr: ChangeDetectorRef // Inject ChangeDetectorRef
+    private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
-    this.from.setDate(this.from.getDate() - 30);
-    this.to.setDate(this.to.getDate() + 1);
-    this.loadCustomers();
+    // Set a very wide date range to show all customers by default
+    // Set from date to a very early date (e.g., 10 years ago)
+    this.from = new Date();
+    this.from.setFullYear(this.from.getFullYear() - 10);
     
-   
+    // Set to date to tomorrow to include all current records
+    this.to = new Date();
+    this.to.setDate(this.to.getDate() + 1);
+    
+    // Load all customers with pagination
+    this.loadCustomers();
+
     this.searchControl.valueChanges.pipe(
       debounceTime(300),
       distinctUntilChanged(),
-      switchMap((nic: string) => {
-        if (!nic) {
-          return this.apiService.getCustomers(this.from,this.to); // Return all customers if NIC is empty
+      switchMap((searchTerm: string) => {
+        this.searchTerm = searchTerm || '';
+        this.page = 1; // Reset to first page when searching
+        if (!searchTerm) {
+          // If no search term, load all customers with pagination
+          const searchParams: CustomerSearchRequest = {
+            from: this.formatDateForAPI(this.from),
+            to: this.formatDateForAPI(this.to),
+            page: this.page,
+            pageSize: this.itemsPerPage,
+            search: this.searchTerm || undefined,
+            sortBy: this.sortBy || undefined,
+            sortOrder: this.sortOrder || undefined
+          };
+          return this.apiService.getCustomers(searchParams);
         }
-        return this.apiService.getCustomerByNIC(nic).pipe(
-          catchError(() => of([])) // Handle errors and return an empty array
+        // If there's a search term, search by NIC
+        return this.apiService.getCustomerByNIC(searchTerm).pipe(
+          catchError(() => of([]))
         );
       })
     ).subscribe({
-      next: (result: CustomerDto[] | CustomerDto) => {
-        if (Array.isArray(result)) {
+      next: (result: any) => {
+        if (result && result.data && Array.isArray(result.data)) {
+          // Handle paginated response
+          this.customers = result.data.map((customer: GetCustomerDTO) => ({
+            ...customer,
+            createdAt: this.dateService.formatDateTime(customer.createdAt),
+            selected: false
+          }));
+          this.pagination = result.pagination;
+        } else if (Array.isArray(result)) {
+          // Handle direct array response
           this.customers = result.map(customer => ({
             ...customer,
             createdAt: this.dateService.formatDateTime(customer.createdAt),
             selected: false
           }));
-        } else {
-          this.customers = result ? [{
+          this.pagination = null;
+        } else if (result) {
+          // Handle single customer response
+          this.customers = [{
             ...result,
             createdAt: this.dateService.formatDateTime(result.createdAt),
             selected: false
-          }] : [];
+          }];
+          this.pagination = null;
+        } else {
+          this.customers = [];
+          this.pagination = null;
         }
-        this.cdr.markForCheck(); // Trigger change detection
+        this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Failed to fetch customer', error);
+        this.cdr.markForCheck();
       }
     });
   }
-  
 
   loadCustomers(): void {
-    this.apiService.getCustomers(this.from, this.to).subscribe({
-      next: (customers: ExtendedCustomerDto[]) => {
-        this.customers = customers.map(customer => ({
+    this.loading = true;
+    
+    const searchParams: CustomerSearchRequest = {
+      from: this.formatDateForAPI(this.from),
+      to: this.formatDateForAPI(this.to),
+      page: this.page,
+      pageSize: this.itemsPerPage,
+      search: this.searchTerm || undefined,
+      sortBy: this.sortBy || undefined,
+      sortOrder: this.sortOrder || undefined
+    };
+
+    this.apiService.getCustomers(searchParams).subscribe({
+      next: (response: PaginatedResponse<GetCustomerDTO>) => {
+        // Handle paginated response according to new API structure
+        this.customers = response.data?.map((customer: GetCustomerDTO) => ({
           ...customer,
           createdAt: this.dateService.formatDateTime(customer.createdAt),
           selected: false
-        }));
-        this.cdr.markForCheck(); // Trigger change detection
-        //console.log("this.customers: ",this.customers)
+        })) || [];
+        this.pagination = response.pagination;
+        this.loading = false;
+        this.cdr.markForCheck();
       },
       error: (error: any) => {
         console.error('Failed to load customers', error);
+        this.loading = false;
+        this.cdr.markForCheck();
       }
     });
+  }
+
+  // Helper method to format Date objects for API calls
+  private formatDateForAPI(date: Date): string {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Handle table actions (view, edit, delete)
+  handleTableAction(event: { action: string, item: ExtendedCustomerDto }): void {
+    const { action, item } = event;
+    
+    switch (action) {
+      case 'view':
+        this.viewNICPhoto(item);
+        break;
+      case 'edit':
+        this.editCustomer(item);
+        break;
+      case 'delete':
+        this.removeCustomer(item);
+        break;
+    }
+  }
+
+  // Handle selection changes from data table
+  onSelectionChange(selectedItems: ExtendedCustomerDto[]): void {
+    // Update selected state in customers array
+    this.customers.forEach(customer => {
+      customer.selected = selectedItems.some(selected => selected.customerId === customer.customerId);
+    });
+    this.cdr.markForCheck();
   }
 
   formatDate(dateString: string): string {
@@ -138,8 +290,7 @@ export class CustomerFormComponent implements OnInit {
         const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
         modalRef.componentInstance.customer = { ...customer };
         modalRef.componentInstance.saveCustomer.subscribe((updatedCustomer: ExtendedCustomerDto) => {
-          // Update the local customers array or reload customers from API
-          this.loadCustomers(); // Reload customers after editing
+          this.loadCustomers();
           Swal.fire('Updated!', 'Customer has been updated.', 'success');
         });
       } else if (result.dismiss === Swal.DismissReason.cancel) {
@@ -147,7 +298,6 @@ export class CustomerFormComponent implements OnInit {
       }
     });
   }
-  
 
   removeCustomer(customer: ExtendedCustomerDto): void {
     Swal.fire({
@@ -162,8 +312,8 @@ export class CustomerFormComponent implements OnInit {
       if (result.isConfirmed) {
         this.apiService.deleteCustomer(customer.customerId).subscribe({
           next: () => {
-            this.loadCustomers(); // Reload customers after deletion
-            this.cdr.markForCheck(); // Trigger change detection
+            this.loadCustomers();
+            this.cdr.markForCheck();
             Swal.fire('Deleted!', 'Customer has been deleted.', 'success');
           },
           error: (error) => {
@@ -196,8 +346,8 @@ export class CustomerFormComponent implements OnInit {
       if (result.isConfirmed) {
         this.apiService.deleteMultipleCustomers(selectedCustomerIds).subscribe({
           next: () => {
-            this.loadCustomers(); // Reload customers after deleting selected customers
-            this.cdr.markForCheck(); // Trigger change detection
+            this.loadCustomers();
+            this.cdr.markForCheck();
             Swal.fire('Deleted!', 'Selected customers have been deleted.', 'success');
           },
           error: (error) => {
@@ -214,14 +364,14 @@ export class CustomerFormComponent implements OnInit {
   selectAll(event: Event): void {
     const checkbox = event.target as HTMLInputElement;
     this.customers.forEach(customer => customer.selected = checkbox.checked);
-    this.cdr.markForCheck(); // Trigger change detection
+    this.cdr.markForCheck();
   }
 
   openAddCustomerModal(): void {
     const modalRef = this.modalService.open(AddCustomerComponent, { size: 'lg' });
     modalRef.componentInstance.saveCustomer.subscribe((customer: ExtendedCustomerDto) => {
-      this.loadCustomers(); // Reload customers after adding a new customer
-      this.cdr.markForCheck(); // Trigger change detection
+      this.loadCustomers();
+      this.cdr.markForCheck();
       Swal.fire('Added!', 'Customer has been added.', 'success');
     });
   }
@@ -234,51 +384,169 @@ export class CustomerFormComponent implements OnInit {
         return customerDate >= new Date(startDate) && customerDate <= new Date(endDate);
       });
     } else {
-      this.loadCustomers(); // Load all customers if no date range selected
+      this.loadCustomers();
     }
-    this.cdr.markForCheck(); // Trigger change detection
+    this.cdr.markForCheck();
   }
 
   getStartIndex(): number {
+    if (this.pagination) {
+      return (this.pagination.currentPage - 1) * this.pagination.pageSize + 1;
+    }
     return (this.page - 1) * this.itemsPerPage + 1;
   }
 
   getEndIndex(): number {
+    if (this.pagination) {
+      const endIndex = this.pagination.currentPage * this.pagination.pageSize;
+      return endIndex > this.pagination.totalItems ? this.pagination.totalItems : endIndex;
+    }
     const endIndex = this.page * this.itemsPerPage;
     return endIndex > this.customers.length ? this.customers.length : endIndex;
   }
-  onStartDateChange(event: any): void {
-    if (event && event.value) {
-      // Create a new UTC date for 'from'
-      const fromDate = new Date(event.value);
-      this.from = new Date(Date.UTC(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate(), 0, 0, 0));
+
+  // New pagination and search event handlers
+  onSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm || '';
+    this.page = 1; // Reset to first page when searching
+    this.loadCustomers();
+  }
+
+  onPageChange(page: number): void {
+    this.page = page;
+    this.loadCustomers();
+  }
+
+  onPageSizeChange(pageSize: number): void {
+    this.itemsPerPage = pageSize;
+    this.page = 1;
+    this.loadCustomers();
+  }
+
+  onSortChange(sortConfig: { sortBy: string, sortOrder: string }): void {
+    this.sortBy = sortConfig.sortBy;
+    this.sortOrder = sortConfig.sortOrder;
+    this.loadCustomers();
+  }
+
+  // Date range handling methods
+  onStartDateChange(dateString: string): void {
+    if (dateString) {
+      console.log("Start date changed:", dateString);
+      // Parse the date string as local date
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0); // Start of day in local time
+      } else {
+        this.from = new Date(dateString);
+      }
       
-      console.log("this.from (UTC): ", this.from);
-      this.loadCustomers();
+      console.log("this.from (Local): ", this.from);
+      
+      // Check if both dates are selected to enable date filtering
+      if (this.from && this.to) {
+        this.dateRangeSelected = true;
+        this.page = 1; // Reset to first page
+        this.loadCustomers();
+      }
     } else {
-      console.error('Start date event or value is null');
+      this.from = new Date(this._currentDate);
+      this.dateRangeSelected = false;
+      console.log('Start date cleared - loading all customers');
+      this.page = 1;
+      this.loadCustomers();
     }
     this.cdr.markForCheck();
   }
-  
-  onDateRangeChange(event: any): void {
-    if (event && event.value) {
-      // Create a new UTC date for 'to', and set it to the start of the next day at midnight (12:00 AM)
-      const toDate = new Date(event.value);
+
+  onDateRangeChange(dateString: string): void {
+    if (dateString) {
+      console.log("End date changed:", dateString);
+      // Parse the date string as local date
+      const parts = dateString.split('-');
+      if (parts.length === 3) {
+        const year = parseInt(parts[0]);
+        const month = parseInt(parts[1]) - 1; // Month is 0-based
+        const day = parseInt(parts[2]);
+        this.to = new Date(year, month, day, 23, 59, 59, 999); // End of day in local time
+      } else {
+        const toDate = new Date(dateString);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999);
+      }
       
-      // Set 'to' to the next day at 12:00 AM UTC
-      this.to = new Date(Date.UTC(toDate.getFullYear(), toDate.getMonth(), toDate.getDate() + 1, 0, 0, 0));
+      console.log("this.to (Local): ", this.to);
       
-      console.log("this.to (UTC): ", this.to);  // This should log the correct 12:00 AM time
-      this.loadCustomers();
+      // Check if both dates are selected to enable date filtering
+      if (this.from && this.to) {
+        this.dateRangeSelected = true;
+        this.page = 1; // Reset to first page
+        this.loadCustomers();
+      }
     } else {
-      console.error('End date event or value is null');
+      this.to = new Date(this._currentDate);
+      this.dateRangeSelected = false;
+      console.log('End date cleared - loading all customers');
+      this.page = 1;
+      this.loadCustomers();
     }
     this.cdr.markForCheck();
   }
+
+  onDateRangeSelected(range: any): void {
+    if (range && range.start && range.end) {
+      // Parse the date strings as local dates
+      const fromParts = range.start.split('-');
+      const toParts = range.end.split('-');
+      
+      if (fromParts.length === 3) {
+        const year = parseInt(fromParts[0]);
+        const month = parseInt(fromParts[1]) - 1; // Month is 0-based
+        const day = parseInt(fromParts[2]);
+        this.from = new Date(year, month, day, 0, 0, 0); // Start of day in local time
+      } else {
+        this.from = new Date(range.start);
+      }
+      
+      if (toParts.length === 3) {
+        const year = parseInt(toParts[0]);
+        const month = parseInt(toParts[1]) - 1; // Month is 0-based
+        const day = parseInt(toParts[2]);
+        this.to = new Date(year, month, day, 23, 59, 59, 999); // End of day in local time
+      } else {
+        const toDate = new Date(range.end);
+        this.to = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate(), 23, 59, 59, 999);
+      }
+      
+      console.log("Date range selected:", { from: this.from, to: this.to });
+      this.dateRangeSelected = true;
+      this.page = 1;
+      this.loadCustomers();
+    } else {
+      this.dateRangeSelected = false;
+      this.from = new Date(this._currentDate);
+      this.to = new Date(this._currentDate);
+      console.log('Date range cleared - loading all customers');
+      this.page = 1;
+      this.loadCustomers();
+    }
+    this.cdr.markForCheck();
+  }
+
+  clearDateFilter(): void {
+    this.from = new Date(this._currentDate);
+    this.to = new Date(this._currentDate);
+    this.dateRangeSelected = false;
+    this.page = 1;
+    this.loadCustomers();
+    this.cdr.markForCheck();
+  }
+
   viewNICPhoto(customer: ExtendedCustomerDto): void {
-    this.selectedCustomer = customer; // Set the selected customer
+    this.selectedCustomer = customer;
     console.log("NIC Photo Path:", this.selectedCustomer?.nicPhotoPath);
-    this.modalService.open(this.nicModal, { size: 'lg' }); // Open modal
+    this.modalService.open(this.nicModal, { size: 'lg' });
   }
 }

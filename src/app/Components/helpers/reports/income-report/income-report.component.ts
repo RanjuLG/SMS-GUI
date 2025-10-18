@@ -70,8 +70,9 @@ export class IncomeReportComponent {
   generateReport(): void {
     if (this.selectedYear !== '' && this.selectedMonth !== '' && this.selectedReportType !== '') {
       // Set the date range based on selected month and year
-      this.from = new Date(+this.selectedYear, +this.selectedMonth, 1);
-      this.to = new Date(+this.selectedYear, this.from.getMonth() + 1, 0); // Last day of the selected month
+      this.from = new Date(Date.UTC(+this.selectedYear, +this.selectedMonth, 1, 0, 0, 0));
+      this.to = new Date(Date.UTC(+this.selectedYear, +this.selectedMonth + 1, 1, 0, 0, 0));
+      
   
       // Hide the transaction history first to reset components
       this.showTransactionHistory = false;
@@ -94,5 +95,37 @@ export class IncomeReportComponent {
       this.cdr.detectChanges();
     }
   }
+
+  generateAllTimeReport(): void {
+    // Set the 'from' date to the earliest possible date (adjust the year/month as needed)
+    const earliestYear = 2000; // You can adjust this to your desired earliest year
+    const earliestMonth = 0;   // January (0 = January in JavaScript Date)
+    this.from = new Date(Date.UTC(earliestYear, earliestMonth, 1, 0, 0, 0));
+  
+    // Set the 'to' date to the current date (same as what you're doing for regular reports)
+    const currentYear = new Date().getUTCFullYear();
+    const nextYear = currentYear + 1;
+    const currentMonth = new Date().getUTCMonth(); // Current month (0-11)
+    const currentDay = new Date().getUTCDate();    // Current day (1-31)
+    this.to = new Date(Date.UTC(nextYear, currentMonth, currentDay, 23, 59, 59));
+  
+    // Hide the transaction history first to reset components
+    this.showTransactionHistory = false;
+  
+    // Trigger Angular change detection to hide the component
+    this.cdr.detectChanges();
+  
+    // Show transaction history again after a short timeout (or next cycle)
+    setTimeout(() => {
+      this.showTransactionHistory = true;
+      // Trigger change detection again after showing the new data
+      this.cdr.detectChanges();
+    }, 0);
+  
+    console.log('From:', this.from);
+    console.log('To:', this.to);
+  }
+  
+  
   
 }

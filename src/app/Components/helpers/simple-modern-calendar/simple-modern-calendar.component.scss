@@ -1,0 +1,124 @@
+/* Simple Modern Calendar Component Styles */
+.modern-calendar-wrapper {
+  position: relative;
+  width: 100%;
+
+  .calendar-input-group {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    .modern-calendar-input {
+      background-color: var(--card-bg) !important;
+      border: 2px solid var(--border-color) !important;
+      border-radius: 0.75rem !important;
+      color: var(--primary-text) !important;
+      padding: 1rem 3rem 1rem 1rem !important;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      width: 100%;
+      
+      &:focus {
+        outline: none;
+        border-color: var(--brand-primary) !important;
+        box-shadow: 0 0 0 0.2rem rgba(var(--brand-primary-rgb), 0.25);
+      }
+      
+      &:hover:not(:disabled) {
+        border-color: var(--brand-primary) !important;
+      }
+      
+      &:disabled {
+        background-color: var(--tertiary-bg) !important;
+        color: var(--secondary-text) !important;
+        cursor: not-allowed;
+        opacity: 0.6;
+      }
+
+      /* Custom date input styling */
+      &::-webkit-calendar-picker-indicator {
+        opacity: 0;
+        position: absolute;
+        right: 1rem;
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+      }
+
+      /* Firefox */
+      &::-moz-placeholder {
+        color: var(--secondary-text) !important;
+      }
+    }
+
+    .calendar-icon {
+      position: absolute;
+      right: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--secondary-text);
+      font-size: 1.25rem;
+      pointer-events: none;
+      transition: color 0.3s ease;
+      z-index: 1;
+      
+      &.disabled {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  &:hover .calendar-icon:not(.disabled) {
+    color: var(--brand-primary);
+  }
+}
+
+/* Dark Theme Specific Styles */
+.dark-theme {
+  .modern-calendar-input {
+    background-color: var(--secondary-bg) !important;
+    
+    &::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+  }
+}
+
+/* Size variants */
+.modern-calendar-wrapper {
+  &.size-sm .modern-calendar-input {
+    padding: 0.5rem 2.5rem 0.5rem 0.75rem !important;
+    font-size: 0.875rem;
+  }
+  
+  &.size-lg .modern-calendar-input {
+    padding: 1.25rem 3.5rem 1.25rem 1.25rem !important;
+    font-size: 1.125rem;
+  }
+}
+
+/* Theme variants */
+.modern-calendar-wrapper {
+  &.theme-rounded .modern-calendar-input {
+    border-radius: 2rem !important;
+  }
+  
+  &.theme-minimal .modern-calendar-input {
+    border: none !important;
+    border-bottom: 2px solid var(--border-color) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    
+    &:focus {
+      border-bottom-color: var(--brand-primary) !important;
+      box-shadow: none;
+    }
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modern-calendar-wrapper .modern-calendar-input {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+}

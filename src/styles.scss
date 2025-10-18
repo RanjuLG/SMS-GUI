@@ -1,48 +1,578 @@
 /* You can add global styles to this file, and also import other style files */
 
+/* Import Flatpickr CSS */
+@import 'flatpickr/dist/flatpickr.min.css';
+
+/* Import Mobile Responsive Utilities */
+@import './app/shared/styles/mobile-responsive.scss';
+
+/* Enhanced Theme Variables with improved dark mode support */
+:root {
+  /* Light Theme Colors */
+  --primary-bg: #ffffff;
+  --secondary-bg: #f8f9fa;
+  --tertiary-bg: #e9ecef;
+  --quaternary-bg: #f1f3f5;
+  --primary-text: #212529;
+  --secondary-text: #6c757d;
+  --muted-text: #868e96;
+  --placeholder-text: #adb5bd;
+  --border-color: #dee2e6;
+  --light-border: #e9ecef;
+  --dark-border: #ced4da;
+  --shadow: rgba(0, 0, 0, 0.1);
+  --light-shadow: rgba(0, 0, 0, 0.05);
+  --medium-shadow: rgba(0, 0, 0, 0.15);
+  --card-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --navbar-bg: #ffffff;
+  --hover-bg: #f8f9fa;
+  --overlay-bg: rgba(255, 255, 255, 0.9);
+  --backdrop-bg: rgba(0, 0, 0, 0.5);
+  --modal-bg: #ffffff;
+  --dropdown-bg: #ffffff;
+  --table-stripe-bg: rgba(0, 0, 0, 0.05);
+  --table-hover-bg: rgba(0, 0, 0, 0.075);
+  --input-bg: #ffffff;
+  --input-border: #ced4da;
+  --input-focus-border: #86b7fe;
+  --input-focus-shadow: rgba(13, 110, 253, 0.25);
+  
+  /* Status and Feedback Colors */
+  --success-bg: rgba(103, 177, 115, 0.1);
+  --success-border: #67b173;
+  --warning-bg: rgba(255, 200, 75, 0.1);
+  --warning-border: #ffc84b;
+  --danger-bg: rgba(241, 113, 113, 0.1);
+  --danger-border: #f17171;
+  --info-bg: rgba(41, 186, 219, 0.1);
+  --info-border: #29badb;
+  
+  /* Brand Colors */
+  --brand-primary: #3d78e3;
+  --brand-primary-rgb: 61, 120, 227;
+  --brand-secondary: #6559cc;
+  --brand-success: #67b173;
+  --brand-warning: #ffc84b;
+  --brand-danger: #f17171;
+  --brand-info: #29badb;
+  --brand-gold: #ecc766;
+  --brand-blue: #0e2c60;
+  
+  /* Interactive States */
+  --link-color: #3d78e3;
+  --link-hover-color: #2860ce;
+  --button-hover-shadow: 0 2px 8px rgba(61, 120, 227, 0.3);
+  --button-active-shadow: 0 1px 4px rgba(61, 120, 227, 0.4);
+}
+
+[data-theme="dark"], .dark-theme {
+  /* Dark Theme Colors */
+  --primary-bg: #0f1419;
+  --secondary-bg: #1a1f29;
+  --tertiary-bg: #2d3748;
+  --quaternary-bg: #1e2532;
+  --primary-text: #e2e8f0;
+  --secondary-text: #a0aec0;
+  --muted-text: #718096;
+  --placeholder-text: #4a5568;
+  --border-color: #2d3748;
+  --light-border: #4a5568;
+  --dark-border: #1a202c;
+  --shadow: rgba(0, 0, 0, 0.4);
+  --light-shadow: rgba(0, 0, 0, 0.2);
+  --medium-shadow: rgba(0, 0, 0, 0.6);
+  --card-bg: #1a1f29;
+  --sidebar-bg: #151a23;
+  --navbar-bg: #151a23;
+  --hover-bg: #2d3748;
+  --overlay-bg: rgba(15, 20, 25, 0.9);
+  --backdrop-bg: rgba(0, 0, 0, 0.8);
+  --modal-bg: #1a1f29;
+  --dropdown-bg: #1a1f29;
+  --table-stripe-bg: rgba(255, 255, 255, 0.02);
+  --table-hover-bg: rgba(255, 255, 255, 0.05);
+  --input-bg: #2d3748;
+  --input-border: #4a5568;
+  --input-focus-border: #63b3ed;
+  --input-focus-shadow: rgba(66, 153, 225, 0.25);
+  
+  /* Status and Feedback Colors for Dark Mode */
+  --success-bg: rgba(104, 211, 145, 0.15);
+  --success-border: #68d391;
+  --warning-bg: rgba(246, 224, 94, 0.15);
+  --warning-border: #f6e05e;
+  --danger-bg: rgba(252, 129, 129, 0.15);
+  --danger-border: #fc8181;
+  --info-bg: rgba(99, 179, 237, 0.15);
+  --info-border: #63b3ed;
+  
+  /* Adjust brand colors for dark mode */
+  --brand-primary: #4299e1;
+  --brand-primary-rgb: 66, 153, 225;
+  --brand-secondary: #805ad5;
+  --brand-success: #68d391;
+  --brand-warning: #f6e05e;
+  --brand-danger: #fc8181;
+  --brand-info: #63b3ed;
+  --brand-gold: #f7dc6f;
+  --brand-blue: #3182ce;
+  
+  /* Interactive States for Dark Mode */
+  --link-color: #4299e1;
+  --link-hover-color: #63b3ed;
+  --button-hover-shadow: 0 2px 8px rgba(66, 153, 225, 0.4);
+  --button-active-shadow: 0 1px 4px rgba(66, 153, 225, 0.5);
+}
+
+/* Apply theme variables to global elements */
+body {
+  background-color: var(--primary-bg);
+  color: var(--primary-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  color: var(--primary-text) !important;
+}
+
+.card-header {
+  background-color: var(--secondary-bg) !important;
+  border-bottom-color: var(--border-color) !important;
+  color: var(--primary-text) !important;
+}
+
+.card-body {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
+}
+
+.card-footer {
+  background-color: var(--secondary-bg) !important;
+  border-top-color: var(--border-color) !important;
+  color: var(--primary-text) !important;
+}
+
+.table {
+  --bs-table-bg: var(--card-bg);
+  --bs-table-color: var(--primary-text);
+  --bs-table-border-color: var(--border-color);
+  --bs-table-hover-bg: var(--tertiary-bg);
+  --bs-table-striped-bg: var(--secondary-bg);
+  --bs-table-active-bg: var(--tertiary-bg);
+  color: var(--primary-text);
+  border-color: var(--border-color);
+}
+
+.table thead th {
+  background-color: var(--secondary-bg) !important;
+  color: var(--primary-text) !important;
+  border-color: var(--border-color) !important;
+}
+
+.table tbody tr {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
+  border-color: var(--border-color) !important;
+}
+
+.table tbody tr:hover {
+  background-color: var(--tertiary-bg) !important;
+}
+
+.form-control, .form-select {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--primary-text) !important;
+  
+  &:focus {
+    background-color: var(--input-bg) !important;
+    border-color: var(--input-focus-border) !important;
+    color: var(--primary-text) !important;
+    box-shadow: 0 0 0 0.2rem var(--input-focus-shadow) !important;
+  }
+  
+  &::placeholder {
+    color: var(--placeholder-text) !important;
+  }
+  
+  &:disabled {
+    background-color: var(--tertiary-bg) !important;
+    color: var(--muted-text) !important;
+    border-color: var(--light-border) !important;
+  }
+}
+
+.input-group-text {
+  background-color: var(--secondary-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--primary-text) !important;
+}
+
+.pagination {
+  .page-link {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--primary-text) !important;
+    
+    &:hover {
+      background-color: var(--tertiary-bg) !important;
+      border-color: var(--border-color) !important;
+      color: var(--primary-text) !important;
+    }
+    
+    &:focus {
+      background-color: var(--card-bg) !important;
+      border-color: var(--brand-primary) !important;
+      box-shadow: 0 0 0 0.2rem rgba(61, 120, 227, 0.25) !important;
+    }
+  }
+  
+  .page-item.active .page-link {
+    background-color: var(--brand-primary) !important;
+    border-color: var(--brand-primary) !important;
+    color: white !important;
+  }
+  
+  .page-item.disabled .page-link {
+    background-color: var(--tertiary-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--secondary-text) !important;
+  }
+}
+
+.modal-content {
+  background-color: var(--modal-bg);
+  border-color: var(--border-color);
+  color: var(--primary-text);
+  box-shadow: 0 0.5rem 1rem var(--shadow);
+}
+
+.modal-header {
+  border-bottom-color: var(--border-color);
+  background-color: var(--secondary-bg);
+}
+
+.modal-footer {
+  border-top-color: var(--border-color);
+  background-color: var(--secondary-bg);
+}
+
+.modal-backdrop {
+  background-color: var(--backdrop-bg);
+}
+
+.dropdown-menu {
+  background-color: var(--dropdown-bg) !important;
+  border-color: var(--border-color) !important;
+  box-shadow: 0 0.5rem 1rem var(--shadow) !important;
+  
+  .dropdown-item {
+    color: var(--primary-text) !important;
+    
+    &:hover, &:focus {
+      background-color: var(--hover-bg) !important;
+      color: var(--primary-text) !important;
+    }
+    
+    &.active {
+      background-color: var(--brand-primary) !important;
+      color: white !important;
+    }
+    
+    &:disabled {
+      color: var(--muted-text) !important;
+    }
+  }
+  
+  .dropdown-header {
+    color: var(--secondary-text) !important;
+  }
+  
+  .dropdown-divider {
+    border-color: var(--light-border) !important;
+  }
+}
+
+.list-group {
+  .list-group-item {
+    background-color: var(--card-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--primary-text) !important;
+    
+    &:hover {
+      background-color: var(--tertiary-bg) !important;
+    }
+    
+    &.active {
+      background-color: var(--brand-primary) !important;
+      border-color: var(--brand-primary) !important;
+      color: white !important;
+    }
+  }
+}
+
+.nav-tabs {
+  border-bottom-color: var(--border-color) !important;
+  
+  .nav-link {
+    color: var(--primary-text) !important;
+    border-color: var(--border-color) !important;
+    
+    &:hover {
+      border-color: var(--border-color) !important;
+      background-color: var(--tertiary-bg) !important;
+    }
+    
+    &.active {
+      background-color: var(--card-bg) !important;
+      border-color: var(--border-color) var(--border-color) var(--card-bg) !important;
+      color: var(--primary-text) !important;
+    }
+  }
+}
+
+.nav-pills {
+  .nav-link {
+    color: var(--primary-text) !important;
+    
+    &:hover {
+      background-color: var(--tertiary-bg) !important;
+    }
+    
+    &.active {
+      background-color: var(--brand-primary) !important;
+      color: white !important;
+    }
+  }
+}
+
+.alert {
+  border-color: var(--border-color) !important;
+  
+  &.alert-primary {
+    background-color: rgba(61, 120, 227, 0.1) !important;
+    border-color: var(--brand-primary) !important;
+    color: var(--brand-primary) !important;
+  }
+  
+  &.alert-secondary {
+    background-color: var(--tertiary-bg) !important;
+    color: var(--primary-text) !important;
+  }
+  
+  &.alert-success {
+    background-color: rgba(103, 177, 115, 0.1) !important;
+    border-color: var(--brand-success) !important;
+    color: var(--brand-success) !important;
+  }
+  
+  &.alert-warning {
+    background-color: rgba(255, 200, 75, 0.1) !important;
+    border-color: var(--brand-warning) !important;
+    color: var(--brand-warning) !important;
+  }
+  
+  &.alert-danger {
+    background-color: rgba(241, 113, 113, 0.1) !important;
+    border-color: var(--brand-danger) !important;
+    color: var(--brand-danger) !important;
+  }
+  
+  &.alert-info {
+    background-color: rgba(41, 186, 219, 0.1) !important;
+    border-color: var(--brand-info) !important;
+    color: var(--brand-info) !important;
+  }
+}
+
 td, th{
-
     font-size: 0.7rem;
-
 }
+
 h4{
-
   font-size: 1.1rem !important;
-
 }
+
 h5{
-
   font-size: 1rem !important;
-
 }
+
 .form-select {
   font-size: 0.7rem !important;
 }
+
 .entries-info {
   font-size: 0.7rem !important;
 }
+
 pagination-controls {
   font-size: 0.7rem !important;
 }
+
 .nav-link, .dropdown-item{
   font-size: 0.8rem !important;
 }
+
 input::placeholder {
   font-size: 0.8rem !important;
-  
+  color: var(--secondary-text);
 }
+
 mat-label{
   font-size: 0.9rem !important;
 }
+
 button{
   font-size: 0.8rem !important;
 }
+
 .form-label{
   font-size: 0.8rem !important;
+  color: var(--primary-text);
 }
+
 .modal-title{
-font-weight: bold !important;
+  font-weight: bold !important;
   font-size: 0.9rem !important;
+}
+
+/* Enhanced Button Theming */
+.btn {
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  
+  &:focus {
+    box-shadow: none !important;
+    outline: none !important;
+  }
+  
+  &.btn-primary {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+    border: 1px solid var(--brand-primary) !important;
+    
+    &:hover {
+      background-color: var(--link-hover-color) !important;
+      border-color: var(--link-hover-color) !important;
+      box-shadow: var(--button-hover-shadow);
+      transform: translateY(-1px);
+    }
+    
+    &:active {
+      background-color: var(--link-hover-color) !important;
+      box-shadow: var(--button-active-shadow);
+      transform: translateY(0);
+    }
+    
+    &:disabled {
+      background-color: var(--muted-text) !important;
+      border-color: var(--muted-text) !important;
+      opacity: 0.6;
+    }
+  }
+  
+  &.btn-secondary {
+    background-color: var(--secondary-bg) !important;
+    color: var(--primary-text) !important;
+    border: 1px solid var(--border-color) !important;
+    
+    &:hover {
+      background-color: var(--tertiary-bg) !important;
+      border-color: var(--dark-border) !important;
+      box-shadow: 0 2px 8px var(--light-shadow);
+    }
+    
+    &:active {
+      background-color: var(--tertiary-bg) !important;
+    }
+  }
+  
+  &.btn-success {
+    background-color: var(--brand-success) !important;
+    color: white !important;
+    border: 1px solid var(--brand-success) !important;
+    
+    &:hover {
+      background-color: var(--success-border) !important;
+      border-color: var(--success-border) !important;
+      box-shadow: 0 2px 8px rgba(103, 177, 115, 0.4);
+    }
+  }
+  
+  &.btn-warning {
+    background-color: var(--brand-warning) !important;
+    color: var(--primary-text) !important;
+    border: 1px solid var(--brand-warning) !important;
+    
+    &:hover {
+      background-color: var(--warning-border) !important;
+      border-color: var(--warning-border) !important;
+      box-shadow: 0 2px 8px rgba(255, 200, 75, 0.4);
+    }
+  }
+  
+  &.btn-danger {
+    background-color: var(--brand-danger) !important;
+    color: white !important;
+    border: 1px solid var(--brand-danger) !important;
+    
+    &:hover {
+      background-color: var(--danger-border) !important;
+      border-color: var(--danger-border) !important;
+      box-shadow: 0 2px 8px rgba(241, 113, 113, 0.4);
+    }
+  }
+  
+  &.btn-info {
+    background-color: var(--brand-info) !important;
+    color: white !important;
+    border: 1px solid var(--brand-info) !important;
+    
+    &:hover {
+      background-color: var(--info-border) !important;
+      border-color: var(--info-border) !important;
+      box-shadow: 0 2px 8px rgba(41, 186, 219, 0.4);
+    }
+  }
+  
+  &.btn-outline-primary {
+    background-color: transparent !important;
+    color: var(--brand-primary) !important;
+    border: 1px solid var(--brand-primary) !important;
+    
+    &:hover {
+      background-color: var(--brand-primary) !important;
+      color: white !important;
+      box-shadow: var(--button-hover-shadow);
+    }
+  }
+  
+  &.btn-outline-secondary {
+    background-color: transparent !important;
+    color: var(--primary-text) !important;
+    border: 1px solid var(--border-color) !important;
+    
+    &:hover {
+      background-color: var(--secondary-bg) !important;
+      border-color: var(--dark-border) !important;
+    }
+  }
+  
+  /* Link buttons */
+  &.btn-link {
+    color: var(--link-color) !important;
+    text-decoration: none;
+    
+    &:hover {
+      color: var(--link-hover-color) !important;
+      text-decoration: underline;
+    }
+  }
 }
 
 .btn-close ,.btn {
@@ -50,75 +580,1236 @@ font-weight: bold !important;
   outline: none !important;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Angular Material Theme Support */
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--input-bg);
+    
+    .mat-mdc-form-field-flex {
+      background-color: var(--input-bg);
+    }
+  }
+  
+  .mat-mdc-form-field-label {
+    color: var(--secondary-text);
+  }
+  
+  .mat-mdc-form-field-required-marker {
+    color: var(--brand-danger);
+  }
+  
+  &.mat-focused .mat-mdc-form-field-label {
+    color: var(--brand-primary);
+  }
+  
+  .mat-mdc-form-field-error {
+    color: var(--brand-danger);
+  }
+  
+  .mat-mdc-form-field-hint {
+    color: var(--secondary-text);
+  }
+}
 
-/* Custom CSS for Muted Colors */
+.mat-mdc-input-element {
+  color: var(--primary-text);
+  
+  &::placeholder {
+    color: var(--placeholder-text);
+  }
+}
+
+.mat-mdc-select {
+  color: var(--primary-text);
+  
+  .mat-mdc-select-trigger {
+    color: var(--primary-text);
+  }
+  
+  .mat-mdc-select-arrow {
+    color: var(--secondary-text);
+  }
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--dropdown-bg);
+  
+  .mat-mdc-option {
+    color: var(--primary-text);
+    
+    &:hover:not(.mdc-list-item--disabled) {
+      background-color: var(--hover-bg);
+    }
+    
+    &.mat-mdc-option-active {
+      background-color: var(--brand-primary);
+      color: white;
+    }
+  }
+}
+
+.mat-datepicker-popup {
+  background-color: var(--modal-bg);
+  color: var(--primary-text);
+  
+  .mat-calendar {
+    background-color: var(--modal-bg);
+    color: var(--primary-text);
+  }
+  
+  .mat-calendar-header {
+    background-color: var(--secondary-bg);
+    
+    .mat-calendar-arrow {
+      border-top-color: var(--primary-text);
+    }
+  }
+  
+  .mat-calendar-table {
+    .mat-calendar-body-cell {
+      color: var(--primary-text);
+      
+      &:hover {
+        background-color: var(--hover-bg);
+      }
+      
+      &.mat-calendar-body-selected {
+        background-color: var(--brand-primary);
+        color: white;
+      }
+      
+      &.mat-calendar-body-today {
+        border-color: var(--brand-primary);
+      }
+    }
+  }
+}
+
+/* Flatpickr Theme Support */
+.flatpickr-calendar {
+  background: var(--modal-bg);
+  border: 1px solid var(--border-color);
+  color: var(--primary-text);
+  
+  .flatpickr-months {
+    background: var(--secondary-bg);
+    
+    .flatpickr-month {
+      color: var(--primary-text);
+    }
+    
+    .flatpickr-prev-month,
+    .flatpickr-next-month {
+      color: var(--secondary-text);
+      
+      &:hover {
+        color: var(--primary-text);
+      }
+    }
+  }
+  
+  .flatpickr-weekdays {
+    background: var(--tertiary-bg);
+    
+    .flatpickr-weekday {
+      color: var(--secondary-text);
+    }
+  }
+  
+  .flatpickr-days {
+    .flatpickr-day {
+      color: var(--primary-text);
+      
+      &:hover {
+        background: var(--hover-bg);
+        border-color: var(--hover-bg);
+      }
+      
+      &.selected,
+      &.startRange,
+      &.endRange {
+        background: var(--brand-primary);
+        border-color: var(--brand-primary);
+        color: white;
+      }
+      
+      &.today {
+        border-color: var(--brand-primary);
+      }
+      
+      &.flatpickr-disabled {
+        color: var(--muted-text);
+      }
+    }
+  }
+  
+  .flatpickr-current-month {
+    .flatpickr-monthDropdown-months,
+    .numInputWrapper {
+      background: var(--input-bg);
+      color: var(--primary-text);
+      border-color: var(--border-color);
+    }
+  }
+}
+
+/* SweetAlert2 Theme Support */
+.swal2-popup {
+  background-color: var(--modal-bg) !important;
+  color: var(--primary-text) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.swal2-title {
+  color: var(--primary-text) !important;
+}
+
+.swal2-content {
+  color: var(--secondary-text) !important;
+}
+
+.swal2-confirm {
+  background-color: var(--brand-primary) !important;
+  border: none !important;
+  
+  &:hover {
+    background-color: var(--link-hover-color) !important;
+  }
+}
+
+.swal2-cancel {
+  background-color: var(--secondary-bg) !important;
+  color: var(--primary-text) !important;
+  border: 1px solid var(--border-color) !important;
+  
+  &:hover {
+    background-color: var(--tertiary-bg) !important;
+  }
+}
+
+.swal2-input,
+.swal2-textarea {
+  background-color: var(--input-bg) !important;
+  color: var(--primary-text) !important;
+  border-color: var(--input-border) !important;
+  
+  &:focus {
+    border-color: var(--input-focus-border) !important;
+    box-shadow: 0 0 0 0.2rem var(--input-focus-shadow) !important;
+  }
+}
+
+/* Bootstrap Tooltip and Popover Theme Support */
+.tooltip {
+  .tooltip-inner {
+    background-color: var(--tertiary-bg);
+    color: var(--primary-text);
+  }
+  
+  &.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: var(--tertiary-bg);
+  }
+  
+  &.bs-tooltip-end .tooltip-arrow::before {
+    border-right-color: var(--tertiary-bg);
+  }
+  
+  &.bs-tooltip-bottom .tooltip-arrow::before {
+    border-bottom-color: var(--tertiary-bg);
+  }
+  
+  &.bs-tooltip-start .tooltip-arrow::before {
+    border-left-color: var(--tertiary-bg);
+  }
+}
+
+.popover {
+  background-color: var(--modal-bg);
+  border-color: var(--border-color);
+  
+  .popover-header {
+    background-color: var(--secondary-bg);
+    border-bottom-color: var(--border-color);
+    color: var(--primary-text);
+  }
+  
+  .popover-body {
+    color: var(--primary-text);
+  }
+}
+
+/* Additional theme utilities */
+.text-theme-primary {
+  color: var(--primary-text) !important;
+}
+
+.text-theme-secondary {
+  color: var(--secondary-text) !important;
+}
+
+.text-theme-muted {
+  color: var(--muted-text) !important;
+}
+
+.bg-theme-primary {
+  background-color: var(--primary-bg) !important;
+}
+
+.bg-theme-secondary {
+  background-color: var(--secondary-bg) !important;
+}
+
+.bg-theme-card {
+  background-color: var(--card-bg) !important;
+}
+
+.border-theme {
+  border-color: var(--border-color) !important;
+}
+
+.shadow-theme {
+  box-shadow: 0 0.125rem 0.25rem var(--light-shadow) !important;
+}
+
+.shadow-theme-lg {
+  box-shadow: 0 0.5rem 1rem var(--shadow) !important;
+}
+
+html, body { 
+  height: 100%; 
+  background-color: var(--primary-bg) !important;
+  color: var(--primary-text) !important;
+}
+body { 
+  margin: 0; 
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+  /* Improve mobile text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Prevent horizontal scrolling on mobile */
+  overflow-x: hidden;
+}
+
+/* Mobile-first responsive breakpoints */
+:root {
+  /* Add mobile-specific sizing variables */
+  --mobile-sidebar-width: 280px;
+  --tablet-sidebar-width: 260px;
+  --mobile-header-height: 60px;
+  --tablet-header-height: 70px;
+  --desktop-header-height: 80px;
+  
+  /* Touch-friendly sizing */
+  --touch-target-min: 44px;
+  --mobile-spacing: 1rem;
+  --tablet-spacing: 1.5rem;
+}
+
+/* Global mobile and tablet responsiveness */
+
+/* Mobile-first responsive design utilities */
+.container, .container-fluid {
+  padding-left: var(--mobile-spacing);
+  padding-right: var(--mobile-spacing);
+  
+  @media (min-width: 768px) {
+    padding-left: var(--tablet-spacing);
+    padding-right: var(--tablet-spacing);
+  }
+  
+  @media (min-width: 992px) {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  }
+}
+
+/* Touch-friendly button sizing */
+.btn, button {
+  min-height: var(--touch-target-min);
+  padding: 0.75rem 1rem;
+  
+  @media (max-width: 767.98px) {
+    font-size: 0.875rem !important;
+    padding: 0.875rem 1.25rem;
+  }
+}
+
+/* Mobile-optimized form controls */
+.form-control, .form-select {
+  min-height: var(--touch-target-min);
+  font-size: 16px; /* Prevent zoom on iOS */
+  
+  @media (max-width: 767.98px) {
+    padding: 0.875rem 1rem;
+  }
+}
+
+/* Mobile-optimized tables */
+.table-responsive {
+  @media (max-width: 767.98px) {
+    font-size: 0.75rem;
+    
+    th, td {
+      padding: 0.5rem 0.25rem;
+      white-space: nowrap;
+    }
+    
+    /* Horizontal scroll with better UX */
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    
+    &::-webkit-scrollbar {
+      height: 6px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: var(--secondary-bg);
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 3px;
+    }
+  }
+}
+
+/* Mobile card optimizations */
+.card {
+  @media (max-width: 767.98px) {
+    margin-bottom: 1rem;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px var(--shadow);
+  }
+  
+  @media (max-width: 575.98px) {
+    margin-left: -0.5rem;
+    margin-right: -0.5rem;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+}
+
+.card-header {
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+}
+
+.card-body {
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+  }
+  
+  @media (max-width: 575.98px) {
+    padding: 0.75rem;
+  }
+}
+
+/* Mobile modal optimizations */
+.modal-dialog {
+  @media (max-width: 767.98px) {
+    margin: 0.5rem;
+    max-width: calc(100% - 1rem);
+  }
+  
+  @media (max-width: 575.98px) {
+    margin: 0;
+    max-width: 100%;
+    height: 100%;
+    
+    .modal-content {
+      height: 100%;
+      border-radius: 0;
+      border: none;
+    }
+  }
+}
+
+.modal-header {
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+    
+    .modal-title {
+      font-size: 1.1rem;
+    }
+    
+    .btn-close {
+      padding: 0.75rem;
+      margin: -0.75rem -0.75rem -0.75rem auto;
+    }
+  }
+}
+
+.modal-body {
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+    max-height: calc(100vh - 200px);
+    overflow-y: auto;
+  }
+  
+  @media (max-width: 575.98px) {
+    padding: 0.75rem;
+    max-height: calc(100vh - 140px);
+  }
+}
+
+.modal-footer {
+  @media (max-width: 767.98px) {
+    padding: 1rem;
+    
+    .btn {
+      flex: 1;
+      margin: 0 0.25rem;
+    }
+  }
+}
+
+/* Dropdown menu mobile optimization */
+.dropdown-menu {
+  @media (max-width: 767.98px) {
+    max-width: 90vw;
+    font-size: 0.875rem;
+    
+    .dropdown-item {
+      padding: 0.875rem 1rem;
+    }
+  }
+}
+
+/* Pagination mobile optimization */
+.pagination {
+  @media (max-width: 767.98px) {
+    justify-content: center;
+    
+    .page-link {
+      padding: 0.75rem;
+      margin: 0 0.125rem;
+      min-width: var(--touch-target-min);
+      text-align: center;
+    }
+    
+    /* Hide non-essential pagination items on mobile */
+    .page-item:not(.active):not(:first-child):not(:last-child):not(.page-item-prev):not(.page-item-next) {
+      display: none;
+    }
+  }
+}
+
+/* Alert mobile optimization */
+.alert {
+  @media (max-width: 767.98px) {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    
+    .alert-heading {
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+/* Badge mobile optimization */
+.badge {
+  @media (max-width: 767.98px) {
+    font-size: 0.75rem;
+    padding: 0.375rem 0.5rem;
+  }
+}
+
+/* Input group mobile optimization */
+.input-group {
+  @media (max-width: 767.98px) {
+    .input-group-text {
+      padding: 0.875rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+/* List group mobile optimization */
+.list-group {
+  @media (max-width: 767.98px) {
+    .list-group-item {
+      padding: 1rem;
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+      
+      &:first-child {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+      
+      &:last-child {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
+}
+
+/* Navigation mobile optimization */
+.nav {
+  @media (max-width: 767.98px) {
+    .nav-link {
+      padding: 0.875rem 1rem;
+      font-size: 0.875rem;
+    }
+  }
+}
+
+/* Breadcrumb mobile optimization */
+.breadcrumb {
+  @media (max-width: 767.98px) {
+    padding: 0.75rem 1rem;
+    font-size: 0.75rem;
+    margin-bottom: 1rem;
+    
+    .breadcrumb-item {
+      &::before {
+        padding-right: 0.25rem;
+        padding-left: 0.25rem;
+      }
+    }
+  }
+  
+  @media (max-width: 575.98px) {
+    /* Show only last 2 breadcrumb items on small screens */
+    .breadcrumb-item:not(:nth-last-child(-n+2)) {
+      display: none;
+    }
+    
+    /* Add ellipsis indicator */
+    &::before {
+      content: "...";
+      color: var(--secondary-text);
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+/* Progress bar mobile optimization */
+.progress {
+  @media (max-width: 767.98px) {
+    height: 0.75rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Spinner mobile optimization */
+.spinner-border, .spinner-grow {
+  @media (max-width: 767.98px) {
+    width: 2rem;
+    height: 2rem;
+  }
+}
+
+/* Tooltip mobile adjustments */
+.tooltip {
+  @media (max-width: 767.98px) {
+    display: none !important; /* Hide tooltips on touch devices */
+  }
+}
+
+/* Popover mobile optimization */
+.popover {
+  @media (max-width: 767.98px) {
+    max-width: 90vw;
+    font-size: 0.875rem;
+  }
+}
+
+/* Toast mobile optimization */
+.toast {
+  @media (max-width: 767.98px) {
+    max-width: 90vw;
+    margin: 0.5rem;
+  }
+}
+
+/* Offcanvas mobile optimization */
+.offcanvas {
+  @media (max-width: 767.98px) {
+    width: 90vw;
+    max-width: 320px;
+  }
+}
+
+/* Mobile utility classes */
+@media (max-width: 575.98px) {
+  .mobile-hide { display: none !important; }
+  .mobile-show { display: block !important; }
+  .mobile-text-center { text-align: center !important; }
+  .mobile-w-100 { width: 100% !important; }
+  .mobile-mb-3 { margin-bottom: 1rem !important; }
+  .mobile-p-2 { padding: 0.5rem !important; }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .tablet-hide { display: none !important; }
+  .tablet-show { display: block !important; }
+}
+
+@media (min-width: 768px) {
+  .desktop-hide { display: none !important; }
+  .desktop-show { display: block !important; }
+}
+
+/* Landscape orientation optimizations */
+@media (max-width: 896px) and (orientation: landscape) {
+  .modal-dialog {
+    height: 95vh;
+    margin: 2.5vh auto;
+    
+    .modal-content {
+      height: 100%;
+      
+      .modal-body {
+        max-height: calc(95vh - 120px);
+        overflow-y: auto;
+      }
+    }
+  }
+  
+  .page-content {
+    padding: 0.75rem;
+  }
+}
+
+/* Force all white backgrounds to use theme variables */
+* {
+  &[style*="background-color: white"],
+  &[style*="background-color: #fff"],
+  &[style*="background-color: #ffffff"] {
+    background-color: var(--card-bg) !important;
+  }
+  
+  &[style*="background-color: #f8f9fa"],
+  &[style*="background-color: #e9ecef"] {
+    background-color: var(--secondary-bg) !important;
+  }
+}
+
+/* Additional Bootstrap component overrides */
+.offcanvas {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
+  border-color: var(--border-color) !important;
+}
+
+.offcanvas-header {
+  border-bottom-color: var(--border-color) !important;
+}
+
+.toast {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
+  border-color: var(--border-color) !important;
+}
+
+.popover {
+  background-color: var(--card-bg) !important;
+  border-color: var(--border-color) !important;
+  
+  .popover-header {
+    background-color: var(--secondary-bg) !important;
+    border-bottom-color: var(--border-color) !important;
+    color: var(--primary-text) !important;
+  }
+  
+  .popover-body {
+    color: var(--primary-text) !important;
+  }
+}
+
+.tooltip .tooltip-inner {
+  background-color: var(--primary-text) !important;
+  color: var(--primary-bg) !important;
+}
+
+/* Override any remaining hardcoded backgrounds */
+.bg-white {
+  background-color: var(--card-bg) !important;
+}
+
+.bg-light {
+  background-color: var(--secondary-bg) !important;
+}
+
+.text-muted {
+  color: var(--secondary-text) !important;
+}
+
+.text-dark {
+  color: var(--primary-text) !important;
+}
+
+.border {
+  border-color: var(--border-color) !important;
+}
+
+.border-top {
+  border-top-color: var(--border-color) !important;
+}
+
+.border-bottom {
+  border-bottom-color: var(--border-color) !important;
+}
+
+.border-left {
+  border-left-color: var(--border-color) !important;
+}
+
+/* Angular Material Dark Mode Support */
+.mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--primary-bg) !important;
+  }
+  
+  .mat-mdc-form-field-input-control {
+    color: var(--primary-text) !important;
+  }
+  
+  .mat-mdc-form-field-label {
+    color: var(--secondary-text) !important;
+  }
+}
+
+.mat-mdc-select {
+  background-color: var(--primary-bg) !important;
+  color: var(--primary-text) !important;
+}
+
+.mat-mdc-select-panel {
+  background-color: var(--card-bg) !important;
+}
+
+.mat-mdc-option {
+  color: var(--primary-text) !important;
+  
+  &:hover {
+    background-color: var(--tertiary-bg) !important;
+  }
+  
+  &.mat-mdc-option-active {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+  }
+}
+
+.mat-mdc-dialog-container {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
+}
+
+/* Date picker specific */
+.mat-datepicker-popup {
+  background-color: var(--card-bg) !important;
+}
+
+.mat-calendar {
+  background-color: var(--card-bg) !important;
+  color: var(--primary-text) !important;
+}
+
+.mat-calendar-header {
+  background-color: var(--secondary-bg) !important;
+  color: var(--primary-text) !important;
+}
+
+.mat-calendar-table-header {
+  color: var(--secondary-text) !important;
+}
+
+.mat-calendar-body-cell {
+  color: var(--primary-text) !important;
+  
+  &:hover {
+    background-color: var(--tertiary-bg) !important;
+  }
+}
+
+.mat-calendar-body-selected {
+  background-color: var(--brand-primary) !important;
+  color: white !important;
+}
+
+.mat-calendar-body-today {
+  border-color: var(--brand-primary) !important;
+}
+
+/* Enhanced Dark Mode Calendar Styles */
+[data-theme="dark"], .dark-theme {
+  /* Date picker popup overlay */
+  .mat-datepicker-popup {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    box-shadow: 0 4px 12px var(--shadow) !important;
+  }
+
+  /* Calendar container */
+  .mat-calendar {
+    background-color: var(--card-bg) !important;
+    color: var(--primary-text) !important;
+  }
+
+  /* Calendar header with navigation */
+  .mat-calendar-header {
+    background-color: var(--secondary-bg) !important;
+    color: var(--primary-text) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+  }
+
+  /* Calendar navigation buttons */
+  .mat-calendar-previous-button,
+  .mat-calendar-next-button {
+    color: var(--primary-text) !important;
+    
+    &:hover {
+      background-color: var(--tertiary-bg) !important;
+    }
+  }
+
+  /* Calendar period button (month/year selector) */
+  .mat-calendar-period-button {
+    color: var(--primary-text) !important;
+    
+    &:hover {
+      background-color: var(--tertiary-bg) !important;
+    }
+  }
+
+  /* Calendar table headers (day names) */
+  .mat-calendar-table-header {
+    color: var(--secondary-text) !important;
+    background-color: var(--secondary-bg) !important;
+  }
+
+  .mat-calendar-table-header th {
+    color: var(--secondary-text) !important;
+    font-weight: 500 !important;
+  }
+
+  /* Calendar body cells (date numbers) */
+  .mat-calendar-body-cell {
+    color: var(--primary-text) !important;
+    background-color: transparent !important;
+    
+    &:hover:not(.mat-calendar-body-disabled) {
+      background-color: var(--tertiary-bg) !important;
+    }
+    
+    &.mat-calendar-body-disabled {
+      color: var(--secondary-text) !important;
+      opacity: 0.5;
+    }
+  }
+
+  /* Calendar cell content */
+  .mat-calendar-body-cell-content {
+    color: inherit !important;
+    border-radius: 50%;
+    transition: all 0.2s ease-in-out;
+  }
+
+  /* Selected date range */
+  .mat-calendar-body-selected {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+  }
+
+  .mat-calendar-body-in-range {
+    background-color: rgba(var(--brand-primary-rgb), 0.2) !important;
+    color: var(--primary-text) !important;
+  }
+
+  .mat-calendar-body-range-start,
+  .mat-calendar-body-range-end {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+  }
+
+  /* Today's date */
+  .mat-calendar-body-today:not(.mat-calendar-body-selected) {
+    border-color: var(--brand-primary) !important;
+    color: var(--brand-primary) !important;
+  }
+
+  /* Calendar year/month view */
+  .mat-calendar-body-label {
+    color: var(--primary-text) !important;
+  }
+
+  /* Date range picker specific styles */
+  .mat-date-range-picker {
+    background-color: var(--card-bg) !important;
+  }
+
+  /* Form field for date picker */
+  .mat-mdc-form-field {
+    &:has(.mat-date-range-input) {
+      .mat-mdc-text-field-wrapper {
+        background-color: var(--card-bg) !important;
+        border-color: var(--border-color) !important;
+      }
+
+      .mat-mdc-form-field-input-control {
+        color: var(--primary-text) !important;
+      }
+
+      .mat-mdc-form-field-label {
+        color: var(--secondary-text) !important;
+      }
+    }
+  }
+
+  /* Date picker toggle button */
+  .mat-datepicker-toggle {
+    color: var(--secondary-text) !important;
+    
+    &:hover {
+      color: var(--brand-primary) !important;
+    }
+  }
+
+  /* Multi-year view */
+  .mat-calendar-body-cell.mat-calendar-body-active {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+  }
+}
+
+/* Global Material Form Field Dark Mode Overrides */
+[data-theme="dark"] .mat-mdc-form-field,
+.dark-theme .mat-mdc-form-field {
+  .mat-mdc-text-field-wrapper {
+    background-color: var(--secondary-bg) !important;
+    border: 1px solid var(--border-color) !important;
+  }
+  
+  .mat-mdc-form-field-input-control {
+    color: var(--primary-text) !important;
+    
+    &::placeholder {
+      color: var(--secondary-text) !important;
+    }
+  }
+  
+  .mat-mdc-form-field-label {
+    color: var(--secondary-text) !important;
+    
+    &.mat-mdc-form-field-label-floating {
+      color: var(--brand-primary) !important;
+    }
+  }
+  
+  &.mat-focused {
+    .mat-mdc-text-field-wrapper {
+      border-color: var(--brand-primary) !important;
+    }
+  }
+}
+
+/* Custom CSS for Muted Colors with Theme Support */
 
 /* Primary Button */
 .btn-primary {
-  background-color: #3d78e3 !important;
-  border-color:  #3d78e3 !important;
+  background-color: var(--brand-primary) !important;
+  border-color: var(--brand-primary) !important;
+  color: #ffffff !important;
+}
+
+.btn-purple {
+  background-color: var(--brand-secondary) !important;
+  border-color: var(--brand-secondary) !important;
   color: #ffffff !important;
 }
 
 /* Secondary Button */
 .btn-danger {
-  background-color: #f17171 !important;
+  background-color: var(--brand-danger) !important;
   color: #ffffff !important;
-  border-color: #f17171 !important;
+  border-color: var(--brand-danger) !important;
 }
 
 /* Success Button */
 .btn-success {
-  background-color: #67b173 !important;
-  border-color:  #67b173 !important;
+  background-color: var(--brand-success) !important;
+  border-color: var(--brand-success) !important;
   color: #ffffff !important;
 }
 
 /* Warning Button */
 .btn-warning {
-  background-color: #ffc84b !important;
-  border-color:  #ffc84b !important;
+  background-color: var(--brand-warning) !important;
+  border-color: var(--brand-warning) !important;
   color: #ffffff !important;
 }
 
 .btn-info{
-
-    background-color: #29badb !important;
-    border-color:  #29badb !important;
-    color: #ffffff !important;
+  background-color: var(--brand-info) !important;
+  border-color: var(--brand-info) !important;
+  color: #ffffff !important;
 }
 
 .btn-secondary{
-
-  background-color: #b8b4b49a !important;
-  border-color:  #b8b4b49a !important;
+  background-color: var(--secondary-text) !important;
+  border-color: var(--secondary-text) !important;
   color: #ffffff !important;
 }
-
 
 .btn-blue{
-  background-color: #0e2c60 !important;
-  border-color:  #0e2c60 !important;
+  background-color: var(--brand-blue) !important;
+  border-color: var(--brand-blue) !important;
   color: #ffffff !important;
-  
 }
+
 .btn-gold{
-  background-color: #ecc766 !important;
-  border-color:  #ecc766 !important;
+  background-color: var(--brand-gold) !important;
+  border-color: var(--brand-gold) !important;
   color: #000000 !important;
-  
 }
 
 .breadcrumb {
-  font-size: 0.875rem !important;/* Smaller text */
+  font-size: 0.875rem !important;
+  color: var(--secondary-text) !important;
+  background-color: var(--secondary-bg) !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.375rem !important;
+  
+  .breadcrumb-item {
+    color: var(--secondary-text) !important;
+    
+    &.active {
+      color: var(--primary-text) !important;
+    }
+  }
 }
 
 .breadcrumb a {
-  text-decoration: none !important; /* Remove underline */
+  text-decoration: none !important;
+  color: var(--brand-primary) !important;
 }
 
 .breadcrumb a:hover {
-  text-decoration: underline !important; /* Optional: underline on hover */
+  text-decoration: underline !important;
+}
+
+.badge {
+  &.bg-primary {
+    background-color: var(--brand-primary) !important;
+    color: white !important;
+  }
+  
+  &.bg-secondary {
+    background-color: var(--secondary-text) !important;
+    color: white !important;
+  }
+  
+  &.bg-success {
+    background-color: var(--brand-success) !important;
+    color: white !important;
+  }
+  
+  &.bg-warning {
+    background-color: var(--brand-warning) !important;
+    color: black !important;
+  }
+  
+  &.bg-danger {
+    background-color: var(--brand-danger) !important;
+    color: white !important;
+  }
+  
+  &.bg-info {
+    background-color: var(--brand-info) !important;
+    color: white !important;
+  }
+  
+  &.bg-light {
+    background-color: var(--tertiary-bg) !important;
+    color: var(--primary-text) !important;
+  }
+  
+  &.bg-dark {
+    background-color: var(--primary-text) !important;
+    color: var(--primary-bg) !important;
+  }
+}
+
+/* Table Theme Overrides */
+.table {
+  --bs-table-bg: var(--card-bg) !important;
+  --bs-table-color: var(--primary-text) !important;
+  color: var(--primary-text) !important;
+  background-color: var(--card-bg) !important;
+  
+  th {
+    color: var(--primary-text) !important;
+    border-color: var(--border-color) !important;
+  }
+  
+  td {
+    color: var(--primary-text) !important;
+    border-color: var(--border-color) !important;
+  }
+}
+
+.table-light {
+  --bs-table-bg: var(--secondary-bg) !important;
+  --bs-table-color: var(--secondary-text) !important;
+  background-color: var(--secondary-bg) !important;
+  
+  th {
+    background-color: var(--secondary-bg) !important;
+    color: var(--secondary-text) !important;
+    border-color: var(--border-color) !important;
+  }
+  
+  td {
+    background-color: var(--secondary-bg) !important;
+    color: var(--secondary-text) !important;
+    border-color: var(--border-color) !important;
+  }
+}
+
+.table-hover > tbody > tr:hover {
+  --bs-table-hover-bg: var(--hover-bg) !important;
+  color: var(--primary-text) !important;
+}
+
+/* Flatpickr Security Fix - Prevent CSS Rules Access Errors */
+.flatpickr-calendar {
+  z-index: 9999 !important;
+  position: fixed !important;
+  overflow: visible !important;
+}
+
+.flatpickr-calendar.static {
+  position: absolute !important;
+}
+
+/* Additional Flatpickr positioning fixes */
+.flatpickr-wrapper {
+  position: relative !important;
+}
+
+/* Ensure calendar doesn't get clipped */
+body {
+  overflow-x: visible !important;
+}
+
+.container-fluid,
+.container {
+  overflow: visible !important;
+}
+
+/* Prevent calendar positioning errors in modals and dropdowns */
+.modal .flatpickr-calendar,
+.dropdown .flatpickr-calendar {
+  z-index: 99999 !important;
 }

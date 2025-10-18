@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../Services/auth.service';
 import { Router } from '@angular/router';
+import { NotificationService } from '../../Services/notification.service';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -19,7 +20,12 @@ export class SignInComponent implements OnInit {
   fieldTextType = false;
   year: number = new Date().getFullYear();
 
-  constructor(private formBuilder: UntypedFormBuilder, private authService: AuthService, private router: Router) { }
+  constructor(
+    private formBuilder: UntypedFormBuilder, 
+    private authService: AuthService, 
+    private router: Router,
+    private notificationService: NotificationService
+  ) { }
 
   ngOnInit(): void {
     this.loginForm = this.formBuilder.group({
@@ -41,8 +47,24 @@ export class SignInComponent implements OnInit {
 
     this.authService.login(username, password).subscribe({
       next: () => {
+        console.log('Login successful, checking token...');
+        const token = localStorage.getItem('token');
+        console.log('Token after login:', token ? token.substring(0, 50) + '...' : 'No token found');
+        
         Swal.fire('Login Successful', 'You have logged in successfully.', 'success');
-        this.router.navigate(['/']);
+        
+        // Check user role and navigate accordingly
+        const userRole = this.authService.currentUserRole;
+        console.log('User role after login:', userRole);
+        
+        if (userRole === 'Admin' || userRole === 'Cashier' || userRole === 'SuperAdmin') {
+          // User has valid role, navigate to overview
+          this.router.navigate(['/overview']);
+        } else {
+          // User has logged in successfully but doesn't have the right permissions
+          // Navigate to profile page where they can see their status
+          this.router.navigate(['/profile']);
+        }
       },
       error: (err) => {
         console.error('Login failed', err);

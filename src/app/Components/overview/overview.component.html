@@ -1,89 +1,478 @@
-<div class="container-fluid my-4">
+<div class="modern-overview">
+  <!-- Page Header -->
+  <app-page-header 
+    [title]="greeting + ', ' + userName + '!'" 
+    [subtitle]="'Today is ' + currentDate + '. Manage your jewelry shop operations efficiently.'"
+    [showActions]="false"
+    [showBreadcrumbs]="false">
+  </app-page-header>
 
-  <!-- Shortcut Panel at the top -->
-  <div class="row mb-5 justify-content-center shortcut-panel">
-    <div class="col-auto">
-      <div class="shortcut-item text-center" routerLink="/create-invoice">
-        <img src="overview/createInvoice2.png" alt="Create Invoice" class="shortcut-icon" data-bs-toggle="tooltip"
-          data-bs-placement="right" data-bs-original-title="Create Invoice">
-      </div>
+  <!-- Quick Actions Cards -->
+  <div class="row mb-5">
+    <div class="col-12 mb-3">
+      <h4 class="section-title">
+        <i class="ri-rocket-line me-2"></i>
+        Quick Actions
+      </h4>
+      <p class="section-subtitle">Fast access to frequently used features</p>
     </div>
-    <div class="col-auto">
-      <div class="shortcut-item text-center" routerLink="/reports/by-customer">
-        <img src="reports/customer.png" alt="Customer History" class="shortcut-icon" data-bs-toggle="tooltip"
-          data-bs-placement="right" data-bs-original-title="Customer History">
-      </div>
-    </div>
-  </div>
-<!-- Summary Statistics -->
-<div class="row mb-4 g-3 justify-content-center">
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Total Active Loans</h6>
-        <!-- Use Angular binding to update the value dynamically -->
-        <span class="widget-value" id="total-loans">{{ totalLoans }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Total Invoices</h6>
-        <span class="widget-value" id="total-invoices">{{ totalInvoices }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Revenue Generated</h6>
-        <span class="widget-value" id="total-revenue">Rs.{{ totalRevenue }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Inventory Count</h6>
-        <span class="widget-value" id="inventory-count">{{ inventoryCount }}</span>
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="card widget-card shadow-sm">
-      <div class="card-body text-center">
-        <h6>Customer Count</h6>
-        <span class="widget-value" id="customer-count">{{ customerCount }}</span>
-      </div>
-    </div>
-  </div>
-</div>
-
-</div>
-  <!-- Dashboard Charts Section 
-  <div class="row justify-content-center">
-    <div class="col-lg-4 col-md-6 mb-3">
-      <div class="card h-100 shadow-sm">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="card-title" style="padding-left: 2%;">Revenue Summary</h5>
-            -->
-
-            <!-- Date Range Selector Icons
-            <div class="date-range-selector d-flex gap-2">
-              <button class="btn btn-sm range-btn" id="btn-7D" (click)="updateChartData('7D', 'btn-7D')">7D</button>
-              <button class="btn btn-sm range-btn" id="btn-31D" (click)="updateChartData('31D', 'btn-31D')">31D</button>
-              <button class="btn btn-sm range-btn" id="btn-12M" (click)="updateChartData('12M', 'btn-12M')">12M</button>
-              <button class="btn btn-sm range-btn" id="btn-5Y" (click)="updateChartData('5Y', 'btn-5Y')">5Y</button>
-            </div>
+    <div class="col-12">
+      <div class="quick-actions-grid">
+        <div class="quick-action-item" routerLink="/create-invoice">
+          <div class="action-icon">
+            <i class="ri-file-add-line"></i>
           </div>
-           -->
+          <div class="action-content">
+            <h6>Create Invoice</h6>
+            <p>Generate new loans and invoices quickly</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
+        </div>
 
-          <!-- Chart 
-          <canvas baseChart [data]="lineChartData" [options]="lineChartOptions" chartType="line"></canvas>
+        <div class="quick-action-item" routerLink="/reports/by-customer">
+          <div class="action-icon">
+            <i class="ri-user-search-line"></i>
+          </div>
+          <div class="action-content">
+            <h6>Customer History</h6>
+            <p>View detailed transaction history</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
+        </div>
+
+        <div class="quick-action-item" routerLink="/customers">
+          <div class="action-icon">
+            <i class="ri-user-3-line"></i>
+          </div>
+          <div class="action-content">
+            <h6>Manage Customers</h6>
+            <p>Add and manage customer profiles</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
+        </div>
+
+        <div class="quick-action-item" routerLink="/items">
+          <div class="action-icon">
+            <i class="ri-archive-line"></i>
+          </div>
+          <div class="action-content">
+            <h6>Inventory</h6>
+            <p>Manage jewelry items and stock</p>
+          </div>
+          <div class="action-arrow">
+            <i class="ri-arrow-right-line"></i>
+          </div>
         </div>
       </div>
     </div>
   </div>
-  -->
+
+  <!-- Statistics Cards -->
+  <div class="row mb-4">
+    <div class="col-12 mb-3">
+      <h4 class="section-title">
+        <i class="ri-dashboard-line me-2"></i>
+        Business Overview
+      </h4>
+      <p class="section-subtitle">Monitor your jewelry shop's key performance indicators</p>
+    </div>
+    
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="col-12">
+      <div class="loading-container">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading dashboard data...</p>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div *ngIf="!isLoading" class="row">
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-primary">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-file-list-3-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ totalLoans | number:'1.0-0' }}</div>
+              <div class="stat-label">Active Loans</div>
+              <div class="stat-trend positive" *ngIf="totalLoans > 0">
+                <i class="ri-arrow-up-line"></i>
+                <span>{{ totalLoans > 5 ? 'High' : 'Low' }} Activity</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-success">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-bill-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ totalInvoices | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Invoices</div>
+              <div class="stat-trend positive" *ngIf="totalInvoices > 0">
+                <i class="ri-arrow-up-line"></i>
+                <span>{{ totalInvoices > 20 ? 'Excellent' : 'Good' }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-warning">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-money-dollar-circle-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">Rs. {{ totalRevenue | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Revenue</div>
+              <div class="stat-trend positive" *ngIf="totalRevenue > 0">
+                <i class="ri-arrow-up-line"></i>
+                <span>Generated</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-info">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-archive-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ inventoryCount | number:'1.0-0' }}</div>
+              <div class="stat-label">Inventory Items</div>
+              <div class="stat-trend neutral" *ngIf="inventoryCount > 0">
+                <i class="ri-checkbox-circle-line"></i>
+                <span>In Stock</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-purple">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-user-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ customerCount | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Customers</div>
+              <div class="stat-trend positive" *ngIf="customerCount > 0">
+                <i class="ri-group-line"></i>
+                <span>Registered</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-danger">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-hand-coin-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">Rs. {{ totalOutstanding | number:'1.0-0' }}</div>
+              <div class="stat-label">Outstanding Amount</div>
+              <div class="stat-trend negative" *ngIf="totalOutstanding > 0">
+                <i class="ri-error-warning-line"></i>
+                <span>Pending</span>
+              </div>
+              <div class="stat-trend positive" *ngIf="totalOutstanding === 0">
+                <i class="ri-check-line"></i>
+                <span>All Clear</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-teal">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-check-double-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ settledLoans | number:'1.0-0' }}</div>
+              <div class="stat-label">Settled Loans</div>
+              <div class="stat-trend positive" *ngIf="settledLoans > 0">
+                <i class="ri-check-line"></i>
+                <span>Completed</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6 mb-3">
+        <div class="stat-card stat-card-dark">
+          <div class="stat-content">
+            <div class="stat-icon">
+              <i class="ri-exchange-line"></i>
+            </div>
+            <div class="stat-details">
+              <div class="stat-number">{{ totalTransactions | number:'1.0-0' }}</div>
+              <div class="stat-label">Total Transactions</div>
+              <div class="stat-trend neutral" *ngIf="totalTransactions > 0">
+                <i class="ri-pulse-line"></i>
+                <span>Activity</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity Section -->
+  <div class="row">
+    <div class="col-lg-8 mb-4">
+      <app-card title="Recent Activities" [showHeaderActions]="true">
+        <div slot="header-actions">
+          <button 
+            class="btn btn-sm btn-outline-secondary rounded-pill me-2"
+            (click)="loadRecentActivities()"
+            [disabled]="isActivitiesLoading">
+            <i class="ri-refresh-line me-1"></i>
+            Refresh
+          </button>
+          
+          <!-- Dropdown for View All options -->
+          <div class="btn-group" role="group">
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline-primary rounded-pill"
+              (click)="viewAllActivities()">
+              <i class="ri-external-link-line me-1"></i>
+              View All
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm btn-outline-primary dropdown-toggle dropdown-toggle-split rounded-pill" 
+              data-bs-toggle="dropdown" 
+              aria-expanded="false">
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" (click)="viewTransactionHistory()">
+                  <i class="ri-exchange-line me-2"></i>
+                  All Transactions
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" (click)="viewReports()">
+                  <i class="ri-file-chart-line me-2"></i>
+                  Reports & Analytics
+                </a>
+              </li>
+              <li>
+                <a class="dropdown-item" (click)="viewCustomers()">
+                  <i class="ri-user-line me-2"></i>
+                  Customer Management
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <a class="dropdown-item" routerLink="/invoices">
+                  <i class="ri-file-list-line me-2"></i>
+                  All Invoices
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <!-- Loading State -->
+        <div *ngIf="isActivitiesLoading" class="text-center py-5">
+          <div class="loading-activity-container">
+            <div class="loading-spinner-activity"></div>
+            <p class="loading-text mt-3">Loading recent activities...</p>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="activitiesError && !isActivitiesLoading" class="alert alert-warning py-3 mb-3">
+          <div class="d-flex align-items-center">
+            <i class="ri-error-warning-line me-2 fs-5"></i>
+            <div>
+              <strong>Unable to load activities</strong>
+              <br>
+              <small>{{ activitiesError }}. Showing sample data instead.</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activities List -->
+        <div class="activity-list modern-activities" *ngIf="!isActivitiesLoading">
+          <div 
+            class="activity-item modern-activity-item" 
+            *ngFor="let activity of recentActivities; trackBy: trackByActivityId"
+            [attr.data-activity-type]="activity.type">
+            
+            <div class="activity-icon-wrapper">
+              <div class="activity-icon" [ngClass]="activity.iconBg">
+                <i [class]="activity.icon"></i>
+              </div>
+            </div>
+            
+            <div class="activity-content">
+              <div class="activity-header">
+                <div class="activity-title">{{ activity.title }}</div>
+                <div class="activity-time">
+                  <i class="ri-time-line me-1"></i>
+                  {{ activity.time }}
+                </div>
+              </div>
+              <div class="activity-description">{{ activity.description }}</div>
+              <div class="activity-meta">
+                <span class="activity-type-badge" [attr.data-type]="activity.type">
+                  {{ activity.type | titlecase }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="activity-status">
+              <span class="badge modern-badge" [ngClass]="activity.statusBg">
+                {{ activity.status }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="recentActivities.length === 0" class="empty-activities-state">
+            <div class="empty-icon">
+              <i class="ri-history-line"></i>
+            </div>
+            <h6>No Recent Activities</h6>
+            <p class="text-muted mb-0">Activities will appear here as they occur in your jewelry shop.</p>
+          </div>
+        </div>
+      </app-card>
+    </div>
+
+    <div class="col-lg-4 mb-4">
+      <app-card title="System Health" [showHeaderActions]="false">
+        <!-- Loading State -->
+        <div *ngIf="isHealthLoading" class="text-center py-4">
+          <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+          <span class="text-muted">Loading health data...</span>
+        </div>
+
+        <!-- Error State -->
+        <div *ngIf="healthError && !isHealthLoading" class="alert alert-warning py-2 mb-3">
+          <i class="ri-error-warning-line me-2"></i>
+          <small>{{ healthError }}</small>
+        </div>
+
+        <div class="status-list" *ngIf="!isHealthLoading">
+          <!-- Database Health - COMMENTED OUT TO REDUCE RESOURCE USAGE -->
+          <!-- <div class="status-item">
+            <div class="status-indicator" [ngClass]="getDatabaseStatusClass()"></div>
+            <div class="status-content">
+              <div class="status-title">Database Connection</div>
+              <div class="status-description">
+                <span *ngIf="databaseHealth?.status === 'connected'">Connected and optimized</span>
+                <span *ngIf="databaseHealth?.status === 'error'">Connection failed</span>
+                <span *ngIf="databaseHealth?.status === 'disconnected'">Connection lost</span>
+                <span *ngIf="!databaseHealth">Checking status...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ (databaseHealth && databaseHealth.uptime) ? (databaseHealth.uptime + '%') : '--' }}
+              </span>
+            </div>
+          </div> -->
+
+          <!-- API Services Health - COMMENTED OUT TO REDUCE RESOURCE USAGE -->
+          <!-- <div class="status-item">
+            <div class="status-indicator" [ngClass]="getServicesStatusClass()"></div>
+            <div class="status-content">
+              <div class="status-title">API Services</div>
+              <div class="status-description">
+                <span *ngIf="servicesHealth?.status === 'healthy'">All endpoints operational</span>
+                <span *ngIf="servicesHealth?.status === 'degraded'">Some services degraded</span>
+                <span *ngIf="servicesHealth?.status === 'unhealthy'">Services unavailable</span>
+                <span *ngIf="!servicesHealth">Checking services...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ servicesHealth?.services?.length || '--' }}
+              </span>
+            </div>
+          </div> -->
+
+          <!-- Backup Status - KEPT ACTIVE -->
+          <div class="status-item">
+            <div class="status-indicator" [ngClass]="getBackupStatusClass()"></div>
+            <div class="status-content">
+              <div class="status-title">Backup Service</div>
+              <div class="status-description">
+                {{ getBackupStatusDescription() }}
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value" *ngIf="shouldShowBackupIcon()">
+                <i [class]="getBackupIconClass()"></i>
+              </span>
+              <span class="metric-value" *ngIf="!shouldShowBackupIcon()">
+                {{ getBackupMetricValue() }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Storage Usage - COMMENTED OUT TO REDUCE RESOURCE USAGE -->
+          <!-- <div class="status-item">
+            <div class="status-indicator" [ngClass]="getStorageStatusClass()"></div>
+            <div class="status-content">
+              <div class="status-title">Storage Usage</div>
+              <div class="status-description">
+                <span *ngIf="storageUsage?.database?.status === 'normal'">Database storage normal</span>
+                <span *ngIf="storageUsage?.database?.status === 'warning'">Storage usage high</span>
+                <span *ngIf="storageUsage?.database?.status === 'critical'">Storage critical</span>
+                <span *ngIf="!storageUsage">Checking storage...</span>
+              </div>
+            </div>
+            <div class="status-metric">
+              <span class="metric-value">
+                {{ (storageUsage && storageUsage.database && storageUsage.database.percentage) ? (storageUsage.database.percentage + '%') : '--' }}
+              </span>
+            </div>
+          </div> -->
+        </div>
+
+        <!-- Refresh Button -->
+        <div class="d-flex justify-content-center mt-3" *ngIf="!isHealthLoading">
+          <button 
+            class="btn btn-sm btn-outline-secondary rounded-pill"
+            (click)="loadSystemHealth()"
+            [disabled]="isHealthLoading">
+            <i class="ri-refresh-line me-1"></i>
+            Refresh Status
+          </button>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

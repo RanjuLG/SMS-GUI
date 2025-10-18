@@ -20,7 +20,13 @@ export class RegisterComponent {
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit() {
-    this.authService.register(this.username, this.email, this.password, this.role).subscribe({
+    const userData = {
+      username: this.username,
+      email: this.email,
+      password: this.password,
+      roles: [this.role]
+    };
+    this.authService.register(userData).subscribe({
       next: () => this.router.navigate(['/auth/sign-in']),
       error: (err) => console.error(err),
     });

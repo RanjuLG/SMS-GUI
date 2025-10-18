@@ -1,102 +1,234 @@
-<div class="container-fluid p-0">
-  <nav class="navbar navbar-expand-sm navbar-light bg-light">
-    <div class="container-fluid">
-      <a class="navbar-brand text-style" href="#">
-        <img src="GoldCashLogo.png" alt="Gold Cash" class="navbar-logo"> Gold Cash
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown"
-        aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNavDropdown">
-        <ul class="navbar-nav ms-auto">
-          <!--
-          <li class="nav-item">
-            <a class="nav-link text-muted" routerLink="/overview" routerLinkActive="active-link">
-              <i class="ri-home-2-line nav-icon"></i> Home
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-muted" href="#" id="invoiceDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ri-article-line nav-icon"></i> Invoice
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="invoiceDropdown">
-              <li><a class="dropdown-item" routerLink="/invoices" routerLinkActive="active-link">View Invoices</a></li>
-              <li><a class="dropdown-item" routerLink="/create-invoice" routerLinkActive="active-link">Create
-                  Invoice</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-muted" href="#" id="customerDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ri-user-3-line nav-icon"></i> Customers
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="customerDropdown">
-              <li><a class="dropdown-item" routerLink="/customers" routerLinkActive="active-link">View Customers</a>
-              </li>
-              <li><a class="dropdown-item" (click)="openAddCustomerModal()" routerLinkActive="active-link">Add
-                  Customer</a></li>
-            </ul>
-          </li>
-
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-muted" href="#" id="itemDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ri-archive-line nav-icon"></i> Inventory
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="itemDropdown">
-              <li><a class="dropdown-item" routerLink="/items" routerLinkActive="active-link">View Inventory</a>
-              </li>
-              <li><a class="dropdown-item" (click)="openAddItemModal()" routerLinkActive="active-link">Add Item</a></li>
-            </ul>
-          </li>
-         
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-muted" href="#" id="reportDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ri-file-chart-line nav-icon"></i> Reports
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="financialDropdown">
-              <li><a class="dropdown-item" routerLink="/reports/by-customer" routerLinkActive="active-link">Customer
-                  History</a></li>
-              <li><a class="dropdown-item" routerLink="/reports/transactions" routerLinkActive="active-link">Transaction
-                  History</a></li>
-            </ul>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle text-muted" href="#" id="financialDropdown" role="button"
-              data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ri-tools-line nav-icon"></i> Configuration
-            </a>
-            <ul class="dropdown-menu" aria-labelledby="financialDropdown">
-              <li><a class="dropdown-item" routerLink="/config/pricings" routerLinkActive="active-link">Pricings</a>
-              </li>
-              <li><a class="dropdown-item" routerLink="/config/users" routerLinkActive="active-link">Users</a></li>
-            </ul>
-          </li>
-           -->
-        </ul>
+<nav class="modern-navbar">
+  <div class="navbar-container">
+    <!-- Left side - Mobile sidebar toggle and breadcrumb -->
+    <div class="navbar-left">
+      <!-- Cashier Mode Indicator -->
+      <div *ngIf="isCashierMode" class="cashier-mode-indicator">
+        <i class="ri-calculator-line"></i>
+        <span class="mode-text">Cashier Mode</span>
       </div>
-      <div class="d-flex ms-auto align-items-center">
-        <img src="nav-bar/user-logo.png" alt="Dropdown Image" class="rounded-circle me-2 user-logo"
-          id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-          <!--
+      
+      <button *ngIf="!isCashierMode" class="mobile-sidebar-toggle d-lg-none" 
+              (click)="toggleSidebar()"
+              (touchstart)="$event.preventDefault()"
+              [attr.aria-label]="sidebarExpanded ? 'Close menu' : 'Open menu'"
+              [attr.aria-expanded]="sidebarExpanded"
+              title="Toggle Menu">
+        <i [class]="sidebarExpanded ? 'ri-close-line' : 'ri-menu-line'"></i>
+      </button>
+      
+      <!-- Navigation actions -->
+      <div class="nav-actions d-none d-md-flex">
+        <button class="nav-action-btn" (click)="goBack()" title="Go Back">
+          <i class="ri-arrow-left-line"></i>
+        </button>
+        <button class="nav-action-btn" (click)="goForward()" title="Go Forward">
+          <i class="ri-arrow-right-line"></i>
+        </button>
+      </div>
+
+      <!-- Search Bar (hidden in cashier mode for simplicity) -->
+      <div *ngIf="!isCashierMode" class="search-container d-none d-lg-flex">
+        <div class="search-input-wrapper">
+          <i class="ri-search-line search-icon"></i>
+          <input type="text" 
+                 class="search-input" 
+                 placeholder="Search pages, customers, invoices..."
+                 #searchInput
+                 [(ngModel)]="searchQuery"
+                 (input)="onSearchInput($event)"
+                 (focus)="showSearchResults = true"
+                 (blur)="hideSearchResults()"
+                 (keydown)="onSearchKeydown($event)">
+        </div>
+        
+        <!-- Search Results Dropdown -->
+        <div class="search-results" *ngIf="showSearchResults && (filteredPages.length > 0 || popularPages.length > 0 || searchQuery.length > 0)">
+          <div class="search-results-header" *ngIf="searchQuery.length > 0">
+            <small class="text-muted">Search results for "{{ searchQuery }}"</small>
+          </div>
+          
+          <!-- Page Results -->
+          <div class="search-category" *ngIf="filteredPages.length > 0">
+            <div class="search-category-title">Pages</div>
+            <button class="search-result-item" 
+                    *ngFor="let page of filteredPages; let i = index"
+                    [class.highlighted]="selectedResultIndex === i"
+                    (mousedown)="navigateToPage(page.route)"
+                    (mouseenter)="selectedResultIndex = i">
+              <i [class]="page.icon"></i>
+              <div class="result-content">
+                <div class="result-title">{{ page.title }}</div>
+                <div class="result-description">{{ page.description }}</div>
+              </div>
+            </button>
+          </div>
+          
+          <!-- No Results -->
+          <div class="no-results" *ngIf="searchQuery.length > 0 && filteredPages.length === 0">
+            <i class="ri-search-line"></i>
+            <span>No pages found for "{{ searchQuery }}"</span>
+          </div>
+          
+          <!-- Recent/Popular Pages when no search -->
+          <div class="search-category" *ngIf="searchQuery.length === 0">
+            <div class="search-category-title">Quick Access</div>
+            <button class="search-result-item" 
+                    *ngFor="let page of popularPages; let i = index"
+                    [class.highlighted]="selectedResultIndex === i"
+                    (mousedown)="navigateToPage(page.route)"
+                    (mouseenter)="selectedResultIndex = i">
+              <i [class]="page.icon"></i>
+              <div class="result-content">
+                <div class="result-title">{{ page.title }}</div>
+                <div class="result-description">{{ page.description }}</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Cashier Quick Navigation -->
+      <div *ngIf="isCashierMode" class="cashier-quick-nav d-none d-md-flex">
+        <button class="quick-nav-btn" 
+                routerLink="/cashier" 
+                routerLinkActive="active"
+                title="Dashboard">
+          <i class="ri-dashboard-line"></i>
+          <span>Dashboard</span>
+        </button>
+        <button class="quick-nav-btn" 
+                routerLink="/create-invoice" 
+                routerLinkActive="active"
+                title="Create Invoice">
+          <i class="ri-file-add-line"></i>
+          <span>Invoice</span>
+        </button>
+        <button class="quick-nav-btn" 
+                routerLink="/customers" 
+                routerLinkActive="active"
+                title="Customers">
+          <i class="ri-user-line"></i>
+          <span>Customers</span>
+        </button>
+        <button class="quick-nav-btn" 
+                routerLink="/items" 
+                routerLinkActive="active"
+                title="Inventory">
+          <i class="ri-archive-line"></i>
+          <span>Inventory</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right side - Actions and user menu -->
+    <div class="navbar-right">
+      <!-- Quick Actions -->
+      <div class="quick-actions d-none d-md-flex">
+        <button class="quick-action-btn" 
+                (click)="openAddCustomerModal()" 
+                title="Add Customer">
+          <i class="ri-user-add-line"></i>
+        </button>
+        <button class="quick-action-btn" 
+                (click)="openAddItemModal()" 
+                title="Add Item">
+          <i class="ri-add-box-line"></i>
+        </button>
+        <button class="quick-action-btn" 
+                routerLink="/create-invoice" 
+                title="Create Invoice">
+          <i class="ri-file-add-line"></i>
+        </button>
+      </div>
+
+      <!-- Notifications -->
+      <!-- <div class="notification-wrapper">
+        <button class="notification-btn" title="Notifications">
+          <i class="ri-notification-3-line"></i>
+          <span class="notification-badge">3</span>
+        </button>
+      </div> -->
+
+      <!-- Theme Toggle -->
+      <button class="theme-toggle-btn" 
+              (click)="toggleTheme()" 
+              [attr.title]="currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'"
+              [attr.aria-label]="currentTheme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode'">
+        <i [class]="currentTheme === 'light' ? 'ri-moon-line' : 'ri-sun-line'"></i>
+      </button>
+
+      <!-- Cashier Mode Toggle -->
+      <button class="cashier-mode-toggle" 
+              (click)="toggleCashierMode()" 
+              [class.active]="isCashierMode"
+              [attr.title]="isCashierMode ? 'Switch to Full Mode' : 'Switch to Cashier Mode'"
+              [attr.aria-label]="isCashierMode ? 'Switch to Full Mode' : 'Switch to Cashier Mode'">
+        <i class="ri-calculator-line"></i>
+        <span class="toggle-text">{{ isCashierMode ? 'Full' : 'Cashier' }}</span>
+      </button>
+
+      <!-- User Menu -->
+      <div class="user-menu dropdown">
+        <button class="user-menu-btn" 
+                id="userMenuDropdown"
+                data-bs-toggle="dropdown" 
+                aria-expanded="false"
+                title="User Menu">
+          <img [src]="getCurrentUser().avatar" 
+               [alt]="getCurrentUser().name" 
+               [title]="getCurrentUser().name"
+               class="user-avatar">
+          <div class="user-info d-none d-md-block">
+            <div class="user-name">{{ getCurrentUser().name }}</div>
+            <div class="user-role">Administrator</div>
+          </div>
+          <i class="ri-arrow-down-s-line user-dropdown-arrow"></i>
+        </button>
+
+        <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
+          <li class="dropdown-header">
+            <div class="user-profile-info">
+              <img [src]="getCurrentUser().avatar" 
+                   [alt]="getCurrentUser().name" 
+                   [title]="getCurrentUser().name"
+                   class="user-profile-avatar">
+              <div>
+                <div class="user-profile-name">{{ getCurrentUser().name }}</div>
+                <div class="user-profile-email">{{ getCurrentUser().email }}</div>
+              </div>
+            </div>
+          </li>
+          <li><hr class="dropdown-divider"></li>
           <li>
-            <a class="dropdown-item" routerLink="/auth/sign-in" href="javascript:void(0);">
+            <a class="dropdown-item" href="#" title="Profile Settings">
+              <i class="ri-user-line me-2"></i>
+              Profile
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="#" title="Account Settings">
+              <i class="ri-settings-3-line me-2"></i>
               Settings
             </a>
           </li>
-          -->
           <li>
-            <a class="dropdown-item" routerLink="/auth/sign-in" (click)="signOut()" href="javascript:void(0);">
-              Sign Out
+            <a class="dropdown-item" href="#" title="Help & Support">
+              <i class="ri-question-line me-2"></i>
+              Help
             </a>
+          </li>
+          <li><hr class="dropdown-divider"></li>
+          <li>
+            <button class="dropdown-item text-danger" 
+                    (click)="signOut()" 
+                    title="Sign Out">
+              <i class="ri-logout-box-line me-2"></i>
+              Sign Out
+            </button>
           </li>
         </ul>
       </div>
     </div>
-  </nav>
-</div>
+  </div>
+</nav>

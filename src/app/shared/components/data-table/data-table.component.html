@@ -1,0 +1,174 @@
+<!-- Data Table Component -->
+<div class="data-table-container">
+  <!-- Search bar (if searchable) -->
+  <div class="table-controls mb-3" *ngIf="searchable">
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <div class="search-container">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search..."
+            [(ngModel)]="searchTerm"
+            (input)="onSearch()">
+          <i class="ri-search-line search-icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading spinner -->
+  <div class="loading-container text-center py-4" *ngIf="loading">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-responsive" *ngIf="!loading">
+    <table class="table table-hover">
+      <thead class="table-light">
+        <tr>
+          <!-- Selection checkbox -->
+          <th scope="col" style="width: 50px;" *ngIf="selectable">
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox" 
+                id="selectAll"
+                [checked]="isAllSelected"
+                [indeterminate]="isIndeterminate"
+                (change)="toggleSelectAll($event)">
+            </div>
+          </th>
+          
+          <!-- Data columns -->
+          <th 
+            *ngFor="let column of columns" 
+            scope="col"
+            [ngClass]="{ 'sortable': column.sortable }"
+            (click)="column.sortable ? onSort(column.key) : null">
+            {{ column.label }}
+            <i 
+              *ngIf="column.sortable && sortColumn === column.key"
+              class="ri-arrow-up-line"
+              [ngClass]="{ 'ri-arrow-down-line': sortDirection === 'desc' }">
+            </i>
+          </th>
+          
+          <!-- Actions column -->
+          <th scope="col" *ngIf="hasActions">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of paginatedData; let i = index" 
+            [ngClass]="{ 'selected': item.selected }">
+          
+          <!-- Selection checkbox -->
+          <td *ngIf="selectable">
+            <div class="form-check">
+              <input 
+                class="form-check-input" 
+                type="checkbox"
+                [(ngModel)]="item.selected"
+                (change)="onSelectionChange()">
+            </div>
+          </td>
+          
+          <!-- Data cells -->
+          <td *ngFor="let column of columns">
+            <ng-container [ngSwitch]="column.type">
+              <span *ngSwitchCase="'date'">{{ formatDate(item[column.key]) }}</span>
+              <span *ngSwitchCase="'currency'">{{ formatCurrency(item[column.key]) }}</span>
+              <span *ngSwitchCase="'boolean'">
+                <span class="badge" [ngClass]="item[column.key] ? 'bg-success' : 'bg-secondary'">
+                  {{ item[column.key] ? 'Yes' : 'No' }}
+                </span>
+              </span>
+              <span *ngSwitchDefault>{{ item[column.key] }}</span>
+            </ng-container>
+          </td>
+          
+          <!-- Actions -->
+          <td *ngIf="hasActions">
+            <div class="d-flex gap-2">
+              <button 
+                class="btn btn-sm btn-info" 
+                (click)="onActionClick('view', item)"
+                title="View Details">
+                <i class="ri-eye-line"></i>
+              </button>
+              <button 
+                class="btn btn-sm btn-warning" 
+                (click)="onActionClick('edit', item)"
+                title="Edit">
+                <i class="ri-edit-box-line"></i>
+              </button>
+              <button 
+                class="btn btn-sm btn-danger" 
+                (click)="onActionClick('delete', item)"
+                title="Delete">
+                <i class="ri-delete-bin-line"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        
+        <!-- No data row -->
+        <tr *ngIf="paginatedData.length === 0">
+          <td [attr.colspan]="getTotalColumns()" class="text-center py-4 text-muted">
+            <i class="ri-inbox-line fs-1 text-muted"></i>
+            <p class="mt-2 mb-0">No data found</p>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="pagination && !loading">
+    <div class="d-flex align-items-center">
+      <label for="itemsPerPage" class="form-label me-2 mb-0">Show:</label>
+      <select 
+        id="itemsPerPage" 
+        class="form-select form-select-sm" 
+        style="width: auto;"
+        [(ngModel)]="itemsPerPage"
+        (change)="onItemsPerPageChange()">
+        <option *ngFor="let option of itemsPerPageOptions" [value]="option">
+          {{ option }}
+        </option>
+      </select>
+      <span class="ms-2 text-muted">entries</span>
+    </div>
+    
+    <div class="pagination-info">
+      <span class="text-muted">
+        Showing {{ getStartIndex() }} to {{ getEndIndex() }} of {{ filteredData.length }} entries
+      </span>
+    </div>
+    
+    <nav aria-label="Table pagination">
+      <ul class="pagination pagination-sm mb-0">
+        <li class="page-item" [ngClass]="{ 'disabled': currentPage === 1 }">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" [disabled]="currentPage === 1">
+            <i class="ri-arrow-left-s-line"></i>
+          </button>
+        </li>
+        
+        <li 
+          *ngFor="let page of getVisiblePages()" 
+          class="page-item" 
+          [ngClass]="{ 'active': page === currentPage }">
+          <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
+        </li>
+        
+        <li class="page-item" [ngClass]="{ 'disabled': currentPage === totalPages }">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" [disabled]="currentPage === totalPages">
+            <i class="ri-arrow-right-s-line"></i>
+          </button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>

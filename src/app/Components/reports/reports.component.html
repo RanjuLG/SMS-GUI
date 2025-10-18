@@ -1,29 +1,85 @@
-<div class="container-fluid my-4">
-  <div class="breadcrumb-container mb-3">
-    <nav aria-label="breadcrumb">
-      <ol class="breadcrumb">
-        <li class="breadcrumb-item">
-          <a routerLink="/overview">Home</a>
-        </li>
-        <li class="breadcrumb-item active" aria-current="page">Reports</li>
-      </ol>
-    </nav>
-  </div>
-  <div class="row justify-content-center g-1">
-    <!-- Customer Management -->
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="by-customer">
-        <img src="reports/customer.png" class="card-img-top" alt="Customer Report">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Customer History</h6>
+<!-- Reports Management with Modern Components -->
+<app-page-header 
+  title="Reports & Analytics"
+  subtitle="Access comprehensive reports and analytics for your business insights">
+</app-page-header>
+
+<div class="modern-reports">
+  <!-- Reports Content -->
+  <div class="reports-content">
+    <div class="container">
+      <!-- Reports Grid -->
+      <div class="reports-grid">
+        <!-- Customer Management -->
+        <div class="report-card-wrapper">
+          <div class="report-card customer-card" routerLink="by-customer" title="View Customer History Reports">
+            <div class="card-icon">
+              <i class="fas fa-users"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Customer History</h3>
+              <p class="card-description">
+                View detailed customer transaction history and analytics
+              </p>
+            </div>
+            <div class="card-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-    <div class="col-lg-1 col-md-2 col-sm-3 col-4">
-      <div class="card h-100 shadow-sm card-hover" routerLink="transactions">
-        <img src="reports/income.png" class="card-img-top" alt="Transactions Report">
-        <div class="card-body p-2">
-          <h6 class="card-title center-title mb-1">Transaction History</h6>
+
+        <!-- Transaction History -->
+        <div class="report-card-wrapper">
+          <div class="report-card transactions-card" routerLink="transactions" title="View Transaction History Reports">
+            <div class="card-icon">
+              <i class="fas fa-history"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Transaction History</h3>
+              <p class="card-description">
+                Comprehensive transaction logs and financial analytics
+              </p>
+            </div>
+            <div class="card-arrow">
+              <i class="fas fa-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invoice Reports -->
+        <div class="report-card-wrapper">
+          <div class="report-card invoice-card" title="Invoice Reports Coming Soon">
+            <div class="card-icon">
+              <i class="fas fa-file-invoice"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Invoice Reports</h3>
+              <p class="card-description">
+                Invoice generation reports and payment tracking
+              </p>
+            </div>
+            <div class="card-badge">
+              <span class="badge">Coming Soon</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="report-card-wrapper">
+          <div class="report-card financial-card" title="Financial Summary Coming Soon">
+            <div class="card-icon">
+              <i class="fas fa-chart-line"></i>
+            </div>
+            <div class="card-content">
+              <h3 class="card-title">Financial Summary</h3>
+              <p class="card-description">
+                Overall business performance and financial insights
+              </p>
+            </div>
+            <div class="card-badge">
+              <span class="badge">Coming Soon</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>

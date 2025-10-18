@@ -1,20 +1,25 @@
 .card {
   border-radius: 0.5rem;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0.5rem 1rem var(--shadow);
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--primary-text);
 }
 
 .card-title {
   font-size: 1.25rem;
   font-weight: 500;
+  color: var(--primary-text);
 }
 
 .table thead th {
-  background-color: #f8f9fa;
-  color: #6c757d;
+  background-color: var(--secondary-bg);
+  color: var(--secondary-text);
+  border-color: var(--border-color);
 }
 
 .table tbody tr:hover {
-  background-color: #f1f3f5;
+  background-color: var(--hover-bg);
 }
 
 .table .badge {
@@ -28,7 +33,7 @@
 
 .btn-outline-warning,
 .btn-outline-danger {
-  color: #6c757d;
+  color: var(--secondary-text);
 }
 
 #searchResultList {
@@ -65,25 +70,25 @@
   .gridjs-pagination {
     .gridjs-pages button {
         margin-left: 0.3rem;
-        border-radius: 0.25rem !important; /* Adjusted border-radius */
-        border: 1px solid #dee2e6; /* Light grey border */
-        background-color: #f8f9fa; /* Light background color */
-        color: #343a40; /* Dark grey text color */
+        border-radius: 0.25rem !important;
+        border: 1px solid var(--border-color);
+        background-color: var(--card-bg);
+        color: var(--primary-text);
 
         &:last-child {
-            border-right: 1px solid #dee2e6;
+            border-right: 1px solid var(--border-color);
         }
 
         &:disabled,
         &:hover:disabled,
         &[disabled] {
-            color: #6c757d; /* Grey color for disabled state */
-            background-color: #f8f9fa;
+            color: var(--muted-text);
+            background-color: var(--tertiary-bg);
         }
 
         &:hover {
-            background-color: #e2e6ea; /* Slightly darker background on hover */
-            color: #343a40; /* Same text color on hover */
+            background-color: var(--hover-bg);
+            color: var(--primary-text);
         }
 
         &:focus {
@@ -98,13 +103,11 @@
         }
 
         &.gridjs-currentPage {
-            background-color: #007bff; /* Primary blue background for active page */
-            color: #fff; /* White text color for active page */
-            border-color: #007bff; /* Primary blue border color for active page */
-            font-weight: 500; /* Medium font weight */
+            background-color: var(--brand-primary);
+            color: white;
+            border-color: var(--brand-primary);
+            font-weight: 500;
         }
     }
-
-    
 }
 
