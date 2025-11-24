@@ -27,6 +27,7 @@ import { IncomeReportComponent } from './Components/helpers/reports/income-repor
 import { ProfileComponent } from './Components/profile/profile.component';
 import { UnifiedTransactionHistoryComponent } from './Components/unified-transaction-history/unified-transaction-history.component';
 import { CashierDashboardComponent } from './Components/cashier-dashboard/cashier-dashboard.component';
+import { HelpComponent } from './Components/help/help.component';
 
 export const routes: Routes = [
     { path: '', redirectTo: '/overview', pathMatch: 'full'},
@@ -57,4 +58,5 @@ export const routes: Routes = [
     {path:'reports/by-customer',component: ReportByCustomerComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'reports/transactions',component: UnifiedTransactionHistoryComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
     {path:'create-invoice',component: DashboardComponent, canActivate: [AuthGuard], data: { role: 'Cashier' }},
+    { path: 'help', component: HelpComponent },
 ];

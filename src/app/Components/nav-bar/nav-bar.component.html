@@ -142,14 +142,6 @@
         </button>
       </div>
 
-      <!-- Notifications -->
-      <!-- <div class="notification-wrapper">
-        <button class="notification-btn" title="Notifications">
-          <i class="ri-notification-3-line"></i>
-          <span class="notification-badge">3</span>
-        </button>
-      </div> -->
-
       <!-- Theme Toggle -->
       <button class="theme-toggle-btn" 
               (click)="toggleTheme()" 
@@ -175,13 +167,12 @@
                 data-bs-toggle="dropdown" 
                 aria-expanded="false"
                 title="User Menu">
-          <img [src]="getCurrentUser().avatar" 
-               [alt]="getCurrentUser().name" 
-               [title]="getCurrentUser().name"
-               class="user-avatar">
-          <div class="user-info d-none d-md-block">
+          <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center" style="width: 32px; height: 32px; border-radius: 50%;">
+            <i class="ri-user-3-line"></i>
+          </div>
+          <div class="user-info d-none d-md-block ms-2">
             <div class="user-name">{{ getCurrentUser().name }}</div>
-            <div class="user-role">Administrator</div>
+            <div class="user-role">{{ getCurrentUser().role }}</div>
           </div>
           <i class="ri-arrow-down-s-line user-dropdown-arrow"></i>
         </button>
@@ -189,31 +180,25 @@
         <ul class="dropdown-menu dropdown-menu-end user-dropdown-menu">
           <li class="dropdown-header">
             <div class="user-profile-info">
-              <img [src]="getCurrentUser().avatar" 
-                   [alt]="getCurrentUser().name" 
-                   [title]="getCurrentUser().name"
-                   class="user-profile-avatar">
+              <div class="avatar-circle bg-primary text-white d-flex align-items-center justify-content-center me-3" style="width: 48px; height: 48px; border-radius: 50%; font-size: 1.5rem;">
+                <i class="ri-user-3-line"></i>
+              </div>
               <div>
                 <div class="user-profile-name">{{ getCurrentUser().name }}</div>
-                <div class="user-profile-email">{{ getCurrentUser().email }}</div>
+                <div class="user-profile-email">{{ getCurrentUser().role }}</div>
               </div>
             </div>
           </li>
           <li><hr class="dropdown-divider"></li>
           <li>
-            <a class="dropdown-item" href="#" title="Profile Settings">
+            <a class="dropdown-item" routerLink="/profile" title="Profile Settings">
               <i class="ri-user-line me-2"></i>
               Profile
             </a>
           </li>
+          <!-- Settings removed as per request -->
           <li>
-            <a class="dropdown-item" href="#" title="Account Settings">
-              <i class="ri-settings-3-line me-2"></i>
-              Settings
-            </a>
-          </li>
-          <li>
-            <a class="dropdown-item" href="#" title="Help & Support">
+            <a class="dropdown-item" routerLink="/help" title="Help & Support">
               <i class="ri-question-line me-2"></i>
               Help
             </a>
