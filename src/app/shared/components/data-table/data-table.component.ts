@@ -514,7 +514,12 @@ export class DataTableComponent implements OnChanges {
       'latefeepayment': 'bg-warning',
       'late fee payment': 'bg-warning',
       'loanclosure': 'bg-secondary',
-      'loan closure': 'bg-secondary'
+      'loan closure': 'bg-secondary',
+
+      // Inventory Status
+      'in stock': 'bg-success',
+      'redeemed': 'bg-info',
+      'defaulted': 'bg-danger'
     };
     const stringValue = value?.toString?.()?.toLowerCase?.() || '';
     return badgeMap[stringValue] || 'bg-secondary';
