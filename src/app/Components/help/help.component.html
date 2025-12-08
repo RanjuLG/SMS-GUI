@@ -1,0 +1,59 @@
+<!-- Breadcrumbs for navigation -->
+<app-breadcrumb></app-breadcrumb>
+
+<div class="container-fluid h-100 bg-light">
+  <div class="row justify-content-center min-vh-100 py-5">
+    <div class="col-lg-8 col-md-10">
+      <div class="card shadow-lg border-0 rounded-lg mb-4">
+        <div class="card-header bg-info text-white text-center py-4 rounded-top">
+          <h2 class="card-title mb-0 fw-bold"><i class="ri-question-line me-2"></i>Help & Support</h2>
+          <p class="mb-0 opacity-75">Frequently Asked Questions and Support Channels</p>
+        </div>
+        
+        <div class="card-body p-5">
+          <h4 class="mb-4 text-primary">Frequently Asked Questions</h4>
+          
+          <div class="accordion" id="faqAccordion">
+            <div class="accordion-item border-0 mb-3 shadow-sm" *ngFor="let faq of faqs; let i = index">
+              <h2 class="accordion-header" [id]="'heading' + i">
+                <button class="accordion-button fw-bold" [class.collapsed]="!faq.isOpen" type="button" (click)="toggleFAQ(i)" [attr.aria-expanded]="faq.isOpen" [attr.aria-controls]="'collapse' + i">
+                  {{ faq.question }}
+                </button>
+              </h2>
+              <div [id]="'collapse' + i" class="accordion-collapse collapse" [class.show]="faq.isOpen" [attr.aria-labelledby]="'heading' + i">
+                <div class="accordion-body text-muted">
+                  {{ faq.answer }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card shadow-lg border-0 rounded-lg">
+        <div class="card-body p-5 text-center">
+          <h4 class="mb-4 text-primary">Still need help?</h4>
+          <p class="text-muted mb-4">Our support team is available to assist you with any issues or questions you may have.</p>
+          
+          <div class="row justify-content-center">
+            <div class="col-md-5 mb-3">
+              <div class="p-3 border rounded bg-white shadow-sm h-100">
+                <i class="ri-mail-send-line fs-1 text-primary mb-2"></i>
+                <h5 class="fw-bold">Email Support</h5>
+                <p class="mb-0"><a href="mailto:support@smsgoldcash.com" class="text-decoration-none">support&#64;smsgoldcash.com</a></p>
+              </div>
+            </div>
+            <div class="col-md-5 mb-3">
+              <div class="p-3 border rounded bg-white shadow-sm h-100">
+                <i class="ri-phone-line fs-1 text-success mb-2"></i>
+                <h5 class="fw-bold">Phone Support</h5>
+                <p class="mb-0"><a href="tel:+18005550199" class="text-decoration-none">+1-800-555-0199</a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

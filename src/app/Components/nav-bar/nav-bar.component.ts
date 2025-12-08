@@ -318,12 +318,13 @@ export class NavBarComponent implements OnInit, OnDestroy {
     this.cashierModeService.toggleCashierMode();
   }
 
-  // Get current user info (you can implement this based on your auth service)
+  // Get current user info
   getCurrentUser() {
     return {
-      name: 'Current User',
-      email: 'user@example.com',
-      avatar: 'nav-bar/user-logo.png'
+      name: this.authService.getUserName() || 'User',
+      email: 'user@example.com', // You might want to add getEmail() to AuthService if available
+      role: this.authService.currentUserRole || 'User',
+      avatar: 'assets/images/user-avatar.png' // Use a generic avatar or one based on user
     };
   }
 
