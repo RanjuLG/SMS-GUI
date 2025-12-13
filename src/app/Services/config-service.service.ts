@@ -111,6 +111,18 @@ export class ConfigService {
     return `${baseUrl}${this.replaceParams(endpoint, params)}`;
   }
 
+  getAccountEndpoint(action: string, params?: any): string {
+    const baseUrl = this.apiUrl;
+    const endpoint = this.config?.api_endpoints?.account?.[action];
+    
+    if (!endpoint) {
+      console.warn(`Account endpoint '${action}' not found in config`);
+      return `${baseUrl}/api/account/me`;
+    }
+
+    return `${baseUrl}${this.replaceParams(endpoint, params)}`;
+  }
+
   getReportEndpoint(action: string, params?: any): string {
     const baseUrl = this.apiUrl;
     const endpoint = this.config?.api_endpoints?.reports?.[action];

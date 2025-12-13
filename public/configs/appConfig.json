@@ -1,5 +1,5 @@
 {
-	"api_host": "https://sms-api-ea.azurewebsites.net",
+	"api_host": "https://localhost:7217",
 	"invoice_settings": {
 		"width": 229,
 		"height": 180
@@ -8,6 +8,12 @@
 		"authentication": {
 			"login": "/api/account/login",
 			"register": "/api/account/register"
+		},
+		"account": {
+			"base": "/api/account",
+			"getMe": "/api/account/me",
+			"updateMe": "/api/account/me",
+			"deleteMe": "/api/account/me"
 		},
 		"customers": {
 			"base": "/api/customers",

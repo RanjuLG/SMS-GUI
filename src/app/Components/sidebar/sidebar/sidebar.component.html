@@ -1,79 +1,112 @@
-<aside class="modern-sidebar" [class.expanded]="expanded" (click)="$event.stopPropagation()">
-    <!-- Sidebar Header -->
-    <div class="sidebar-header">
-        <div class="logo-container" *ngIf="expanded">
-            <img src="GoldCashLogo.png" alt="Gold Cash" class="logo">
-            <span class="logo-text">Gold Cash</span>
-        </div>
-        
-        <button class="sidebar-toggle-btn" (click)="toggleSidebar()" 
-                [attr.aria-label]="expanded ? 'Collapse sidebar' : 'Expand sidebar'">
-            <i [class]="expanded ? 'ri-menu-fold-line' : 'ri-menu-unfold-line'"></i>
-        </button>
+<aside
+  class="modern-sidebar"
+  [class.expanded]="expanded"
+  (click)="$event.stopPropagation()"
+>
+  <!-- Sidebar Header -->
+  <div class="sidebar-header">
+    <div class="logo-container" *ngIf="expanded">
+      <img src="GoldCashLogo.png" alt="Gold Cash" class="logo" />
+      <span class="logo-text">Gold Cash</span>
     </div>
 
-    <!-- Navigation Menu -->
-    <nav class="sidebar-nav">
-        <ul class="nav-list">
-            <li *ngFor="let item of currentMenuItems" class="nav-item">
-                <!-- Menu item without children -->
-                <a *ngIf="!item.children" 
-                   [routerLink]="item.route" 
-                   routerLinkActive="active"
-                   class="nav-link"
-                   [attr.title]="!expanded ? item.label : null">
-                    <i [class]="item.icon + ' nav-icon'"></i>
-                    <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
-                </a>
+    <button
+      class="sidebar-toggle-btn"
+      (click)="toggleSidebar()"
+      [attr.aria-label]="expanded ? 'Collapse sidebar' : 'Expand sidebar'"
+    >
+      <i [class]="expanded ? 'ri-menu-fold-line' : 'ri-menu-unfold-line'"></i>
+    </button>
+  </div>
 
-                <!-- Menu item with children -->
-                <div *ngIf="item.children" class="nav-group">
-                    <!-- If parent has a route, make it clickable -->
-                    <a *ngIf="item.route" 
-                       [routerLink]="item.route" 
-                       routerLinkActive="active"
-                       class="nav-link nav-toggle" 
-                       [attr.title]="!expanded ? item.label : null">
-                        <i [class]="item.icon + ' nav-icon'"></i>
-                        <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
-                        <i *ngIf="expanded" 
-                           [class]="isMenuExpanded(item.label) ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'" 
-                           class="nav-arrow"
-                           (click)="$event.preventDefault(); $event.stopPropagation(); toggleMenu(item.label)"></i>
-                    </a>
-                    <!-- If parent has no route, use button -->
-                    <button *ngIf="!item.route"
-                            class="nav-link nav-toggle" 
-                            (click)="expanded ? toggleMenu(item.label) : expandSidebar()"
-                            [attr.title]="!expanded ? item.label : null">
-                        <i [class]="item.icon + ' nav-icon'"></i>
-                        <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
-                        <i *ngIf="expanded" 
-                           [class]="isMenuExpanded(item.label) ? 'ri-arrow-down-s-line' : 'ri-arrow-right-s-line'" 
-                           class="nav-arrow"></i>
-                    </button>
+  <!-- Navigation Menu -->
+  <nav class="sidebar-nav">
+    <ul class="nav-list">
+      <li *ngFor="let item of currentMenuItems" class="nav-item">
+        <!-- Menu item without children -->
+        <a
+          *ngIf="!item.children"
+          [routerLink]="item.route"
+          routerLinkActive="active"
+          class="nav-link"
+          [attr.title]="!expanded ? item.label : null"
+        >
+          <i [class]="item.icon + ' nav-icon'"></i>
+          <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+        </a>
 
-                    <!-- Submenu -->
-                    <ul class="nav-submenu" 
-                        [class.expanded]="expanded && isMenuExpanded(item.label)"
-                        *ngIf="expanded">
-                        <li *ngFor="let child of item.children" class="nav-subitem">
-                            <a [routerLink]="child.route" 
-                               routerLinkActive="active"
-                               class="nav-sublink">
-                                <i [class]="child.icon + ' nav-subicon'"></i>
-                                <span class="nav-sublabel">{{ child.label }}</span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+        <!-- Menu item with children -->
+        <div *ngIf="item.children" class="nav-group">
+          <!-- If parent has a route, make it clickable -->
+          <a
+            *ngIf="item.route"
+            [routerLink]="item.route"
+            routerLinkActive="active"
+            class="nav-link nav-toggle"
+            [attr.title]="!expanded ? item.label : null"
+          >
+            <i [class]="item.icon + ' nav-icon'"></i>
+            <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+            <i
+              *ngIf="expanded"
+              [class]="
+                isMenuExpanded(item.label)
+                  ? 'ri-arrow-down-s-line'
+                  : 'ri-arrow-right-s-line'
+              "
+              class="nav-arrow"
+              (click)="
+                $event.preventDefault();
+                $event.stopPropagation();
+                toggleMenu(item.label)
+              "
+            ></i>
+          </a>
+          <!-- If parent has no route, use button -->
+          <button
+            *ngIf="!item.route"
+            class="nav-link nav-toggle"
+            (click)="expanded ? toggleMenu(item.label) : expandSidebar()"
+            [attr.title]="!expanded ? item.label : null"
+          >
+            <i [class]="item.icon + ' nav-icon'"></i>
+            <span class="nav-label" *ngIf="expanded">{{ item.label }}</span>
+            <i
+              *ngIf="expanded"
+              [class]="
+                isMenuExpanded(item.label)
+                  ? 'ri-arrow-down-s-line'
+                  : 'ri-arrow-right-s-line'
+              "
+              class="nav-arrow"
+            ></i>
+          </button>
+
+          <!-- Submenu -->
+          <ul
+            class="nav-submenu"
+            [class.expanded]="expanded && isMenuExpanded(item.label)"
+            *ngIf="expanded"
+          >
+            <li *ngFor="let child of item.children" class="nav-subitem">
+              <a
+                [routerLink]="child.route"
+                routerLinkActive="active"
+                class="nav-sublink"
+              >
+                <i [class]="child.icon + ' nav-subicon'"></i>
+                <span class="nav-sublabel">{{ child.label }}</span>
+              </a>
             </li>
-        </ul>
-    </nav>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </nav>
 
-    <!-- Sidebar Footer -->
-    <div class="sidebar-footer" *ngIf="expanded">
-        <div class="user-section">
+  <!-- Sidebar Footer -->
+  <div class="sidebar-footer" *ngIf="expanded">
+    <!-- <div class="user-section">
             <div class="user-avatar">
                 <img src="nav-bar/user-logo.png" alt="User" class="avatar-img">
             </div>
@@ -81,19 +114,18 @@
                 <div class="user-name">Current User</div>
                 <div class="user-role">Administrator</div>
             </div>
-        </div>
-        
-        <button class="logout-btn" (click)="signOut()" title="Sign Out">
-            <i class="ri-logout-box-line"></i>
-            <span>Sign Out</span>
-        </button>
-    </div>
+        </div> -->
 
-    <!-- Compact footer for collapsed state -->
-    <div class="sidebar-footer-compact" *ngIf="!expanded">
-        <button class="logout-btn-compact" (click)="signOut()" title="Sign Out">
-            <i class="ri-logout-box-line"></i>
-        </button>
-    </div>
+    <button class="logout-btn" (click)="signOut()" title="Sign Out">
+      <i class="ri-logout-box-line"></i>
+      <span>Sign Out</span>
+    </button>
+  </div>
+
+  <!-- Compact footer for collapsed state -->
+  <div class="sidebar-footer-compact" *ngIf="!expanded">
+    <button class="logout-btn-compact" (click)="signOut()" title="Sign Out">
+      <i class="ri-logout-box-line"></i>
+    </button>
+  </div>
 </aside>
-
