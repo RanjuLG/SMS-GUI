@@ -584,9 +584,9 @@ export class ApiService {
     return this.http.delete(deleteMultipleUrl, { body: invoiceIds });
   }
 
-  getInvoicesByCustomerNIC(nic: string): Observable<InvoiceDto2[]> {
+  getInvoicesByCustomerNIC(customerNIC: string): Observable<InvoiceDto2[]> {
     if (!this.checkLoggedIn()) return throwError(() => new Error('Not logged in'));
-    const getByCustomerUrl = this.configService.getInvoiceEndpoint('getByCustomerNIC', { nic });
+    const getByCustomerUrl = this.configService.getInvoiceEndpoint('getByCustomerNIC', { customerNIC });
     return this.http.get<InvoiceDto2[]>(getByCustomerUrl);
   }
 
